@@ -36,7 +36,7 @@ class LoginController extends Controller
             // log activity
             LogActivity::create([
                 'user_id' => $userId,
-                'action' => 'login',
+                'action' => 'melakukan login',
             ]);
 
             $request->session()->regenerate();
@@ -45,6 +45,44 @@ class LoginController extends Controller
 
         return back()->with('loginError', 'login gagal!');
 
+    }
+
+    public function authenticateApi(Request $request)
+    {
+        $credentials = $request->validate([
+            'username' => 'required',
+            'password' => 'required'
+        ]);
+
+        if (Auth::attempt($credentials)) {
+            $userId = Auth::id();
+
+            $data = User::find($userId);
+
+            // log activity
+            LogActivity::create([
+                'user_id' => $userId,
+                'action' => 'melakukan login',
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Login berhasil',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Login gagal',
+                'errors' => 'Periksa kembali username dan passwordnya',
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Server error',
+            'errors' => 'server error',
+        ], 500);
     }
 
     public function logout(Request $request)
@@ -57,10 +95,38 @@ class LoginController extends Controller
         // log activity
         LogActivity::create([
             'user_id' => $userId,
-            'action' => 'logout',
+            'action' => 'melakukan logout',
         ]);
 
         return redirect('/');
+    }
+
+    public function logoutApi(Request $request)
+    {
+        try {
+
+        $userId = $request->userId;
+        Auth::logout();
+
+        // log activity
+        LogActivity::create([
+            'user_id' => $userId,
+            'action' => 'melakukan logout',
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Logout berhasil',
+        ], 200);
+
+        } catch (\Exception $e) {
+            // Tangani kesalahan dan kembalikan pesan error
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan saat logout',
+                'errors' => $e->getMessage(), // Mengembalikan pesan kesalahan yang lebih spesifik
+            ], 500);
+        }
     }
 }
 

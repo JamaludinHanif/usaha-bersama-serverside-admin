@@ -4,45 +4,101 @@
 @endsection
 
 @section('content')
-    {{-- @dd($users) --}}
+    <div id="loading-spinner"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255,255,255,0.8); z-index: 9999; text-align: center;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    {{-- filter --}}
+    <div class="d-flex" style="width: 50%">
+        {{-- <div style="width: 300px" class="col-sm-6 mb-3 mb-sm-0">
+            <form action="" id="formFilter">
+                <p class="h6 mb-2 text-gray-800">Filter berdasarkan kategory :</p>
+                <select name="categorySelected" id="categorySelected" class="form-select" aria-label="Default select example"
+                    required>
+                    <option value="" selected>Semua Kategori</option>
+                    <option value="makanan">
+                        Makanan</option>
+                    <option value="minuman">
+                        Minuman</option>
+                    <option value="pembersih">
+                        Pembersih</option>
+                </select>
+            </form>
+        </div>
+        <div style="width: 300px" class="col-sm-6 mb-3 mb-sm-0">
+            <form action="" id="formFilter">
+                <p class="h6 mb-2 text-gray-800">Filter berdasarkan satuan :</p>
+                <select name="unitSelected" id="unitSelected" class="form-select" aria-label="Default select example"
+                    required>
+                    <option value="" selected>Semua satuan</option>
+                    <option value="pcs">
+                        Pcs</option>
+                    <option value="pak">
+                        Pak</option>
+                    <option value="dos">
+                        Dos</option>
+                </select>
+            </form>
+        </div> --}}
+        <div style="width: 300px" class="col-sm-6 mb-3 mb-sm-0">
+            <p class="h6 mb-2 text-gray-800">Filter berdasarkan kategori:</p>
+            <select name="categorySelected" id="categorySelected" class="form-select" aria-label="Default select example"
+                required>
+                <option value="" selected>Semua Kategori</option>
+                <option value="makanan">Makanan</option>
+                <option value="minuman">Minuman</option>
+                <option value="pembersih">Pembersih</option>
+            </select>
+        </div>
+
+        <div style="width: 300px" class="col-sm-6 mb-3 mb-sm-0">
+            <p class="h6 mb-2 text-gray-800">Filter berdasarkan satuan:</p>
+            <select name="unitSelected" id="unitSelected" class="form-select" aria-label="Default select example" required>
+                <option value="" selected>Semua Satuan</option>
+                <option value="pcs">Pcs</option>
+                <option value="pak">Pak</option>
+                <option value="dos">Dos</option>
+            </select>
+        </div>
+
+    </div>
+
     {{-- tambah quotes --}}
     <div class="d-flex justify-content-end">
         <a href="#" data-toggle="modal" id="createButton" data-target="#insertModal"
             class="btn btn-primary btn-icon-split">
             <span class="icon text-white-50">
                 <i class="far fa-plus-square"></i> </span>
-            <span class="text">New Quotes</span>
+            <span class="text">Produk Baru</span>
         </a>
     </div>
 
     <div class="" style="height: 35px"></div>
 
-    <!-- DataTales Example -->
+    <!-- DataTales -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Semua User</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Semua Produk</h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="myTable" width="100%" cellspacing="0">
+                <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Nama Pemosting</th>
-                            <th>Kategori</th>
-                            <th>judul</th>
-                            <th>Diposting pada</th>
-                            <th>Aksi</th>
+                            <th style="background-color: #007bff; color: white;">Nama</th>
+                            <th style="background-color: #007bff; color: white;">Harga</th>
+                            <th style="background-color: #007bff; color: white;">Satuan</th>
+                            <th style="background-color: #007bff; color: white;">Stok</th>
+                            <th style="background-color: #007bff; color: white;">Kategori</th>
+                            <th style="background-color: #007bff; color: white;">Gambar</th>
+                            <th style="background-color: #007bff; color: white;">Aksi</th>
                         </tr>
                     </thead>
-                    <tfoot>
-                        <tr>
-                            <th>Poster Name</th>
-                            <th>Category</th>
-                            <th>Title</th>
-                            <th>posted on</th>
-                            <th>Action</th>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
         </div>
@@ -81,24 +137,81 @@
                 processing: true,
                 serverside: true,
                 autoWidth: false,
-                ajax: "{{ url('/admin/quotes/quotes-json') }}",
+                ajax: {
+                    url: `{{ url('/admin/products/products-json') }}`,
+                    data: function(d) {
+                        let categorySelected = $('#categorySelected').val();
+                        if (categorySelected) {
+                            d.category = categorySelected;
+                        } else {
+                            d.category = null;
+                        }
+                        let unitSelected = $('#unitSelected').val();
+                        if (unitSelected) {
+                            d.unit = unitSelected;
+                        } else {
+                            d.unit = null;
+                        }
+                    }
+                },
                 columns: [{
-                    data: 'username',
-                    name: 'Nama Pemosting'
+                    data: 'name',
+                    name: 'Nama'
+                }, {
+                    data: 'price',
+                    name: 'Harga'
+                }, {
+                    data: 'unit',
+                    name: 'Satuan'
+                }, {
+                    data: 'stock',
+                    name: 'Stok'
                 }, {
                     data: 'category',
                     name: 'Kategori'
                 }, {
-                    data: 'title',
-                    name: 'Judul'
+                    data: 'image',
+                    name: 'Gambar'
                 }, {
-                    data: 'formatted_created_at',
-                    name: 'Diposting Pada'
-                }, {
-                    data: 'aksi',
-                    name: 'aksi'
+                    data: 'action',
+                    name: 'Aksi'
                 }]
             })
+
+            // loading
+            $(document).on('click', 'a', function(e) {
+                var href = $(this).attr('href');
+
+                if (href && href !== "#" && href.indexOf('#') === -1) {
+                    $('#loading-spinner').show();
+                }
+            });
+
+            $(window).on('load', function() {
+                $('#loading-spinner').hide();
+            });
+
+            // filter
+            $('#categorySelected').change(function(e) {
+                e.preventDefault();
+                $('#myTable').DataTable().ajax.reload();
+            });
+
+            $('#unitSelected').change(function(e) {
+                e.preventDefault();
+                $('#myTable').DataTable().ajax.reload();
+            });
+            // $('#formFilter').find('[name="categorySelected"]').change(function(e) {
+            //     e.preventDefault();
+            //     // console.log('Role changed:', $(this).val()); // Log perubahan
+            //     $('#myTable').DataTable().ajax.reload();
+            // });
+
+            // $('#formFilter').find('[name="unitSelected"]').change(function(e) {
+            //     e.preventDefault();
+            //     // console.log('Role changed:', $(this).val()); // Log perubahan
+            //     $('#myTable').DataTable().ajax.reload();
+            // });
 
             function initializeSelect2User() {
                 $('.input-user_id').select2({

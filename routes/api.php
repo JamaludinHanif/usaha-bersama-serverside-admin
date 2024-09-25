@@ -3,7 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,8 +18,27 @@ use App\Http\Controllers\UsersController;
 |
 */
 
+Auth::routes();
+
+// auth
+Route::prefix('auth')->group(function () {
+    Route::post('/register', [UsersController::class, 'register']);
+    Route::post('/login', [LoginController::class, 'authenticateApi']);
+    Route::post('/logout', [LoginController::class, 'logoutApi']);
+});
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::prefix('product')->group(function () {
+    Route::post('/all-product', [ProductController::class, 'showAllApi']);
+    Route::post('/search-product', [ProductController::class, 'searchProduct']);
+    Route::post('/pre-checkout', [ProductController::class, 'preCheckout']);
+    Route::post('/checkout', [ProductController::class, 'checkOutV1']);
+    Route::post('/make-redeem-code', [ProductController::class, 'addRedeemCode']);
+    Route::post('/redeem-code', [ProductController::class, 'reedemCode']);
+    Route::post('/my-cart', [UsersController::class, 'myCart']);
 });
 
 

@@ -3,22 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\ReedemCode;
 use App\Exports\UsersExport;
 use App\Imports\UsersImport;
 use Illuminate\Http\Request;
 use App\Exports\TemplateImport;
-use Illuminate\Validation\Rule;
 // use Intervention\Image\Facades\Image;
+use Illuminate\Validation\Rule;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Log;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Intervention\Image\ImageManager;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use RealRashid\SweetAlert\Facades\Alert;
-use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Drivers\Gd\Driver;
 // use Intervention\Image\Laravel\Facades\Image;
@@ -426,17 +426,54 @@ class UsersController extends Controller
     }
 
     // Simpan post baru
-    public function storeApi(Request $request)
+    public function register(Request $request)
     {
-        // $request->validate([
-        //     'title' => 'required|string|max:255',
-        //     'content' => 'required|string',
-        // ]);
 
-        // $post = User::create($request->all());
+        $data = $request->all();
+        
+        $rules = [
+            'name' => 'required|max:100',
+            'username' => ['required', 'min:3', 'max:100', 'unique:users'],
+            'email' => ['required', 'email:dns', 'unique:users'],
+            'password' => 'required|min:5|max:100'
+        ];
 
-        return response()->json($request);
-        // return response()->json($post, 201);
+        $validasi = Validator::make($data, $rules, [
+            'name.required' => 'Nama wajib diisi',
+            'name.max' => 'Nama maksimal 100 karakter',
+            'username.required' => 'Username wajib diisi',
+            'username.min' => 'Username minimal 3 karakter',
+            'username.max' => 'Username maksimal 100 karakter',
+            'username.unique' => 'Username sudah digunakan',
+            'email.required' => 'Email wajib diisi',
+            'email.email' => 'Email tidak valid',
+            'email.unique' => 'Email sudah digunakan',
+            'password.required' => 'Password wajib diisi',
+            'password.min' => 'Password minimal 5 karakter',
+            'password.max' => 'Password maksimal 100 karakter',
+        ]);
+
+        if ($validasi->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validasi->errors(),
+            ], 200);
+        } else {
+            $data = [
+                'name' => $request->name,
+                'username' => $request->username,
+                'role' => $request->role,
+                'email' => $request->email,
+                'password' => bcrypt($request->password)
+            ];
+
+            User::create($data);
+            return response()->json([
+                'status' => true,
+                'message' => 'Berhasil membuat akun, Silahkan Login',
+            ], 200);
+        }
+
     }
 
     // Tampilkan satu post
@@ -468,4 +505,45 @@ class UsersController extends Controller
 
         return response()->json(null, 204);
     }
+
+    public function myCart(Request $request)
+    {
+        $userId = $request->userId;
+
+        // Ambil semua data keranjang berdasarkan user_id dan eager load produk
+        $dataCarts = ReedemCode::with('product') // Eager load produk
+            ->where('user_id', $userId)
+            ->get();
+
+        // Kelompokkan data berdasarkan kode
+        $groupedData = $dataCarts->groupBy('code');
+
+        // Formatkan data untuk menampilkan produk
+        $formattedData = [];
+        foreach ($groupedData as $code => $items) {
+            $productData = [];
+            foreach ($items as $item) {
+                $productData[] = [
+                    'id' => $item->product_id,
+                    'name' => $item->product->name, // Ambil nama produk dari relasi
+                    'quantity' => $item->quantity,
+                    'total_amount' => $item->total_amount,
+                ];
+            }
+            $formattedData[] = [
+                'code' => $code,
+                'products' => $productData,
+            ];
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Berhasil fetch data keranjang',
+            'data' => $formattedData,
+        ], 200);
+    }
+
+
+
+
 }

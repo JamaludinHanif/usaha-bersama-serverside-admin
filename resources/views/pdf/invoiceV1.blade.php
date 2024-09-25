@@ -18,7 +18,7 @@
             padding: 20px;
         }
 
-/*
+        /*
         .header h1 {
             font-size: 24px;
             margin: 0;
@@ -29,7 +29,7 @@
         }
 
         .invoice-info div {
-            margin-bottom: 10px;
+            /* margin-bottom: 10px; */
         }
 
         .invoice-info span {
@@ -67,6 +67,7 @@
         .total {
             text-align: right;
             margin-top: 20px;
+            margin-bottom: 50px
         }
 
         .total h3 {
@@ -86,12 +87,17 @@
 
 <body>
     <div class="container">
-
+        {{-- @dd($data['noInvoice']) --}}
+        @php
+            // Mengambil data dari $data123
+            // $itemsList = $data['data']; // ambil data yang diperlukan
+        @endphp
         <table style="width: 100%;">
             <tr>
                 <td>
                     <div>
-                        <img src="https://adiva.co.id/storage/website/logo_website.png" width="50" alt="Company Logo"> <br>
+                        <img src="https://jamaludinhanif.github.io/portofolio-hanif/dist/img/logo%20by%20tegar.png" width="50" alt="Company Logo">
+                        <br>
                         Jamal Industri
                     </div>
                 </td>
@@ -108,18 +114,18 @@
         <table class="table2">
             <tr>
                 <td>
-                    Invoice to
+                    Nama Pembeli
                 </td>
                 <td>
-                    : Daniel Gallego
+                    : {{ $name ?? 'Pembeli yng terhormat' }}
                 </td>
             </tr>
             <tr>
                 <td>
-                    Address
+                    No. Invoice
                 </td>
                 <td>
-                    : 123 Anywhere St., Any City, ST 12345
+                    : {{ $noInvoice ?? 'no_invoice' }}
                 </td>
             </tr>
             <tr>
@@ -127,63 +133,60 @@
                     Tanggal
                 </td>
                 <td>
-                    : 06/09/2024
+                    : {{ now()->format('d-F-Y') }}
                 </td>
             </tr>
         </table>
+
+        {{-- <p>{{ $data->title }}</p> --}}
 
         <div class="" style="height: 30px;"></div>
 
         <table class="table">
             <thead>
                 <tr>
-                    <th>Item</th>
-                    <th>Quantity</th>
-                    <th>Unit Price</th>
-                    <th>Total</th>
+                    <th>Nama</th>
+                    <th>Kuantitas</th>
+                    <th>Harga Satuan</th>
+                    <th>Total Harga</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>A4 Paper (75gr/m2)</td>
-                    <td>10</td>
-                    <td>$20</td>
-                    <td>$200</td>
-                </tr>
-                <tr>
-                    <td>Pencil (12ea/box)</td>
-                    <td>5</td>
-                    <td>$15</td>
-                    <td>$75</td>
-                </tr>
-                <tr>
-                    <td>Ruler</td>
-                    <td>2</td>
-                    <td>$5</td>
-                    <td>$10</td>
-                </tr>
+                @foreach ($data['data']['data'] as $items)
+                    <tr>
+                        <td>{{ $items['value']['name'] ?? $items['value']['product']['name'] }}</td>
+                        <td>{{ $items['quantity'] ?? 0 }}</td>
+                        <td>Rp. {{ number_format($items['value']['price'] ?? $items['value']['product']['price'], 0, ',', '.') }}</td>
+                        <td>Rp.
+                            {{ number_format(($items['value']['price'] ?? $items['value']['product']['price']) * ($items['quantity'] ?? 1), 0, ',', '.') }}
+                        </td>
+                    </tr>
+                @endforeach
             </tbody>
         </table>
 
         <div class="total">
-            <h3>Subtotal: $285</h3>
-            <h3>Tax (0%): $0</h3>
-            <h3>Total: $285</h3>
+            <h3>Subtotal: Rp. {{ number_format($data['data']['totalPrice'] ?? 0, 0, ',', '.') }}</h3>
+            <h3>Tax (0%): Rp. 0</h3>
+            <h3>Total: Rp. {{ number_format($data['data']['totalPrice'] ?? 0, 0, ',', '.') }}</h3>
         </div>
 
-        <div class="payment-info">
-            <h4>PAYMENT METHOD</h4>
-            <p>Rimberio Bank</p>
-            <p>Account Name: Alfredo Torres</p>
-            <p>Account No.: 0123 4567 8901</p>
-            <p>Pay by: 23 June 2023</p>
+        <div class="" style="height: 30px"></div>
+
+        <div class="">
+            <h4>Check My Sosial Media</h4>
+            <p></p>
+            <p>Instagram : @_ha_nif</p>
+            <p>No. Hp : 0851-6131-0017</p>
+            <p>Email : newhanif743@gmail.com</p>
         </div>
 
         <div class="footer">
-            <p>Thank you for your business!</p>
-            <p>Authorized Signed</p>
-            <p>123-456-7890 | 123 Anywhere St., Any City</p>
+            <p>Terima kasih atas Transaksi anda 🙏🙏</p>
+            <p>-- Salam Hangat Hanif --</p>
+            <p>Desa Cikaso, Kec. KramatMulya, Kab. Kuningan</p>
         </div>
     </div>
 </body>
+
 </html>

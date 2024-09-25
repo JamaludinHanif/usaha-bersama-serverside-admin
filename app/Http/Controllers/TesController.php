@@ -300,7 +300,7 @@ class TesController extends Controller
             $mpdf->Output($uniqueFileName, 'I'); // 'F' untuk save file
 
             // Mengirim email dengan lampiran PDF (opsional)
-            // Mail::to('user@example.com')->send(new SendInvoice($uniqueFileName));
+            Mail::to('newhanif743@gmail.com')->send(new SendInvoice($uniqueFileName));
 
             return 'PDF telah dibuat dan disimpan sebagai: ' . $uniqueFileName;
         }

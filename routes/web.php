@@ -13,6 +13,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\QuotesController;
 use App\Http\Controllers\AddUserController;
 use App\Http\Controllers\CashierController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RecycleController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\LogActivityController;
@@ -65,21 +66,21 @@ Route::prefix('admin')->middleware(['is_admin'])->group(function () {
     });
 
     // quotes
-    Route::prefix('quotes')->group(function () {
-        Route::get('/all-quotes', [QuotesController::class, 'showAll']);
+    Route::prefix('products')->group(function () {
+        Route::get('/all-products', [ProductController::class, 'showAll']);
         // categories
         Route::get('/categories', [CategoriesController::class, 'showAll']);
         Route::get('/categories/{category:name}', function () {
             return view('category');
         });
-        // kelola quotes
-        Route::get('/quotes', [QuotesController::class, 'index']);
-        Route::get('/create-quotes', [QuotesController::class, 'showFormCreate']);
-        Route::get('/quotes-json', [QuotesController::class, 'showData']);
-        Route::post('/quotes', [QuotesController::class, 'store']);
-        Route::delete('/quotes/{id}', [QuotesController::class, 'deleteQuotes']);
-        Route::get('/quotes/{id}/edit', [QuotesController::class, 'editQuotes']);
-        Route::put('/quotes/{id}', [QuotesController::class, 'update']);
+        // kelola products
+        Route::get('/products', [ProductController::class, 'index']);
+        Route::get('/create-products', [ProductController::class, 'showFormCreate']);
+        Route::get('/products-json', [ProductController::class, 'showAll']);
+        Route::post('/products', [ProductController::class, 'store']);
+        Route::delete('/products/{id}', [ProductController::class, 'deleteproduct']);
+        Route::get('/products/{id}/edit', [ProductController::class, 'editproduct']);
+        Route::put('/products/{id}', [ProductController::class, 'update']);
     });
 
     // // recycle bin
@@ -132,6 +133,7 @@ Route::post('/generate-nim', [TesController::class, 'generateNim'])->name('code.
 Route::get('/ranking-json', [TesController::class, 'ranking']);
 Route::get('/api-quran', [TesController::class, 'fetchData']);
 Route::get('/checkout-v1', [TesController::class, 'checkOutV1']);
+Route::get('/tespdf123', [ProductController::class, 'checkOutV1']);
 
 
 // cashier
@@ -154,6 +156,6 @@ Route::get('/send-test-email', function () {
     $emailUser = 'amandadmyntii@gmail.com';
     $emailUser2 = 'newhanif743@gmail.com';
 
-    Mail::to($emailUser)->send(new \App\Mail\TestEmail($details));
+    Mail::to($emailUser2)->send(new \App\Mail\TestEmail($details));
     return 'Email has been sent!';
 });

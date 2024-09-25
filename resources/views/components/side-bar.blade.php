@@ -53,7 +53,7 @@
 
     <!-- Heading -->
     <div class="sidebar-heading">
-        QUOTES
+        PRODUCTS
     </div>
 
     <li class="nav-item">
@@ -61,23 +61,23 @@
             aria-expanded="true" aria-controls="collapsePages">
             <i class="fas fa-fw fa-folder"></i>
             {{-- <i class="fas fa-recycle"></i> --}}
-            <span>Master Quotes</span>
+            <span>Master Products</span>
         </a>
         @php
-            $routeQuotes = "Request::is('admin/quotes";
-            $routeUsers = "Request::is('admin/quotes";
+            $routeproducts = "Request::is('admin/products";
+            $routeUsers = "Request::is('admin/products";
         @endphp
-        {{-- @dd($routeQuotes + "/quotes')" ? 'show' : '') --}}
+        {{-- @dd($routeproducts + "/products')" ? 'show' : '') --}}
         <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Kelola Quotes :</h6>
-                <a class="collapse-item {{ Request::is('admin/quotes/quotes') ? 'active' : '' }}"
-                    href="/admin/quotes/quotes">Quotes</a>
-                <h6 class="collapse-header">Quotes :</h6>
-                <a class="collapse-item {{ Request::is('admin/quotes/all-quotes') ? 'active' : '' }}"
-                    href="/admin/quotes/all-quotes">All Quotes</a>
-                <a class="collapse-item {{ Request::is('admin/quotes/categories') ? 'active' : '' }}"
-                    href="/admin/quotes/categories">Categories Quotes</a>
+                <h6 class="collapse-header">Kelola products :</h6>
+                <a class="collapse-item {{ Request::is('admin/products/products') ? 'active' : '' }}"
+                    href="/admin/products/products">products</a>
+                <h6 class="collapse-header">products :</h6>
+                <a class="collapse-item {{ Request::is('admin/products/all-products') ? 'active' : '' }}"
+                    href="/admin/products/all-products">All products</a>
+                <a class="collapse-item {{ Request::is('admin/products/categories') ? 'active' : '' }}"
+                    href="/admin/products/categories">Categories products</a>
                 <div class="collapse-divider"></div>
                 <h6 class="collapse-header">Other :</h6>
                 <a class="collapse-item" href="404.html">Comments</a>

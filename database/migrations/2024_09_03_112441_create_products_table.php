@@ -17,11 +17,15 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('price');
+            $table->string('unit'); // unit adalah satuan dos,pcs,pak, other
+            $table->string('category'); // category adalah minuman, makanan, pembersih, other
+            $table->string('image')->nullable();
             $table->integer('stock');
+            $table->date('expired_date')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
@@ -30,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('products');
+        Schema::dropIfExists('products'); // Menghapus seluruh tabel jika dibatalkan
     }
 };

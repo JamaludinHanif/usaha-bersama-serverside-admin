@@ -1,40 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
-
-    <title>Document</title>
+    <title>Email Kutipan</title>
 </head>
-
-<body>
-    <h1 style="text-align: center;font-weight: bold">Haii Cantik 🖐️</h1>
-    <p style="text-align: center">I Love You ❤️ 👉👈</p>
-
-    <div class="" style="height: 20px"></div>
-    {{-- <div style="margin-top: 40px;"> --}}
-        <center>
-            <div class="" style="background-color: skyblue;border-radius: 5px;padding-top: 1px;padding-bottom: 1px;padding-left: 20px;padding-right: 20px;width: 130px">
-                <a href="https://wa.me/6285161310017?text=i%20love%20you%20tooo%20❤️👉👈" class=""
-                    style="text-decoration: none;text-align: center;">
-                        <p style="color: white;font-size: 15px">
-                            Balas Pesan Ini
-                        </p>
-                </a>
-            </div>
-
-            <p style="font-size: 9px;margin-top: 10px">(Note : Habis di klik, pilih buka di chrome aja)</p>
-        </center>
-
-
-    {{-- <h1>{{ $details['title'] }}</h1>
-    <p>{{ $details['body'] }}</p> --}}
+<body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f9f9f9;">
+    <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+        <h2 style="text-align: center; color: #333;">Kutipan Pesan</h2>
+        <p style="color: #555; line-height: 1.6;">
+            Dear Pembeli...,
+        </p>
+        <p style="color: #555; line-height: 1.6;">
+            Terima kasih atas pembelian Anda. Berikut adalah detail pesanan Anda berupa file PDF:
+        </p>
+        <p style="color: #555; line-height: 1.6;">
+            Jika Anda memiliki pertanyaan atau membutuhkan bantuan lebih lanjut, jangan ragu untuk menghubungi kami di <a href="https://wa.me/6285161310017?text=saya%20mengalami%20bug%20diaplikasi%20E-Commerce-Jamal">Klik Ini</a>.
+        </p>
+        <p style="color: #555; line-height: 1.6;">
+            Terima kasih atas kepercayaan Anda!
+        </p>
+        <p style="color: #555; line-height: 1.6;">
+            Hormat kami,<br>
+            Jamal Company
+        </p>
+        <footer style="margin-top: 20px; font-size: 12px; color: #999; text-align: center;">
+            <p>Email ini dikirim karena Anda melakukan pembelian di situs kami.</p>
+        </footer>
+    </div>
 </body>
-
 </html>

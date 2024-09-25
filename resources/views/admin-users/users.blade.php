@@ -5,6 +5,14 @@
 @endsection
 
 @section('content')
+    <div id="loading-spinner"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255,255,255,0.8); z-index: 9999; text-align: center;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    </div>
     {{-- filter --}}
     <div style="width: 300px" class="col-sm-6 mb-3 mb-sm-0">
         <form action="" id="formFilter">
@@ -45,27 +53,17 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="myTable" width="100%" cellspacing="0">
+                <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Nama</th>
-                            <th>Nama Pengguna</th>
-                            <th>Peran Sebagai</th>
-                            <th>Email</th>
-                            <th>Gambar</th>
-                            <th>Aksi</th>
+                            <th style="background-color: #007bff; color: white;">Nama</th>
+                            <th style="background-color: #007bff; color: white;">Nama Pengguna</th>
+                            <th style="background-color: #007bff; color: white;">Peran Sebagai</th>
+                            <th style="background-color: #007bff; color: white;">Email</th>
+                            <th style="background-color: #007bff; color: white;">Gambar</th>
+                            <th style="background-color: #007bff; color: white;">Aksi</th>
                         </tr>
                     </thead>
-                    <tfoot>
-                        <tr>
-                            <th>Name</th>
-                            <th>Username</th>
-                            <th>Role</th>
-                            <th>Email</th>
-                            <th>Image</th>
-                            <th>Action</th>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
         </div>
@@ -140,6 +138,18 @@
                 //         `{{ url('/admin/users/users-v2-json') }}?role=${role}`;
                 // }
             })
+
+            $(document).on('click', 'a', function(e) {
+                var href = $(this).attr('href');
+
+                if (href && href !== "#" && href.indexOf('#') === -1) {
+                    $('#loading-spinner').show();
+                }
+            });
+
+            $(window).on('load', function() {
+                $('#loading-spinner').hide();
+            });
         })
 
         $('#formFilter').find('[name="roleSelected"]').change(function(e) {
