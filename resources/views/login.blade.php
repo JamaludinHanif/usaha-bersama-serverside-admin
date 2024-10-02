@@ -45,7 +45,7 @@
                                 width="245" height="80" alt="BootstrapBrain Logo"> --}}
                             <h1>Welcome</h1>
                             <hr class="border-primary-subtle mb-4">
-                            <h2 class="h1 mb-4">We make digital products that drive you to stand out.</h2>
+                            <h2 class="h1 mb-4">Admin usaha bersama</h2>
                             <p class="lead mb-5">We write words, take photos, make videos, and interact with artificial
                                 intelligence.</p>
                             <div class="text-endx">
