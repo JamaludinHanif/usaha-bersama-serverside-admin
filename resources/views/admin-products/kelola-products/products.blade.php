@@ -53,6 +53,7 @@
                 <option value="makanan">Makanan</option>
                 <option value="minuman">Minuman</option>
                 <option value="pembersih">Pembersih</option>
+                <option value="lainnya">Lainnya</option>
             </select>
         </div>
 
@@ -63,12 +64,13 @@
                 <option value="pcs">Pcs</option>
                 <option value="pak">Pak</option>
                 <option value="dos">Dos</option>
+                <option value="1/4">1/4 kg</option>
             </select>
         </div>
 
     </div>
 
-    {{-- tambah quotes --}}
+    {{-- tambah products --}}
     <div class="d-flex justify-content-end">
         <a href="#" data-toggle="modal" id="createButton" data-target="#insertModal"
             class="btn btn-primary btn-icon-split">
@@ -201,17 +203,6 @@
                 e.preventDefault();
                 $('#myTable').DataTable().ajax.reload();
             });
-            // $('#formFilter').find('[name="categorySelected"]').change(function(e) {
-            //     e.preventDefault();
-            //     // console.log('Role changed:', $(this).val()); // Log perubahan
-            //     $('#myTable').DataTable().ajax.reload();
-            // });
-
-            // $('#formFilter').find('[name="unitSelected"]').change(function(e) {
-            //     e.preventDefault();
-            //     // console.log('Role changed:', $(this).val()); // Log perubahan
-            //     $('#myTable').DataTable().ajax.reload();
-            // });
 
             function initializeSelect2User() {
                 $('.input-user_id').select2({
@@ -236,10 +227,10 @@
             initializeSelect2Category();
 
             function create() {
-                $.get("{{ url('/admin/quotes/create-quotes') }}", {}, function(data, status) {
+                $.get("{{ url('/admin/products/create-products') }}", {}, function(data, status) {
                     $("#page").html(data);
                     $('#insertModal').modal('show');
-                    $('.modal-title').html('Buat Quotes');
+                    $('.modal-title').html('Tambah Produk');
                     initializeSelect2User(); // Inisialisasi Select2 setelah konten dimuat
                     initializeSelect2Category(); // Inisialisasi Select2 setelah konten dimuat
                 });
@@ -254,16 +245,16 @@
             $('body').on('click', '.tombol-edit', function() {
                 var id = $(this).attr('data-id');
                 console.log('tesss tombol edit', id);
-                $.get("{{ url('/admin/quotes/quotes/') }}/" + id + "/edit", {}, function(data, status) {
+                $.get("{{ url('/admin/products/products/') }}/" + id + "/edit", {}, function(data, status) {
                     $("#page").html(data);
                     $('#insertModal').modal('show');
-                    $('.modal-title').html('Ubah Quotes')
+                    $('.modal-title').html('Ubah Produk')
                     initializeSelect2User();
                     initializeSelect2Category();
                 })
                 console.log('ini data id', id);
                 $.ajax({
-                    url: '/admin/quotes/quotes/' + id + '/edit',
+                    url: '/admin/products/products/' + id + '/edit',
                     type: 'GET',
                     success: function(response) {}
                 })
@@ -284,13 +275,15 @@
             var loadingCreate = Ladda.create(document.querySelector('.tombol-tambah'));
             loadingCreate.start();
             $.ajax({
-                url: '/admin/quotes/quotes',
+                url: '/admin/products/products',
                 type: 'POST',
                 data: {
-                    user_id: $('#formCreate').find('[id="user_id"]').val(),
-                    category_id: $('#formCreate').find('[id="category_id"]').val(),
-                    title: $('#formCreate').find('[id="title"]').val(),
-                    quote: $('#formCreate').find('[id="quote"]').val()
+                    name: $('#formCreate').find('[id="name"]').val(),
+                    price: $('#formCreate').find('[id="price"]').val(),
+                    category: $('#formCreate').find('[id="category"]').val(),
+                    unit: $('#formCreate').find('[id="unit"]').val(),
+                    stock: $('#formCreate').find('[id="stock"]').val(),
+                    image: $('#formCreate').find('[id="image"]').val(),
                 },
                 success: function(response) {
                     const Toast = Swal.mixin({
@@ -304,7 +297,7 @@
                             toast.onmouseleave = Swal.resumeTimer;
                         }
                     });
-                    // console.log($('#user_id').val());
+                    // console.log($('#name').val());
                     if (response.errors) {
                         // console.log(response.errors);
                         loadingCreate.stop();
@@ -312,21 +305,47 @@
                             icon: "warning",
                             title: 'Tambah Data Gagal'
                         });
-                        if (response.errors.user_id) {
-                            $('.input-user_id').addClass('is-invalid')
-                            $('.feedback-user_id').html(response.errors.user_id)
+                        if (response.errors.name) {
+                            $('.input-name').addClass('is-invalid')
+                            $('.feedback-name').html(response.errors.name)
+                        } else {
+                            $('.input-name').removeClass('is-invalid').addClass('is-valid');
+                            $('.feedback-name').html('');
                         }
-                        if (response.errors.category_id) {
-                            $('.input-category_id').addClass('is-invalid')
-                            $('.feedback-category_id').html(response.errors.category_id)
+                        if (response.errors.price) {
+                            $('.input-price').addClass('is-invalid')
+                            $('.feedback-price').html(response.errors.price)
+                        } else {
+                            $('.input-price').removeClass('is-invalid').addClass('is-valid');
+                            $('.feedback-price').html('');
                         }
-                        if (response.errors.title) {
-                            $('.input-title').addClass('is-invalid')
-                            $('.feedback-title').html(response.errors.title)
+                        if (response.errors.category) {
+                            $('.input-category').addClass('is-invalid')
+                            $('.feedback-category').html(response.errors.category)
+                        } else {
+                            $('.input-category').removeClass('is-invalid').addClass('is-valid');
+                            $('.feedback-category').html('');
                         }
-                        if (response.errors.quote) {
-                            $('.input-quote').addClass('is-invalid')
-                            $('.feedback-quote').html(response.errors.quote)
+                        if (response.errors.image) {
+                            $('.input-image').addClass('is-invalid')
+                            $('.feedback-image').html(response.errors.image)
+                        } else {
+                            $('.input-image').removeClass('is-invalid').addClass('is-valid');
+                            $('.feedback-image').html('');
+                        }
+                        if (response.errors.unit) {
+                            $('.input-unit').addClass('is-invalid')
+                            $('.feedback-unit').html(response.errors.unit)
+                        } else {
+                            $('.input-unit').removeClass('is-invalid').addClass('is-valid');
+                            $('.feedback-unit').html('');
+                        }
+                        if (response.errors.stock) {
+                            $('.input-stock').addClass('is-invalid')
+                            $('.feedback-stock').html(response.errors.stock)
+                        } else {
+                            $('.input-stock').removeClass('is-invalid').addClass('is-valid');
+                            $('.feedback-stock').html('');
                         }
                     } else {
                         loadingCreate.stop();
@@ -404,40 +423,49 @@
         })
 
         $('body').on('click', '.tombol-del', function() {
-            // console.log('ttesss');
-            if (confirm('Yakin mau hapus data ini') == true) {
-                var id = $(this).attr('data-id');
-                // console.log('ini data id', id);
-                $.ajax({
-                    url: '/admin/quotes/quotes/' + id,
-                    type: 'DELETE',
-                    success: function(response) {
-                        const Toast = Swal.mixin({
-                            toast: true,
-                            position: "top-end",
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                            didOpen: (toast) => {
-                                toast.onmouseenter = Swal.stopTimer;
-                                toast.onmouseleave = Swal.resumeTimer;
+            Swal.fire({
+                title: "Apakah kmu yakin?",
+                text: "Data yang sudah dihapus dapat dikembalikan jika kmu mau",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Ya, Hapus"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var id = $(this).attr('data-id');
+                    // console.log('ini data id', id);
+                    $.ajax({
+                        url: '/admin/products/products/' + id,
+                        type: 'DELETE',
+                        success: function(response) {
+                            const Toast = Swal.mixin({
+                                toast: true,
+                                position: "top-end",
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true,
+                                didOpen: (toast) => {
+                                    toast.onmouseenter = Swal.stopTimer;
+                                    toast.onmouseleave = Swal.resumeTimer;
+                                }
+                            });
+                            if (response.success) {
+                                Toast.fire({
+                                    icon: "success",
+                                    title: response.success
+                                });
+                                $('#myTable').DataTable().ajax.reload();
+                            } else {
+                                Toast.fire({
+                                    icon: "warning",
+                                    title: response.error
+                                });
                             }
-                        });
-                        if (response.success) {
-                            Toast.fire({
-                                icon: "success",
-                                title: response.success
-                            });
-                            $('#myTable').DataTable().ajax.reload();
-                        } else {
-                            Toast.fire({
-                                icon: "warning",
-                                title: response.error
-                            });
                         }
-                    }
-                })
-            }
+                    })
+                }
+            })
         })
     </script>
 @endsection

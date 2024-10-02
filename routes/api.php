@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UsersController;
@@ -22,9 +23,11 @@ Auth::routes();
 
 // auth
 Route::prefix('auth')->group(function () {
-    Route::post('/register', [UsersController::class, 'register']);
-    Route::post('/login', [LoginController::class, 'authenticateApi']);
-    Route::post('/logout', [LoginController::class, 'logoutApi']);
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'authenticateApi']);
+    Route::post('/logout', [AuthController::class, 'logoutApi']);
+    Route::post('/password/email', [AuthController::class, 'sendResetLinkEmail']);
+    Route::post('/password/reset', [AuthController::class, 'resetPassword']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

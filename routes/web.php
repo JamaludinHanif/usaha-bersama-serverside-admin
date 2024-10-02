@@ -78,7 +78,7 @@ Route::prefix('admin')->middleware(['is_admin'])->group(function () {
         Route::get('/create-products', [ProductController::class, 'showFormCreate']);
         Route::get('/products-json', [ProductController::class, 'showAll']);
         Route::post('/products', [ProductController::class, 'store']);
-        Route::delete('/products/{id}', [ProductController::class, 'deleteproduct']);
+        Route::delete('/products/{id}', [ProductController::class, 'deleteProduct']);
         Route::get('/products/{id}/edit', [ProductController::class, 'editproduct']);
         Route::put('/products/{id}', [ProductController::class, 'update']);
     });

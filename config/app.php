@@ -199,6 +199,8 @@ return [
         // 'Image' => Intervention\Image\Facades\Image::class,
     ])->toArray(),
 
+    'frontend_url' => env('FRONTEND_URL', 'http://localhost:5173'),
+
     // 'aliases' => [
     //     'Image' => Intervention\Image\Facades\Image::class,
     // ],
