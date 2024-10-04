@@ -141,36 +141,33 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
-        $quote = Quotes::findOrFail($id);
+        $produk = Product::findOrFail($id);
         $validasi = Validator::make($request->all(), [
-            'user_id' => 'required',
-            'category_id' => 'required',
-            'title'=> [
-                'required',
-                Rule::unique('quotes')->ignore($quote->id), // Mengabaikan validasi unique untuk ID yang sedang diupdate
-                'max:100'
-            ],
-            'quote' => 'required|max:255'
+            'name' => 'required',
+            'price'=> 'required',
+            'category' => 'required',
+            'unit' => 'required',
+            'stock' => 'required',
         ], [
-            'user_id.required' => 'User wajib di isi',
-            'category_id.required' => 'Kategori wajib di isi',
-            'title.required' => 'Judul wajib di isi',
-            'title.unique' => 'Judul sudah dipakai, tolong gunakan judul yang lain',
-            'title.max' => 'Judul terlalu panjang, max 100 karacter',
-            'quote.required' => 'Quote wajib di isi',
-            'quote.max' => 'Quote terlalu panjang, max 255 karakter'
+            'name.required' => 'Nama wajib di isi',
+            'price.required' => 'Harga wajib di isi',
+            'category.required' => 'Kategori wajib di isi',
+            'unit.required' => 'Satuan wajib di isi',
+            'stock.required' => 'Stok wajib di isi',
         ]);
 
         if ($validasi->fails()) {
             return response()->json(['errors' => $validasi->errors()]);
         } else {
             $data = [
-                'user_id' => $request->user_id,
-                'category_id' => $request->category_id,
-                'title' => $request->title,
-                'quote' => $request->quote
+                'name' => $request->name,
+                'price' => $request->price,
+                'category' => $request->category,
+                'unit' => $request->unit,
+                'stock' => $request->stock,
+                'image' => $request->image,
             ];
-            Quotes::where('id', $id)->update($data);
+            Product::where('id', $id)->update($data);
             return response()->json(['success' => 'Berhasi mengupdate data']);
         }
     }
@@ -187,13 +184,98 @@ class ProductController extends Controller
         }
     }
 
+    // recycle section
+    public function indexRecycle()
+    {
+        return view('admin-recycle.products', [
+            'title' => 'Recycle Products',
+        ]);
+    }
+
+    public function showAllRecycle(Request $request)
+    {
+        $data = Product::query()->onlyTrashed();
+
+        // dd($request->category . '' . $request->unit);
+
+        if (isset($request->category)) {
+            $data->where('category', $request->category);
+        }
+
+        if (isset($request->unit)) {
+            $data->where('unit', $request->unit);
+        }
+
+        return Datatables::of($data)
+        ->addColumn('category', function($data) {
+            $btnClass = $data->category == 'minuman'
+                ? 'bg-gradient-info'
+                : ($data->category == 'makanan'
+                    ? 'bg-gradient-success'
+                    : ($data->category == 'pembersih'
+                    ? 'bg-gradient-danger'
+                    : 'bg-gradient-warning'));
+
+            return '<div class="' . $btnClass . '"
+                        style="padding-top: 5px; padding-bottom: 5px; color: white; border-radius: 10px; font-size: 15px; text-align: center;">'
+                    . $data->category .
+                    '</div>';
+        })
+        ->addColumn('unit', function($data) {
+            $btnClass2 = $data->unit == 'pcs'
+            ? 'bg-gradient-info'
+            : ($data->unit == 'dos'
+                ? 'bg-gradient-success'
+                : ($data->unit == 'pak'
+                    ? 'bg-gradient-danger'
+                    : 'bg-gradient-warning'));
+
+            return '<div class="' . $btnClass2 . '"
+                        style="padding-top: 5px; padding-bottom: 5px; color: white; border-radius: 10px; font-size: 15px; text-align: center;">'
+                    . $data->unit .
+                    '</div>';
+        })
+        ->addColumn('action', function($data){
+            return view('admin-recycle.action')->with('data', $data);
+        })
+        ->addColumn('image', function($data) {
+            // Ganti $data->image dengan $data->image untuk mendapatkan nilai gambar dari data
+            $imageUrl = $data->image == null
+                ? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSI3-0UOb16mRek6YkvKr4wuBpEmwYfWhav0w&s'
+                : $data->image;
+
+            // Kembalikan HTML yang diinginkan
+            return '<div class="d-flex justify-content-center">
+                        <img src="' . $imageUrl . '" width="50" alt="">
+                    </div>';
+        })
+        ->rawColumns(['category', 'unit', 'image', 'action'])
+        ->make(true);
+    }
+
+    public function restore($id)
+    {
+        // dd($id);
+        $product = Product::onlyTrashed()->where('id', $id)->restore();
+
+        return response()->json(['success' => 'Berhasil merestore data']);
+    }
+
+    public function destroy($id)
+    {
+        // dd($id);
+        $product = Product::onlyTrashed()->where('id', $id)->forceDelete();
+
+        return response()->json(['success' => 'Berhasil mendestroy data']);
+    }
+
     // api section
     public function showAllApi(Request $request)
     {
         $data = Product::all();
         $data = $data->map(function($item) {
             $item->value = $item->id;
-            $item->label = $item->name . " " . " " . " " . "-" . $item->stock;
+            $item->label = $item->name . " " . " " . " " . "-" . $item->unit;
             return $item;
         });
 
@@ -245,10 +327,9 @@ class ProductController extends Controller
 
     public function checkOutV1(Request $request)
     {
-        // return $request->all();
         $formattedDate = now()->format('dmy-H:i:s');
         $noInvoice = 'INV-' . $formattedDate . '-' . $request->userId;
-        // $request->userId
+        
         // Data yang akan dimasukkan ke dalam PDF
         $data123 = [
             'data' => [
@@ -304,48 +385,53 @@ class ProductController extends Controller
 
         // return $data;
 
-        // // database section
-        // $totalAmount = 0;
-        // $productItems = [];
+        // database section
+        $totalAmount = 0;
+        $productItems = [];
 
-        // foreach ($request->data['data'] as $productData) {
-        //     // Pastikan 'value' dan 'id' atau 'product_id' tersedia sebelum mengaksesnya
-        //     if (isset($productData['value']['id'])) {
-        //         $product = Product::find($productData['value']['id']);
-        //     } elseif (isset($productData['value']['product_id'])) {
-        //         $product = Product::find($productData['value']['product_id']);
-        //     } else {
-        //         $product = null; // Jaga-jaga jika 'id' atau 'product_id' tidak ada
-        //     }
+        foreach ($request->data['data'] as $productData) {
+            // Pastikan 'value' dan 'id' atau 'product_id' tersedia sebelum mengaksesnya
+            if (isset($productData['value']['id'])) {
+                $product = Product::find($productData['value']['id']);
+            } elseif (isset($productData['value']['product_id'])) {
+                $product = Product::find($productData['value']['product_id']);
+            } else {
+                $product = null; // Jaga-jaga jika 'id' atau 'product_id' tidak ada
+            }
 
-        //     $quantity = $productData['quantity'];
+            $quantity = $productData['quantity'];
 
-        //     if ($product && $quantity > 0) {
-        //         $itemPrice = $product->price * $quantity;
-        //         $totalAmount += $itemPrice;
+            if ($product && $quantity > 0) {
+                $itemPrice = $product->price * $quantity;
+                $totalAmount += $itemPrice;
 
-        //         $productItems[] = [
-        //             'product_id' => $product->id,
-        //             'quantity' => $quantity,
-        //             'price' => $itemPrice,
-        //         ];
-        //     }
-        // }
+                $productItems[] = [
+                    'product_id' => $product->id,
+                    'quantity' => $quantity,
+                    'price' => $itemPrice,
+                ];
+            }
+        }
 
-        // if ($totalAmount > 0) {
-        //     $transaction = Transaction::create(['total_amount' => $totalAmount]);
+        if ($totalAmount > 0) {
+            $transaction = Transaction::create([
+                                'total_amount' => $totalAmount,
+                                'kode_invoice' => $noInvoice,
+                                'user_id' => $request->userId
+                            ]);
 
-        //     foreach ($productItems as $item) {
-        //         TransactionItem::create([
-        //             'transaction_id' => $transaction->id,
-        //             'product_id' => $item['product_id'],
-        //             'quantity' => $item['quantity'],
-        //             'price' => $item['price'],
-        //         ]);
-        //         Product::find($item['product_id'])->decrement('stock', $item['quantity']);
-        //     }
+            foreach ($productItems as $item) {
+                TransactionItem::create([
+                    'transaction_id' => $transaction->id,
+                    'user_id' => $request->userId,
+                    'product_id' => $item['product_id'],
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price'],
+                ]);
+                Product::find($item['product_id'])->decrement('stock', $item['quantity']);
+            }
 
-        // }
+        }
 
         // testing
         // $string = json_encode($cart);

@@ -122,7 +122,7 @@
             </tr>
             <tr>
                 <td>
-                    No. Invoice
+                    Kode Invoice
                 </td>
                 <td>
                     : {{ $noInvoice ?? 'no_invoice' }}

@@ -11,6 +11,7 @@ use App\Exports\TemplateImport;
 // use Intervention\Image\Facades\Image;
 use Illuminate\Validation\Rule;
 use Illuminate\Routing\Controller;
+use Yajra\DataTables\Facades\DataTables;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
@@ -27,96 +28,6 @@ use Intervention\Image\Drivers\Gd\Driver;
 
 class UsersController extends Controller
 {
-    public function showAll ()
-    {
-        return view('users', [
-            'users' => User::all()
-        ]);
-    }
-
-    public function indexAddUser()
-    {
-        return view('addUsers', [
-            'title' => 'Tambah User'
-        ]);
-    }
-
-    // public function indexEditUser($username)
-    // {
-    //     $user = User::where('username', $username)->first();
-    //     return view('admin-users.editUsers23', [
-    //         'users' => $user,
-    //         'title' => 'Edit User'
-    //     ]);
-
-    //     // return $user;
-    // }
-
-    public function storeUser(Request $request)
-    {
-        // return request()->all();  *response berupa json
-
-        $validatedData = $request->validate([
-            'name' => 'required|max:100',  //versi biasa
-            'username' => ['required', 'min:3', 'max:100', 'unique:users'], //versi menggunakan array
-            'role' => 'required',
-            'email' => ['required', 'email:dns', 'unique:users'],
-            'password' => 'required|min:5|max:100'
-        ]);
-
-        $validatedData['password'] = Hash::make($validatedData['password']);
-
-        User::create($validatedData);
-        $request->session()->flash('succes', 'Tambah Data Berhasil');
-        notify()->success('Laravel Notify is awesome!');
-        Log::info('Notifikasi sukses dipanggil');
-        return redirect('/admin/users/users');
-    }
-
-    public function deleteUser($username)
-    {
-        $user = User::where('username', $username)->first();
-        User::destroy($user->id);
-        return redirect('/admin/users/users')->with('success', 'User berhasil dihapus');
-    }
-
-    public function editUser(Request $request, $username)
-    {
-        $user = User::where('username', $username)->first();
-
-        $data = [
-            'name' => 'required|max:100',  //versi biasa
-            // 'username' => ['required', 'min:3', 'max:100', 'unique:users'], versi menggunakan array
-            'role' => 'required',
-            // 'email' => ['required', 'email:dns', 'unique:users'],
-            // 'password' => 'required|min:5|max:100'
-        ];
-
-        if ($request->username != $user->username) {
-            $data['username'] = 'required|min:3|max:100|unique:users';
-        }
-
-        if ($request->email != $user->email) {
-            $data['email'] = 'required|email:dns|unique:users';
-        }
-
-        if ($request->filled('password')) {
-            $data['password'] = bcrypt($request->password);
-        }
-
-        $validatedData = $request->validate($data);
-
-        User::where('id', $user->id)->update($validatedData);
-
-        // toast('User berhasil di ubah','success');
-        return redirect('/admin/users/users')->with('success', 'User berhasil dihapus');
-
-        // return $validatedData;
-    }
-
-
-
-
     // users menggunakan ajax (tanpa reload website)
     public function create()
     {
@@ -130,7 +41,7 @@ class UsersController extends Controller
         ]);
     }
 
-    public function showAll2(Request $request)
+    public function showAll(Request $request)
     {
         $data = User::query();
 
@@ -430,7 +341,7 @@ class UsersController extends Controller
     {
 
         $data = $request->all();
-        
+
         $rules = [
             'name' => 'required|max:100',
             'username' => ['required', 'min:3', 'max:100', 'unique:users'],

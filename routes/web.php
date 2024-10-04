@@ -42,53 +42,41 @@ Route::prefix('admin')->middleware(['is_admin'])->group(function () {
 
     // users
     Route::prefix('users')->group(function () {
-        Route::get('/users', [UsersController::class, 'showAll']);
-        // Route::delete('/users/{username}', [UsersController::class, 'deleteUser']);
-        // edit user
-        // Route::get('/{username}/edit', [UsersController::class, 'indexEditUser']);
-        Route::put('/edit/{username}', [UsersController::class, 'editUser']);
-        // tambah user
-        Route::get('/tambah-user', [UsersController::class, 'indexAddUser']);
-        Route::post('/tambah-user', [UsersController::class, 'storeUser']);
         // menggunakan ajax
-        Route::get('/users-v2', [UsersController::class, 'indexUsers']);
+        Route::get('/users', [UsersController::class, 'indexUsers']);
         Route::get('/create', [UsersController::class, 'create']);
-        Route::get('/users-v2-json', [UsersController::class, 'showAll2']);
+        Route::get('/users-json', [UsersController::class, 'showAll']);
         Route::get('/users/{id}/edit', [UsersController::class, 'editUser2']);
         Route::post('/users', [UsersController::class, 'store']);
         Route::delete('/users/{id}', [UsersController::class, 'deleteUserAjax']);
         Route::put('/users/{id}', [UsersController::class, 'updateUser2']);
         // log-activity
         Route::get('/log-activities', [LogActivityController::class, 'showAll']);
-        Route::get('/log-activities-json', [LogActivityController::class, 'showDataJson']);
         // excel
 
     });
 
     // quotes
     Route::prefix('products')->group(function () {
-        Route::get('/all-products', [ProductController::class, 'showAll']);
-        // categories
-        Route::get('/categories', [CategoriesController::class, 'showAll']);
-        Route::get('/categories/{category:name}', function () {
-            return view('category');
-        });
         // kelola products
         Route::get('/products', [ProductController::class, 'index']);
         Route::get('/create-products', [ProductController::class, 'showFormCreate']);
-        Route::get('/products-json', [ProductController::class, 'showAll']);
-        Route::post('/products', [ProductController::class, 'store']);
-        Route::delete('/products/{id}', [ProductController::class, 'deleteProduct']);
         Route::get('/products/{id}/edit', [ProductController::class, 'editproduct']);
-        Route::put('/products/{id}', [ProductController::class, 'update']);
     });
 
     // // recycle bin
     Route::prefix('recycle')->group(function () {
+        // users
         Route::get('/users', [RecycleController::class, 'indexUsers']);
         Route::get('/users-json', [RecycleController::class, 'showAll']);
         Route::get('/users/{id}/restore', [RecycleController::class, 'restore']);
         Route::get('/users/{id}/destroy', [RecycleController::class, 'destroy']);
+
+        // products
+        Route::get('/products', [ProductController::class, 'indexRecycle']);
+        Route::get('/products-json', [ProductController::class, 'showAllRecycle']);
+        Route::get('/products/{id}/restore', [ProductController::class, 'restore']);
+        Route::get('/products/{id}/destroy', [ProductController::class, 'destroy']);
     });
 });
 

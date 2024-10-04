@@ -60,8 +60,8 @@
             </div>
 
             <div class="d-flex justify-content-center">
-                <button type="submit" style="width: 50%" id=""
-                    class="btn btn-primary btn-user btn-block tombol-tambah ladda-button" data-style="expand-right">
+                <button type="submit" data-id={{ $data->id }} style="width: 50%" id=""
+                    class="btn btn-primary btn-user btn-block tombol-simpan ladda-button" data-style="expand-right">
                     Update
                 </button>
             </div>

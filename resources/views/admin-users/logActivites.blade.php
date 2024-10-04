@@ -26,7 +26,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="myTable" width="100%" cellspacing="0">
+                <table class="table table-bordered" id="myTableLog" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>Nama</th>
@@ -45,24 +45,6 @@
                             <th>Time</th>
                         </tr>
                     </tfoot>
-                    {{-- <tbody>
-                        @foreach ($datas as $data)
-                            <tr>
-                                <td>{{ $data->find($data->id)->user->name }}</td>
-                                <td>{{ $data->find($data->id)->user->username }}</td>
-                                <td>{{ $data->find($data->id)->user->role }}</td>
-                                <td>
-                                    <div class="d-flex justify-content-center">
-                                        <div
-                                            class="btn {{ $data->action == 'login' ? 'btn-info' : 'btn-warning' }} btn-icon-split">
-                                            <span class="text">{{ $data->action }}</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>{{ $data->created_at->format('d-m-Y H:i:s') }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody> --}}
                 </table>
             </div>
         </div>
@@ -72,11 +54,11 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
-            var table = $('#myTable').DataTable({
+            var table = $('#myTableLog').DataTable({
                 processing: true,
                 serverSide: true,
                 autoWidth: false,
-                ajax: "{{ url('/admin/users/log-activities-json') }}",
+                ajax: "{{ url('/api/users/log-activities-json') }}",
                 columns: [{
                         data: 'name',
                         name: 'name'
@@ -105,14 +87,14 @@
                     let class_id = $('#formFilter').find('[name="class_id"]').val();
 
                     settings.ajax =
-                        `{{ url('/admin/users/log-activities-json') }}?date=${date}&class_id=${class_id}`;
+                        `{{ url('/api/users/log-activities-json') }}?date=${date}&class_id=${class_id}`;
                 }
             });
 
             // function untuk filter
             $('#formFilter').find('[name="date"]').change(function(e) {
                 e.preventDefault();
-                $('#myTable').DataTable().ajax.reload();
+                $('#myTableLog').DataTable().ajax.reload();
             });
 
             // function download pdf

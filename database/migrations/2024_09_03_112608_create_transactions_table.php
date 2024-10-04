@@ -15,6 +15,8 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->string('kode_invoice');
+            $table->foreignId('user_id')->constrained();
             $table->integer('total_amount');
             $table->timestamps();
         });

@@ -5,19 +5,11 @@
 @endsection
 
 @section('content')
-    <div id="loading-spinner"
-        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255,255,255,0.8); z-index: 9999; text-align: center;">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <div class="spinner-border" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-        </div>
-    </div>
     {{-- filter --}}
     <div style="width: 300px" class="col-sm-6 mb-3 mb-sm-0">
         <form action="" id="formFilter">
             <p class="h5 mb-2 text-gray-800">Filter berdasarkan role :</p>
-            <select name="roleSelected" id="roleSelected" class="form-select" aria-label="Default select example" required>
+            <select name="roleSelected" id="roleSelected" class="form-select" aria-label="Default select example" required data-turbolinks="false">
                 <option value="" selected>All Role</option>
                 <option value="admin">
                     Admin</option>
@@ -53,7 +45,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
+                <table class="table table-bordered table-hover" id="myTableUsers" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th style="background-color: #007bff; color: white;">Nama</th>
@@ -97,12 +89,12 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
-            $('#myTable').DataTable({
+            $('#myTableUsers').DataTable({
                 processing: true,
                 serverside: true,
                 autoWidth: false,
                 ajax: {
-                    url: `{{ url('/admin/users/users-v2-json') }}`,
+                    url: `{{ url('/api/users/users-json') }}`,
                     data: function(d) {
                         let roleSelected = $('#roleSelected').val();
                         if (roleSelected) {
@@ -110,6 +102,7 @@
                         } else {
                             d.role = null; // Jika tidak ada role terpilih
                         }
+                        console.log(d);
                     }
                 },
                 columns: [{
@@ -131,31 +124,13 @@
                     data: 'action',
                     name: 'Aksi'
                 }],
-                // preDrawCallback: function(settings) {
-                //     let role = $('#formFilter').find('[name="role"]').val();
-
-                //     settings.ajax =
-                //         `{{ url('/admin/users/users-v2-json') }}?role=${role}`;
-                // }
             })
-
-            $(document).on('click', 'a', function(e) {
-                var href = $(this).attr('href');
-
-                if (href && href !== "#" && href.indexOf('#') === -1) {
-                    $('#loading-spinner').show();
-                }
-            });
-
-            $(window).on('load', function() {
-                $('#loading-spinner').hide();
-            });
         })
 
         $('#formFilter').find('[name="roleSelected"]').change(function(e) {
             e.preventDefault();
             // console.log('Role changed:', $(this).val()); // Log perubahan
-            $('#myTable').DataTable().ajax.reload();
+            $('#myTableUsers').DataTable().ajax.reload();
         });
 
         $('#generatePdfBtn').click(function() {
@@ -240,7 +215,7 @@
             var loadingCreate = Ladda.create(document.querySelector('.tombol-simpan'));
             loadingCreate.start();
             $.ajax({
-                url: '/admin/users/users/' + id,
+                url: '/api/users/users/' + id,
                 type: 'POST',
                 data: formData,
                 contentType: false, // Penting: agar data dikirim sebagai multipart/form-data
@@ -332,10 +307,6 @@
 
         // function tambah user
         $('body').on('click', '.tombol-tambah', function() {
-            // loadingCreate.start();
-            // console.log($('#user_id').val());
-            // Ladda.bind('button[type=submit]', {timeout: 10000});
-
             var formData = new FormData();
             formData.append('name', $('#formCreate').find('[id="name"]').val());
             formData.append('username', $('#formCreate').find('[id="username"]').val());
@@ -347,7 +318,7 @@
             var loadingCreate = Ladda.create(document.querySelector('.tombol-tambah'));
             loadingCreate.start();
             $.ajax({
-                url: '/admin/users/users',
+                url: '/api/users/users',
                 type: 'POST',
                 data: formData,
                 contentType: false, // Penting: agar data dikirim sebagai multipart/form-data
@@ -451,7 +422,7 @@
                     var id = $(this).attr('data-id');
                     console.log('ini data id', id);
                     $.ajax({
-                        url: '/admin/users/users/' + id,
+                        url: '/api/users/users/' + id,
                         type: 'DELETE',
                         success: function(response) {
                             const Toast = Swal.mixin({

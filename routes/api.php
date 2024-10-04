@@ -7,6 +7,7 @@ use App\Http\Controllers\EmailController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\LogActivityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,12 +45,22 @@ Route::prefix('product')->group(function () {
     Route::post('/my-cart', [UsersController::class, 'myCart']);
 });
 
+// untuk admin
+Route::prefix('products')->group(function () {
+    Route::get('/products-json', [ProductController::class, 'showAll']);
+    Route::post('/products', [ProductController::class, 'store']);
+    Route::delete('/products/{id}', [ProductController::class, 'deleteProduct']);
+    Route::put('/products/{id}', [ProductController::class, 'update']);
+});
 
-Route::get('user-api', [UsersController::class, 'indexApi']); // Menampilkan semua post
-Route::post('user-api', [UsersController::class, 'storeApi']); // Menyimpan post baru
-Route::get('user-api/{id}', [UsersController::class, 'showApi']); // Menampilkan post tertentu
-Route::put('user-api/{id}', [UsersController::class, 'updateApi']); // Memperbarui post tertentu
-Route::delete('user-api/{id}', [UsersController::class, 'destroyApi']); // Menghapus post tertentu
+Route::prefix('users')->group(function () {
+    Route::get('/users-json', [UsersController::class, 'showAll']);
+    Route::post('/users', [UsersController::class, 'store']);
+    Route::delete('/users/{id}', [UsersController::class, 'deleteUserAjax']);
+    Route::put('/users/{id}', [UsersController::class, 'updateUser2']);
+    // log-activity
+    Route::get('/log-activities-json', [LogActivityController::class, 'showDataJson']);
+});
 
 
 Route::post('/send-email', [EmailController::class, 'sendEmail']);

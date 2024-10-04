@@ -73,14 +73,14 @@
                 <h6 class="collapse-header">Kelola products :</h6>
                 <a class="collapse-item {{ Request::is('admin/products/products') ? 'active' : '' }}"
                     href="/admin/products/products">products</a>
-                <h6 class="collapse-header">products :</h6>
+                {{-- <h6 class="collapse-header">products :</h6>
                 <a class="collapse-item {{ Request::is('admin/products/all-products') ? 'active' : '' }}"
                     href="/admin/products/all-products">All products</a>
                 <a class="collapse-item {{ Request::is('admin/products/categories') ? 'active' : '' }}"
-                    href="/admin/products/categories">Categories products</a>
+                    href="/admin/products/categories">Categories products</a> --}}
                 <div class="collapse-divider"></div>
                 <h6 class="collapse-header">Other :</h6>
-                <a class="collapse-item" href="404.html">Comments</a>
+                <a class="collapse-item" href="404.html">Tes 123</a>
             </div>
         </div>
     </li>
@@ -101,19 +101,15 @@
             <i class="fas fa-recycle"></i>
             <span>Master Recycle</span>
         </a>
-        @php
-            $routeQuotes = "Request::is('admin/quotes";
-            $routeUsers = "Request::is('admin/quotes";
-        @endphp
         {{-- @dd($routeQuotes + "/quotes')" ? 'show' : '') --}}
         <div id="collapseRecycle" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Recycle Quote :</h6>
-                <a class="collapse-item {{ Request::is('admin/quotes/quotes') ? 'active' : '' }}"
-                    href="/admin/quotes/quotes">Quotes</a>
+                <h6 class="collapse-header">Recycle Produk :</h6>
+                <a class="collapse-item {{ Request::is('admin/recycle/products') ? 'active' : '' }}"
+                    href="/admin/recycle/products">Produk</a>
                 <h6 class="collapse-header">Recycle User :</h6>
                 <a class="collapse-item {{ Request::is('admin/recycle/users') ? 'active' : '' }}"
-                    href="/admin/recycle/users">Users</a>
+                    href="/admin/recycle/users">User</a>
                 <div class="collapse-divider"></div>
                 <h6 class="collapse-header">Other :</h6>
                 <a class="collapse-item" href="404.html">Comments</a>

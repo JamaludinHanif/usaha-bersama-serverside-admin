@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes; // Tambahkan SoftDeletes trait
 
+    // Kolom-kolom yang dapat diisi
     protected $fillable = [
         'name',
         'price',
@@ -17,12 +18,11 @@ class Product extends Model
         'category',
         'image',
         'stock',
-        'expired_date',
+        'expired_date'
     ];
 
-    // Tanggal yang akan digunakan oleh soft deletes
-    protected $dates = ['deleted_at'];
 }
+
 
 // Product::create([
 //     'name' => 'nabati ukuran 720g rasa coklat',

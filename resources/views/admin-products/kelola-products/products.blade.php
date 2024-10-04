@@ -4,47 +4,8 @@
 @endsection
 
 @section('content')
-    <div id="loading-spinner"
-        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255,255,255,0.8); z-index: 9999; text-align: center;">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <div class="spinner-border" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-        </div>
-    </div>
-
     {{-- filter --}}
     <div class="d-flex" style="width: 50%">
-        {{-- <div style="width: 300px" class="col-sm-6 mb-3 mb-sm-0">
-            <form action="" id="formFilter">
-                <p class="h6 mb-2 text-gray-800">Filter berdasarkan kategory :</p>
-                <select name="categorySelected" id="categorySelected" class="form-select" aria-label="Default select example"
-                    required>
-                    <option value="" selected>Semua Kategori</option>
-                    <option value="makanan">
-                        Makanan</option>
-                    <option value="minuman">
-                        Minuman</option>
-                    <option value="pembersih">
-                        Pembersih</option>
-                </select>
-            </form>
-        </div>
-        <div style="width: 300px" class="col-sm-6 mb-3 mb-sm-0">
-            <form action="" id="formFilter">
-                <p class="h6 mb-2 text-gray-800">Filter berdasarkan satuan :</p>
-                <select name="unitSelected" id="unitSelected" class="form-select" aria-label="Default select example"
-                    required>
-                    <option value="" selected>Semua satuan</option>
-                    <option value="pcs">
-                        Pcs</option>
-                    <option value="pak">
-                        Pak</option>
-                    <option value="dos">
-                        Dos</option>
-                </select>
-            </form>
-        </div> --}}
         <div style="width: 300px" class="col-sm-6 mb-3 mb-sm-0">
             <p class="h6 mb-2 text-gray-800">Filter berdasarkan kategori:</p>
             <select name="categorySelected" id="categorySelected" class="form-select" aria-label="Default select example"
@@ -59,7 +20,8 @@
 
         <div style="width: 300px" class="col-sm-6 mb-3 mb-sm-0">
             <p class="h6 mb-2 text-gray-800">Filter berdasarkan satuan:</p>
-            <select name="unitSelected" id="unitSelected" class="form-select" aria-label="Default select example" required>
+            <select name="unitSelected" id="unitSelected" class="form-select"
+                aria-label="Default select example" required>
                 <option value="" selected>Semua Satuan</option>
                 <option value="pcs">Pcs</option>
                 <option value="pak">Pak</option>
@@ -89,7 +51,8 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
+                <table class="table table-bordered table-hover" id="myTableProducts" width="100%"
+                    cellspacing="0">
                     <thead>
                         <tr>
                             <th style="background-color: #007bff; color: white;">Nama</th>
@@ -135,73 +98,53 @@
     <script>
         $(document).ready(function() {
 
-            $('#myTable').DataTable({
-                processing: true,
-                serverside: true,
-                autoWidth: false,
-                ajax: {
-                    url: `{{ url('/admin/products/products-json') }}`,
-                    data: function(d) {
-                        let categorySelected = $('#categorySelected').val();
-                        if (categorySelected) {
-                            d.category = categorySelected;
-                        } else {
-                            d.category = null;
-                        }
-                        let unitSelected = $('#unitSelected').val();
-                        if (unitSelected) {
-                            d.unit = unitSelected;
-                        } else {
-                            d.unit = null;
-                        }
-                    }
-                },
-                columns: [{
-                    data: 'name',
-                    name: 'Nama'
-                }, {
-                    data: 'price',
-                    name: 'Harga'
-                }, {
-                    data: 'unit',
-                    name: 'Satuan'
-                }, {
-                    data: 'stock',
-                    name: 'Stok'
-                }, {
-                    data: 'category',
-                    name: 'Kategori'
-                }, {
-                    data: 'image',
-                    name: 'Gambar'
-                }, {
-                    data: 'action',
-                    name: 'Aksi'
-                }]
-            })
+                $('#myTableProducts').DataTable({
+                    processing: true,
+                    serverside: true,
+                    autoWidth: false,
+                    ajax: {
+                        url: '/api/products/products-json',
+                        data: function(d) {
+                            let categorySelected = $('#categorySelected').val();
+                            d.category = categorySelected ? categorySelected : null;
 
-            // loading
-            $(document).on('click', 'a', function(e) {
-                var href = $(this).attr('href');
-
-                if (href && href !== "#" && href.indexOf('#') === -1) {
-                    $('#loading-spinner').show();
-                }
-            });
-
-            $(window).on('load', function() {
-                $('#loading-spinner').hide();
-            });
+                            let unitSelected = $('#unitSelected').val();
+                            d.unit = unitSelected ? unitSelected : null;
+                        },
+                    },
+                    columns: [{
+                        data: 'name',
+                        name: 'Nama'
+                    }, {
+                        data: 'price',
+                        name: 'Harga'
+                    }, {
+                        data: 'unit',
+                        name: 'Satuan'
+                    }, {
+                        data: 'stock',
+                        name: 'Stok'
+                    }, {
+                        data: 'category',
+                        name: 'Kategori'
+                    }, {
+                        data: 'image',
+                        name: 'Gambar'
+                    }, {
+                        data: 'action',
+                        name: 'Aksi'
+                    }]
+                })
 
             // filter
             $('#categorySelected').change(function(e) {
                 e.preventDefault();
-                $('#myTable').DataTable().ajax.reload();
+                $('#myTableProducts').DataTable().ajax.reload();
             });
 
             $('#unitSelected').change(function(e) {
                 e.preventDefault();
-                $('#myTable').DataTable().ajax.reload();
+                $('#myTableProducts').DataTable().ajax.reload();
             });
 
             function initializeSelect2User() {
@@ -275,7 +218,7 @@
             var loadingCreate = Ladda.create(document.querySelector('.tombol-tambah'));
             loadingCreate.start();
             $.ajax({
-                url: '/admin/products/products',
+                url: '/api/products/products',
                 type: 'POST',
                 data: {
                     name: $('#formCreate').find('[id="name"]').val(),
@@ -353,7 +296,7 @@
                             icon: "success",
                             title: response.success
                         });
-                        $('#myTable').DataTable().ajax.reload();
+                        $('#myTableProducts').DataTable().ajax.reload();
                         $('.close').click();
                     }
                 }
@@ -363,17 +306,19 @@
 
         $('body').on('click', '.tombol-simpan', function() {
             var id = $(this).attr('data-id');
-            console.log('tesss tombol edit', id);
+            console.log('tesss tombol edit123', id);
             var loadingCreate = Ladda.create(document.querySelector('.tombol-simpan'));
             loadingCreate.start();
             $.ajax({
-                url: '/admin/quotes/quotes/' + id,
+                url: '/api/products/products/' + id,
                 type: 'PUT',
                 data: {
-                    user_id: $('#user_id').val(),
-                    category_id: $('#category_id').val(),
-                    title: $('#title').val(),
-                    quote: $('#quote').val()
+                    name: $('#name').val(),
+                    price: $('#price').val(),
+                    stock: $('#stock').val(),
+                    category: $('#category').val(),
+                    unit: $('#unit').val(),
+                    image: $('#image').val(),
                 },
                 success: function(response) {
                     const Toast = Swal.mixin({
@@ -388,26 +333,53 @@
                         }
                     });
                     if (response.errors) {
+                        // console.log(response.errors);
                         loadingCreate.stop();
                         Toast.fire({
                             icon: "warning",
-                            title: response.errors
+                            title: 'Ubah Data Gagal'
                         });
-                        if (response.errors.user_id) {
-                            $('.input-user_id').addClass('is-invalid')
-                            $('.feedback-user_id').html(response.errors.user_id)
+                        if (response.errors.name) {
+                            $('.input-name').addClass('is-invalid')
+                            $('.feedback-name').html(response.errors.name)
+                        } else {
+                            $('.input-name').removeClass('is-invalid').addClass('is-valid');
+                            $('.feedback-name').html('');
                         }
-                        if (response.errors.category_id) {
-                            $('.input-category_id').addClass('is-invalid')
-                            $('.feedback-category_id').html(response.errors.category_id)
+                        if (response.errors.price) {
+                            $('.input-price').addClass('is-invalid')
+                            $('.feedback-price').html(response.errors.price)
+                        } else {
+                            $('.input-price').removeClass('is-invalid').addClass('is-valid');
+                            $('.feedback-price').html('');
                         }
-                        if (response.errors.title) {
-                            $('.input-title').addClass('is-invalid')
-                            $('.feedback-title').html(response.errors.title)
+                        if (response.errors.category) {
+                            $('.input-category').addClass('is-invalid')
+                            $('.feedback-category').html(response.errors.category)
+                        } else {
+                            $('.input-category').removeClass('is-invalid').addClass('is-valid');
+                            $('.feedback-category').html('');
                         }
-                        if (response.errors.quote) {
-                            $('.input-quote').addClass('is-invalid')
-                            $('.feedback-quote').html(response.errors.quote)
+                        if (response.errors.image) {
+                            $('.input-image').addClass('is-invalid')
+                            $('.feedback-image').html(response.errors.image)
+                        } else {
+                            $('.input-image').removeClass('is-invalid').addClass('is-valid');
+                            $('.feedback-image').html('');
+                        }
+                        if (response.errors.unit) {
+                            $('.input-unit').addClass('is-invalid')
+                            $('.feedback-unit').html(response.errors.unit)
+                        } else {
+                            $('.input-unit').removeClass('is-invalid').addClass('is-valid');
+                            $('.feedback-unit').html('');
+                        }
+                        if (response.errors.stock) {
+                            $('.input-stock').addClass('is-invalid')
+                            $('.feedback-stock').html(response.errors.stock)
+                        } else {
+                            $('.input-stock').removeClass('is-invalid').addClass('is-valid');
+                            $('.feedback-stock').html('');
                         }
                     } else {
                         loadingCreate.stop();
@@ -415,7 +387,7 @@
                             icon: "success",
                             title: response.success
                         });
-                        $('#myTable').DataTable().ajax.reload();
+                        $('#myTableProducts').DataTable().ajax.reload();
                         $('.close').click();
                     }
                 }
@@ -436,7 +408,7 @@
                     var id = $(this).attr('data-id');
                     // console.log('ini data id', id);
                     $.ajax({
-                        url: '/admin/products/products/' + id,
+                        url: '/api/products/products/' + id,
                         type: 'DELETE',
                         success: function(response) {
                             const Toast = Swal.mixin({
@@ -455,7 +427,7 @@
                                     icon: "success",
                                     title: response.success
                                 });
-                                $('#myTable').DataTable().ajax.reload();
+                                $('#myTableProducts').DataTable().ajax.reload();
                             } else {
                                 Toast.fire({
                                     icon: "warning",
