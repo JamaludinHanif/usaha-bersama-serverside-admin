@@ -2,169 +2,358 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-
-    {{-- <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet"> --}}
-
-    {{-- bs --}}
-    <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/components/logins/login-9/assets/css/login-9.css">
-
+    <meta charset="utf-8">
+    <meta name="author" content="Kodinger">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Login</title>
+    <script src="{{ asset('atlantis/assets/js/plugin/webfont/webfont.min.js') }}"></script>
+    <script>
+        WebFont.load({
+            google: {
+                "families": ["Lato:300,400,700,900"]
+            },
+            custom: {
+                "families": ["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands",
+                    "simple-line-icons"
+                ],
+                urls: ['{{ asset('atlantis/assets/css/fonts.min.css') }}']
+            },
+            active: function() {
+                sessionStorage.fonts = true;
+            }
+        });
+    </script>
     {{-- ladda --}}
-    <link rel="stylesheet" href="{{ url('vendor/ladda/ladda-themeless.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('ladda/ladda-themeless.min.css') }}">
 
-    {{-- sweetalert cdn --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-    <!-- Custom fonts for this template -->
-    <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
+    <style>
+        /* html,
+        body {
+            height: 100%;
+        } */
 
-    <!-- Custom styles for this template -->
-    {{-- <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet"> --}}
+        body.my-login-page {
+            background-color: #f7f9fb;
+            font-size: 14px;
+        }
 
-    <!-- Custom styles for this page -->
-    <link href="{{ asset('vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+        .my-login-page .brand {
+            width: 90px;
+            height: 90px;
+            overflow: hidden;
+            border-radius: 50%;
+            margin: 40px auto;
+            /* background-color: white; */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, .05);
+            position: relative;
+            z-index: 1;
+        }
 
+        .my-login-page .brand img {
+            padding: 20px;
+            width: 100%;
+            margin-right: 5px
+        }
+
+        .my-login-page .card-wrapper {
+            width: 400px;
+        }
+
+        .my-login-page .card {
+            border-color: transparent;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, .05);
+        }
+
+        .my-login-page .card.fat {
+            padding: 10px;
+        }
+
+        .my-login-page .card .card-title {
+            margin-bottom: 30px;
+        }
+
+        .my-login-page .form-control {
+            border-width: 2.3px;
+        }
+
+        .my-login-page .form-group label {
+            width: 100%;
+        }
+
+        .my-login-page .btn.btn-block {
+            padding: 12px 10px;
+        }
+
+        .my-login-page .footer {
+            margin: 40px 0;
+            color: #888;
+            text-align: center;
+        }
+
+        @media screen and (max-width: 425px) {
+            .my-login-page .card-wrapper {
+                width: 90%;
+                margin: 0 auto;
+            }
+        }
+
+        @media screen and (max-width: 320px) {
+            .my-login-page .card.fat {
+                padding: 0;
+            }
+
+            .my-login-page .card.fat .card-body {
+                padding: 15px;
+            }
+        }
+
+        body {
+            margin: auto;
+            height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow: auto;
+            background: linear-gradient(315deg, rgba(101, 0, 94, 1) 3%, rgba(60, 132, 206, 1) 38%, rgba(48, 238, 226, 1) 68%, rgba(255, 25, 25, 1) 98%);
+            animation: gradient 15s ease infinite;
+            background-size: 400% 400%;
+            background-attachment: fixed;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 0%;
+            }
+
+            50% {
+                background-position: 100% 100%;
+            }
+
+            100% {
+                background-position: 0% 0%;
+            }
+        }
+
+        .wave {
+            background: rgb(255 255 255 / 25%);
+            border-radius: 1000% 1000% 0 0;
+            position: fixed;
+            width: 200%;
+            height: 12em;
+            animation: wave 10s -3s linear infinite;
+            transform: translate3d(0, 0, 0);
+            opacity: 0.8;
+            bottom: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        .wave:nth-of-type(2) {
+            bottom: -1.25em;
+            animation: wave 18s linear reverse infinite;
+            opacity: 0.8;
+        }
+
+        .wave:nth-of-type(3) {
+            bottom: -2.5em;
+            animation: wave 20s -1s reverse infinite;
+            opacity: 0.9;
+        }
+
+        @keyframes wave {
+            2% {
+                transform: translateX(1);
+            }
+
+            25% {
+                transform: translateX(-25%);
+            }
+
+            50% {
+                transform: translateX(-50%);
+            }
+
+            75% {
+                transform: translateX(-25%);
+            }
+
+            100% {
+                transform: translateX(1);
+            }
+        }
+    </style>
 </head>
 
-<body>
-    <!-- Login 9 - Bootstrap Brain Component -->
-    <section style="height: 100vh" class="bg-primary py-3 py-md-5 py-xl-8">
-        <div class="container">
-            <div class="row gy-4 align-items-center">
-                <div class="col-12 col-md-6 col-xl-7">
-                    <div class="d-flex justify-content-center text-bg-primary">
-                        <div class="col-12 col-xl-9">
-                            {{-- <img class="img-fluid rounded mb-4" loading="lazy" src="./assets/img/bsb-logo-light.svg"
-                                width="245" height="80" alt="BootstrapBrain Logo"> --}}
-                            <h1>Welcome</h1>
-                            <hr class="border-primary-subtle mb-4">
-                            <h2 class="h1 mb-4">Admin usaha bersama</h2>
-                            <p class="lead mb-5">We write words, take photos, make videos, and interact with artificial
-                                intelligence.</p>
-                            <div class="text-endx">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"
-                                    fill="currentColor" class="bi bi-grip-horizontal" viewBox="0 0 16 16">
-                                    <path
-                                        d="M2 8a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm3 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0-3a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
-                                </svg>
-                            </div>
-                        </div>
+<body class="my-login-page">
+    <section class="h-100">
+        <div class="container h-100">
+            <div class="row justify-content-md-center h-100">
+                <div class="card-wrapper">
+                    <div class="brand">
+                        <img src="https://jamaludinhanif.github.io/portofolio-hanif/dist/img/logo%20by%20tegar.png"
+                            alt="logo">
                     </div>
-                </div>
-                <div class="col-12 col-md-6 col-xl-5">
-                    <div class="card border-0 rounded-4">
-                        <div class="card-body p-3 p-md-4 p-xl-5">
+                    <div class="card fat">
+                        <div class="card-body">
                             @if (session()->has('loginError'))
-                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <div class="alert alert-danger" role="alert">
                                     {{ session('loginError') }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close">
-                                    </button>
                                 </div>
                             @endif
                             @if (session()->has('errorMiddleware'))
-                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <div class="alert alert-danger" role="alert">
                                     {{ session('errorMiddleware') }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close">
-                                    </button>
                                 </div>
                             @endif
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="mb-4">
-                                        <h3>Sign in</h3>
-                                        <p>Don't have an account? <a href="#!">Sign up</a></p>
+                            <h4 class="card-title">Login</h4>
+                            <form method="POST" action="/auth/login" class="my-login-validation">
+                                @csrf
+                                <div class="form-group">
+                                    <label for="username">Username :</label>
+                                    <input id="username" type="text" class="form-control" name="username"
+                                        value="" required autofocus>
+                                    <div class="invalid-feedback">
+                                        Username is invalid
                                     </div>
                                 </div>
-                            </div>
-                            <form action="/auth/login" method="POST">
-                            @csrf
-                            <div class="row gy-3 overflow-hidden">
-                                <div class="col-12">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="username" id="username"
-                                            placeholder="name@example.com" autofocus required>
-                                        <label for="username" class="form-label">Username</label>
+
+                                <div class="form-group">
+                                    <label for="password">Password :
+                                        <a href="forgot.html" class="float-right">
+                                            Forgot Password?
+                                        </a>
+                                    </label>
+                                    <input id="password" type="password" class="form-control" name="password" required
+                                        data-eye>
+                                    <div class="invalid-feedback">
+                                        Password is required
                                     </div>
                                 </div>
-                                <div class="col-12">
-                                    <div class="form-floating mb-3">
-                                        <input type="password" class="form-control" name="password" id="password"
-                                            value="" placeholder="Password" required>
-                                        <label for="password" class="form-label">Password</label>
+
+                                <div class="form-group">
+                                    <div class="custom-checkbox custom-control">
+                                        <input type="checkbox" name="remember" id="remember"
+                                            class="custom-control-input">
+                                        <label for="remember" class="custom-control-label">Remember Me</label>
                                     </div>
                                 </div>
-                                <div class="col-12">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value=""
-                                            name="remember_me" id="remember_me">
-                                        <label class="form-check-label text-secondary" for="remember_me">
-                                            Keep me logged in
-                                        </label>
-                                    </div>
+
+                                <div class="form-group m-0">
+                                    <button type="submit" id="submitButton"
+                                        class="btn btn-primary btn-block ladda-button">
+                                        Login
+                                        <i class="fas fa-spinner fa-spin" id="spinner"
+                                            style="display: none;margin-left: 10px"></i>
+                                    </button>
                                 </div>
-                                <div class="col-12">
-                                    <div class="d-grid">
-                                        <button class="btn btn-primary btn-lg ladda-button" id="tombol-login"
-                                            type="submit">
-                                            Login
-                                            {{-- <span class="ladda-loading"></span> --}}
-                                            {{-- <span class="spinner-border spinner-border-sm ml-2" role="status" aria-hidden="true"></span> --}}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            {{-- </form> --}}
-                            <div class="row">
-                                <div class="col-12">
-                                    <div
-                                        class="d-flex gap-2 gap-md-4 flex-column flex-md-row justify-content-md-end mt-4">
-                                        <a href="#!">Forgot password</a>
-                                    </div>
-                                </div>
-                            </div>
+                            </form>
                         </div>
+                    </div>
+                    <div class="footer">
+                        Copyright &copy; 2024 &mdash; Usaha Bersama (by hanif)
                     </div>
                 </div>
             </div>
         </div>
+
+        <div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+        </div>
     </section>
 
-</body>
 
-<!-- Bootstrap core JavaScript-->
-<script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
-<script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+    <!-- Bootstrap Notify -->
+    <script src="{{ asset('atlantis/assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
+    <script>
+        $(function() {
 
+            $("input[type='password'][data-eye]").each(function(i) {
+                var $this = $(this),
+                    id = 'eye-password-' + i,
+                    el = $('#' + id);
 
-<!-- Core plugin JavaScript-->
-<script src="{{ asset('vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+                // Bungkus input password dengan div yang relative
+                $this.wrap($("<div/>", {
+                    style: 'position:relative',
+                    id: id
+                }));
 
-<!-- Custom scripts for all pages-->
-<script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
+                // Berikan padding kanan untuk ikon mata
+                $this.css({
+                    paddingRight: 60
+                });
 
-{{-- ladda --}}
-<script src="{{ url('vendor/ladda/spin.min.js') }}"></script>
-<script src="{{ url('vendor/ladda/ladda.min.js') }}"></script>
-<script src="{{ url('vendor/ladda/ladda.jquery.min.js') }}"></script>
+                // Tambahkan ikon mata untuk toggle visibility
+                $this.after($("<div/>", {
+                    html: '<i class="fas fa-eye"></i>',
+                    id: 'passeye-toggle-' + i,
+                }).css({
+                    position: 'absolute',
+                    right: 10,
+                    top: ($this.outerHeight() / 2) - 12,
+                    padding: '2px 7px',
+                    fontSize: 12,
+                    cursor: 'pointer',
+                }));
 
-<!-- Page level plugins -->
-<script src="{{ asset('vendor/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
+                // Tambahkan input hidden untuk menyimpan password
+                $this.after($("<input/>", {
+                    type: 'hidden',
+                    id: 'passeye-' + i
+                }));
 
-<!-- Page level custom scripts -->
-<script src="{{ asset('js/demo/datatables-demo.js') }}"></script>
+                // Update hidden input saat ada perubahan di input password
+                $this.on("keyup paste", function() {
+                    $("#passeye-" + i).val($(this).val());
+                });
 
-<script>
-        $(document).ready(function() {
-            Ladda.bind('button[type=submit]', {timeout: 10000});
+                // Fungsi untuk toggle visibility password
+                $("#passeye-toggle-" + i).on("click", function() {
+                    if ($this.attr('type') === 'password') {
+                        $this.attr('type', 'text');
+                        $(this).html(
+                            '<i class="fas fa-eye-slash"></i>'); // Ganti ikon menjadi 'eye-slash'
+                    } else {
+                        $this.attr('type', 'password');
+                        $(this).html('<i class="fas fa-eye"></i>'); // Kembalikan ikon menjadi 'eye'
+                    }
+                });
+            });
+
         });
-</script>
+    </script>
+
+    {{-- ladda --}}
+    <script src="{{ asset('ladda/spin.min.js') }}"></script>
+    <script src="{{ asset('ladda/ladda.min.js') }}"></script>
+    <script src="{{ asset('ladda/ladda.jquery.min.js') }}"></script>
+
+    <script>
+        $('#submitButton').on('click', function(e) {
+            var form = $(this).closest('form');
+
+            // Cek validasi form
+            if (form[0].checkValidity() === false) {
+                e.preventDefault(); // Cegah submit jika tidak valid
+                e.stopPropagation();
+            } else {
+                $('#spinner').show(); // Tampilkan spinner
+            }
+        });
+    </script>
+
+</body>
 
 </html>

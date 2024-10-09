@@ -26,6 +26,6 @@ class IsAdmin
         }
 
         // Jika pengguna bukan admin atau tidak masuk, arahkan kembali dengan pesan kesalahan
-        return redirect('/')->with('errorMiddleware', "You don't have admin access.");
+        return redirect('/')->with('errorMiddleware', "Kamu tidak mempunyai akses admin");
     }
 }

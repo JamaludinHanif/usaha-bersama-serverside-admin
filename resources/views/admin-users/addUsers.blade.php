@@ -23,7 +23,7 @@
                                 </div>
                                 <div class="form-group d-flex justify-content-center">
                                     <div class="col-sm-10 mb-3 mb-sm-0">
-                                        <select name="roles" id="roles" class="form-select input-role" aria-label="Default select example">
+                                        <select name="roles" id="roles" class="form-control input-role" aria-label="Default select example">
                                             <option value="" disabled selected>Pilih Role</option>
                                             <option value="admin">Admin</option>
                                             <option value="user">User</option>

@@ -8,8 +8,7 @@
 
             <div class="form-floating mb-3">
                 <input type="text" class="form-control input-name" name="name" id="name"
-                    placeholder="Masukan Nama Produk (masukan juga detail variant dan gram nya *opsional)">
-                <label for="floatingInput">Nama Produk (masukan juga detail variant dan gram nya *opsional)</label>
+                    placeholder="Masukan Nama Produk (masukan juga detail variant dan gram nya)">
                 <div class="invalid-feedback feedback-name"></div>
             </div>
 
@@ -22,12 +21,11 @@
             <div class="form-floating mb-3">
                 <input type="number" class="form-control input-stock" name="stock" id="stock"
                     placeholder="Masukan Stok (tanpa menggunakan titik dan spasi)">
-                <label for="floatingInput">Masukan Stok (tanpa menggunakan titik dan spasi)</label>
                 <div class="invalid-feedback feedback-stock"></div>
             </div>
 
             <div class="mb-3">
-                <select name="category" id="category" class="form-select input-category" aria-label="Pilih User123"
+                <select name="category" id="category" class="form-control input-category" aria-label="Pilih User123"
                     required>
                     <option value="" disabled selected>Pilih Kategori</option>
                         <option value="makanan">Makanan</option>
@@ -39,11 +37,11 @@
             </div>
 
             <div class="mb-3">
-                <select name="unit" id="unit" class="form-select input-unit"
+                <select name="unit" id="unit" class="form-control input-unit"
                     aria-label="Pilih Kategori" required>
                     <option value="" disabled selected>Pilih Satuan</option>
                         <option value="pcs">Pcs</option>
-                        <option value="pak">Pak</option>
+                        <option value="pak">Pack</option>
                         <option value="dos">Dos</option>
                         <option value="1/4">1/4 kg</option>
                 </select>
@@ -52,9 +50,8 @@
 
             <div class="mb-3">
                 <div class="form-floating">
-                    <textarea class="form-control input-image" placeholder="Masukin Gambar kmu" rows="3" name="image"
+                    <textarea class="form-control input-image" placeholder="Masukan gambar (opsional) *gambar harus berbentuk URL" rows="3" name="image"
                         id="image"></textarea>
-                    <label for="floatingTextarea">Masukan gambar (opsional) *gambar harus berbentuk URL</label>
                     <div class="invalid-feedback feedback-image"></div>
                 </div>
             </div>

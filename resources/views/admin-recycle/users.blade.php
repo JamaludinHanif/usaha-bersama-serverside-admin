@@ -3,13 +3,33 @@
 @section('title')
     {{ $title }}
 @endsection
-
+@section('breadcrumbs')
+<ul class="breadcrumbs" style="color: white">
+    <li class="nav-home">
+        <a href="/admin/dashboard">
+            <i class="flaticon-home" style="color: white"></i>
+        </a>
+    </li>
+    <li class="separator">
+        <i class="flaticon-right-arrow" style="color: white"></i>
+    </li>
+    <li class="nav-item">
+        <a href="/admin/resycle/users" style="color: white">Restore</a>
+    </li>
+    <li class="separator">
+        <i class="flaticon-right-arrow" style="color: white"></i>
+    </li>
+    <li class="nav-item">
+        <a href="/admin/resycle/users" style="color: white">User</a>
+    </li>
+</ul>
+@endsection
 @section('content')
     {{-- filter --}}
     <div style="width: 300px" class="col-sm-6 mb-3 mb-sm-0">
         <form action="" id="formFilter">
             <p class="h5 mb-2 text-gray-800">Filter berdasarkan role :</p>
-            <select name="roleSelected" id="roleSelected" class="form-select" aria-label="Default select example" required>
+            <select name="roleSelected" id="roleSelected" class="form-control" aria-label="Default select example" required>
                 <option value="" selected>All Role</option>
                 <option value="admin">
                     Admin</option>
@@ -29,29 +49,18 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="myTableRecycleUser" width="100%" cellspacing="0">
+                <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Nama</th>
-                            <th>Nama Pengguna</th>
-                            <th>Peran Sebagai</th>
-                            <th>Email</th>
-                            <th>Gambar</th>
-                            <th>Dihapus Pada</th>
-                            <th>Aksi</th>
+                            <th style="background-color: #007bff; color: white;">Nama</th>
+                            <th style="background-color: #007bff; color: white;">Nama Pengguna</th>
+                            <th style="background-color: #007bff; color: white;">Peran Sebagai</th>
+                            <th style="background-color: #007bff; color: white;">Email</th>
+                            <th style="background-color: #007bff; color: white;">Gambar</th>
+                            <th style="background-color: #007bff; color: white;">Dihapus Pada</th>
+                            <th style="background-color: #007bff; color: white;">Aksi</th>
                         </tr>
                     </thead>
-                    <tfoot>
-                        <tr>
-                            <th>Name</th>
-                            <th>Username</th>
-                            <th>Role</th>
-                            <th>Email</th>
-                            <th>Image</th>
-                            <th>Deleted At</th>
-                            <th>Action</th>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
         </div>
@@ -85,7 +94,7 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
-            $('#myTableRecycleUser').DataTable({
+            $('#myTable').DataTable({
                 processing: true,
                 serverside: true,
                 autoWidth: false,

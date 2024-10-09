@@ -69,7 +69,7 @@ return [
     |
     */
 
-    'timezone' => env('APP_TIMEZONE', 'UTC'),
+    'timezone' => 'UTC',
 
     /*
     |--------------------------------------------------------------------------
@@ -164,9 +164,6 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
 
-        Mckenziearts\Notify\LaravelNotifyServiceProvider::class,
-        // Intervention\Image\ImageServiceProvider::class,
-
         /*
          * Package Service Providers...
          */
@@ -179,8 +176,6 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
-                // Intervention\Image\ImageServiceProvider::class,
 
     ],
 
@@ -196,13 +191,7 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        // 'Image' => Intervention\Image\Facades\Image::class,
+        // ...
     ])->toArray(),
-
-    'frontend_url' => env('FRONTEND_URL', 'http://localhost:5173'),
-
-    // 'aliases' => [
-    //     'Image' => Intervention\Image\Facades\Image::class,
-    // ],
 
 ];

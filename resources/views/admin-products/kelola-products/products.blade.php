@@ -2,13 +2,33 @@
 @section('title')
     {{ $title }}
 @endsection
-
+@section('breadcrumbs')
+<ul class="breadcrumbs" style="color: white">
+    <li class="nav-home">
+        <a href="/admin/dashboard">
+            <i class="flaticon-home" style="color: white"></i>
+        </a>
+    </li>
+    <li class="separator">
+        <i class="flaticon-right-arrow" style="color: white"></i>
+    </li>
+    <li class="nav-item">
+        <a href="/admin/products/products" style="color: white">Produk</a>
+    </li>
+    <li class="separator">
+        <i class="flaticon-right-arrow" style="color: white"></i>
+    </li>
+    <li class="nav-item">
+        <a href="/admin/products/products" style="color: white">Kelola Produk</a>
+    </li>
+</ul>
+@endsection
 @section('content')
     {{-- filter --}}
     <div class="d-flex" style="width: 50%">
         <div style="width: 300px" class="col-sm-6 mb-3 mb-sm-0">
             <p class="h6 mb-2 text-gray-800">Filter berdasarkan kategori:</p>
-            <select name="categorySelected" id="categorySelected" class="form-select" aria-label="Default select example"
+            <select name="categorySelected" id="categorySelected" class="form-control" aria-label="Default select example"
                 required>
                 <option value="" selected>Semua Kategori</option>
                 <option value="makanan">Makanan</option>
@@ -20,11 +40,11 @@
 
         <div style="width: 300px" class="col-sm-6 mb-3 mb-sm-0">
             <p class="h6 mb-2 text-gray-800">Filter berdasarkan satuan:</p>
-            <select name="unitSelected" id="unitSelected" class="form-select"
+            <select name="unitSelected" id="unitSelected" class="form-control"
                 aria-label="Default select example" required>
                 <option value="" selected>Semua Satuan</option>
                 <option value="pcs">Pcs</option>
-                <option value="pak">Pak</option>
+                <option value="pack">Pack</option>
                 <option value="dos">Dos</option>
                 <option value="1/4">1/4 kg</option>
             </select>
@@ -38,13 +58,13 @@
             class="btn btn-primary btn-icon-split">
             <span class="icon text-white-50">
                 <i class="far fa-plus-square"></i> </span>
-            <span class="text">Produk Baru</span>
+            <span class="text" style="color: white">Produk Baru</span>
         </a>
     </div>
 
     <div class="" style="height: 35px"></div>
 
-    <!-- DataTales -->
+    <!-- DataTables -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Semua Produk</h6>
@@ -116,7 +136,7 @@
                         data: 'name',
                         name: 'Nama'
                     }, {
-                        data: 'price',
+                        data: 'formatted_amount',
                         name: 'Harga'
                     }, {
                         data: 'unit',

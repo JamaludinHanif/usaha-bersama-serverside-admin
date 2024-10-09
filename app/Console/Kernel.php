@@ -7,11 +7,6 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
-    protected $commands = [
-        \App\Console\Commands\DeleteImageUserCommand::class,  // Daftarkan command baru di sini
-        \App\Console\Commands\CheckMissingImages::class,
-    ];
-
     /**
      * Define the application's command schedule.
      *
@@ -20,12 +15,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->daily();
-        // $schedule->command('images:check-missing')->hourly();
-        $schedule->command('images:check-missing')->daily()->at('11:24'); // custom waktu
+        // $schedule->command('inspire')->hourly();
     }
 
-    /** adiva123hanif_
+    /**
      * Register the commands for the application.
      *
      * @return void

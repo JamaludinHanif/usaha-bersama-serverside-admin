@@ -2,17 +2,40 @@
 @section('title')
     {{ $title }}
 @endsection
+@section('breadcrumbs')
+<ul class="breadcrumbs" style="color: white">
+    <li class="nav-home">
+        <a href="/admin/dashboard">
+            <i class="flaticon-home" style="color: white"></i>
+        </a>
+    </li>
+    <li class="separator">
+        <i class="flaticon-right-arrow" style="color: white"></i>
+    </li>
+    <li class="nav-item">
+        <a href="/admin/users/users" style="color: white">Users</a>
+    </li>
+    <li class="separator">
+        <i class="flaticon-right-arrow" style="color: white"></i>
+    </li>
+    <li class="nav-item">
+        <a href="/admin/users/users" style="color: white">Log Aktifitas</a>
+    </li>
+</ul>
+@endsection
 @section('content')
-    <h1 class="h5 mb-3 text-gray-800">Filter berdasarkan periode tanggal :</h1>
-    <!-- Input untuk filter tanggal -->
-    <div class="row d-flex align-items-end">
+    {{-- filter --}}
+
+    <div style="width: 300px" class="mb-3 mb-sm-0]">
         <form action="" id="formFilter">
-            <div class="col-md-3">
+            <p class="h5 mb-2 text-gray-800">Filter berdasarkan tanggal :</p>
+            <div class="form-group">
                 <label for="start_date" class="form-label">Dari tanggal : </label>
-                <input type="date" id="date" name="date" class="form-control" placeholder="Start Date">
+                <input type="date" id="date" name="date" class="form-control datepicker" placeholder="Pilih Tanggal">
             </div>
         </form>
     </div>
+
     {{-- download pdf --}}
     <div class="" style="height: 35px"></div>
     <div class="">
@@ -22,29 +45,20 @@
     <!-- DataTales  -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Semua User</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Semua Aktifitas Users</h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="myTableLog" width="100%" cellspacing="0">
+                <table class="table table-bordered table-hover" id="myTableLog" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Nama</th>
-                            <th>Nama Pengguna</th>
-                            <th>Peran Sebagai</th>
-                            <th>Aktivitas</th>
-                            <th>Waktu</th>
+                            <th style="background-color: #007bff; color: white;">Nama</th>
+                            <th style="background-color: #007bff; color: white;">Nama Pengguna</th>
+                            <th style="background-color: #007bff; color: white;">Peran Sebagai</th>
+                            <th style="background-color: #007bff; color: white;">Aktivitas</th>
+                            <th style="background-color: #007bff; color: white;">Waktu</th>
                         </tr>
                     </thead>
-                    <tfoot>
-                        <tr>
-                            <th>Name</th>
-                            <th>Username</th>
-                            <th>Role</th>
-                            <th>Activity</th>
-                            <th>Time</th>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
         </div>

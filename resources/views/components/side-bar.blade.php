@@ -1,142 +1,119 @@
-<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
-    <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-        <div class="sidebar-brand-icon rotate-n-15">
-            <i class="fa-solid fa-face-grin-squint-tears"></i>
-        </div>
-        <div class="sidebar-brand-text mx-3">Admin {{ session('userData')->username }}</div>
-    </a>
-
-    <!-- Divider -->
-    <hr class="sidebar-divider my-0">
-
-    <!-- Nav Item - Dashboard -->
-    <li class="nav-item {{ Request::is('admin/dashboard') ? 'active' : '' }}">
-        <a class="nav-link" href="/admin/dashboard">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span></a>
-    </li>
-
-    <!-- Divider -->
-    <hr class="sidebar-divider">
-
-    <!-- Heading -->
-    <div class="sidebar-heading">
-        USERS
-    </div>
-
-    <!-- Nav Item - Pages Collapse Menu -->
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-            aria-expanded="true" aria-controls="collapseTwo">
-            <i class="fas fa-fw fa-cog"></i>
-            <span>Master Users</span>
-        </a>
-        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Kelola User :</h6>
-                <a class="collapse-item {{ Request::is('admin/users/users') ? 'active' : '' }}"
-                    href="/admin/users/users">Users</a>
-                <a class="collapse-item {{ Request::is('admin/users/users-v2') ? 'active' : '' }}"
-                    href="/admin/users/users-v2">Users V2</a>
-                <a class="collapse-item {{ Request::is('admin/users/log-activities') ? 'active' : '' }}"
-                    href="/admin/users/log-activities">Log Activities</a>
+<div class="sidebar sidebar-style-2">
+    <div class="sidebar-wrapper scrollbar scrollbar-inner">
+        <div class="sidebar-content">
+            <div class="user">
+                <div class="avatar-sm float-left mr-2">
+                    <img src="https://i.pinimg.com/236x/88/ef/45/88ef4583aa9e81b18d6baa9ebf3e5486.jpg" alt="..."
+                        class="avatar-img rounded-circle">
+                </div>
+                <div class="info">
+                    <a>
+                        <span>
+                            {{ session('userData')->username }}
+                            <span class="user-level">{{ session('userData')->role }}</span>
+                        </span>
+                    </a>
+                </div>
             </div>
+            <ul class="nav nav-primary">
+                <li class="nav-item {{ Request::is('admin/dashboard') ? 'active' : '' }}">
+                    <a href="/admin/dashboard">
+                        <i class="fas fa-home"></i>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+                {{-- users --}}
+                <li class="nav-section">
+                    <span class="sidebar-mini-icon">
+                        <i class="fa fa-ellipsis-h"></i>
+                    </span>
+                    <h4 class="text-section">USERS</h4>
+                </li>
+                <li class="nav-item">
+                    <a data-toggle="collapse" aria-expanded="false" href="#users">
+                        <i class="fas fa-users"></i>
+                        <p>Users</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse" id="users">
+                        <ul class="nav nav-collapse">
+                            <li class="{{ Request::is('admin/users/users') ? 'active' : '' }}">
+                                <a href="/admin/users/users">
+                                    <span class="sub-item">Kelola User</span>
+                                </a>
+                            </li>
+                            <li class="{{ Request::is('admin/users/log-activities') ? 'active' : '' }}">
+                                <a href="/admin/users/log-activities">
+                                    <span class="sub-item">Log-Aktifitas</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                {{-- products --}}
+                <li class="nav-section">
+                    <span class="sidebar-mini-icon">
+                        <i class="fa fa-ellipsis-h"></i>
+                    </span>
+                    <h4 class="text-section">PRODUCTS</h4>
+                </li>
+                <li class="nav-item">
+                    <a data-toggle="collapse" aria-expanded="false" href="#products">
+                        <i class="fas fa-box"></i>
+                        <p>Produk</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse" id="products">
+                        <ul class="nav nav-collapse">
+                            <li class="{{ Request::is('admin/products/products') ? 'active' : '' }}">
+                                <a href="/admin/products/products">
+                                    <span class="sub-item">Kelola Produk</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                {{-- recycle bin --}}
+                <li class="nav-section">
+                    <span class="sidebar-mini-icon">
+                        <i class="fa fa-ellipsis-h"></i>
+                    </span>
+                    <h4 class="text-section">RESTORE</h4>
+                </li>
+                <li class="nav-item">
+                    <a data-toggle="collapse" aria-expanded="false" href="#restore">
+                        <i class="fas fa-recycle"></i>
+                        <p>Restore</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse" id="restore">
+                        <ul class="nav nav-collapse">
+                            <li class="{{ Request::is('admin/recycle/users') ? 'active' : '' }}">
+                                <a href="/admin/recycle/users">
+                                    <span class="sub-item">Users</span>
+                                </a>
+                            </li>
+                            <li class="{{ Request::is('admin/recycle/products') ? 'active' : '' }}">
+                                <a href="/admin/recycle/products">
+                                    <span class="sub-item">Produk</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="widgets.html">
+                        <i class="fas fa-desktop"></i>
+                        <p>Widgets</p>
+                        <span class="badge badge-success">4</span>
+                    </a>
+                </li>
+                <li class="mx-4 mt-2">
+                    <a href="https://usaha-bersama.hanifdev.my.id" class="btn btn-primary btn-block"><span
+                            class="btn-label mr-2"> <i class="fa fa-heart"></i>
+                        </span>Usaha Bersama</a>
+                </li>
+            </ul>
         </div>
-    </li>
-
-    <!-- Divider -->
-    <hr class="sidebar-divider">
-
-    {{-- quote --}}
-
-    <!-- Heading -->
-    <div class="sidebar-heading">
-        PRODUCTS
     </div>
-
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
-            aria-expanded="true" aria-controls="collapsePages">
-            <i class="fas fa-fw fa-folder"></i>
-            {{-- <i class="fas fa-recycle"></i> --}}
-            <span>Master Products</span>
-        </a>
-        @php
-            $routeproducts = "Request::is('admin/products";
-            $routeUsers = "Request::is('admin/products";
-        @endphp
-        {{-- @dd($routeproducts + "/products')" ? 'show' : '') --}}
-        <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Kelola products :</h6>
-                <a class="collapse-item {{ Request::is('admin/products/products') ? 'active' : '' }}"
-                    href="/admin/products/products">products</a>
-                {{-- <h6 class="collapse-header">products :</h6>
-                <a class="collapse-item {{ Request::is('admin/products/all-products') ? 'active' : '' }}"
-                    href="/admin/products/all-products">All products</a>
-                <a class="collapse-item {{ Request::is('admin/products/categories') ? 'active' : '' }}"
-                    href="/admin/products/categories">Categories products</a> --}}
-                <div class="collapse-divider"></div>
-                <h6 class="collapse-header">Other :</h6>
-                <a class="collapse-item" href="404.html">Tes 123</a>
-            </div>
-        </div>
-    </li>
-
-    <!-- Divider -->
-    <hr class="sidebar-divider">
-
-    <!-- recycle bin -->
-
-    <!-- Heading -->
-    <div class="sidebar-heading">
-        RECYCLE BIN
-    </div>
-
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseRecycle"
-            aria-expanded="true" aria-controls="collapseRecycle">
-            <i class="fas fa-recycle"></i>
-            <span>Master Recycle</span>
-        </a>
-        {{-- @dd($routeQuotes + "/quotes')" ? 'show' : '') --}}
-        <div id="collapseRecycle" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Recycle Produk :</h6>
-                <a class="collapse-item {{ Request::is('admin/recycle/products') ? 'active' : '' }}"
-                    href="/admin/recycle/products">Produk</a>
-                <h6 class="collapse-header">Recycle User :</h6>
-                <a class="collapse-item {{ Request::is('admin/recycle/users') ? 'active' : '' }}"
-                    href="/admin/recycle/users">User</a>
-                <div class="collapse-divider"></div>
-                <h6 class="collapse-header">Other :</h6>
-                <a class="collapse-item" href="404.html">Comments</a>
-            </div>
-        </div>
-    </li>
-
-    <!-- Nav Item - Charts -->
-    <li class="nav-item">
-        <a class="nav-link" href="charts.html">
-            <i class="fas fa-fw fa-chart-area"></i>
-            <span>Charts</span></a>
-    </li>
-
-    <!-- Nav Item - Tables -->
-    <li class="nav-item {{ Request::is('tables') ? 'active' : '' }}">
-        <a class="nav-link" href="/tables">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Tables</span></a>
-    </li>
-
-    <!-- Divider -->
-    <hr class="sidebar-divider d-none d-md-block">
-
-    <!-- Sidebar Toggler (Sidebar) -->
-    <div class="text-center d-none d-md-inline">
-        <button class="rounded-circle border-0" id="sidebarToggle"></button>
-    </div>
-
-</ul>
+</div>

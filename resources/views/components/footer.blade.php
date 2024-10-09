@@ -1,7 +1,3 @@
-<footer class="sticky-footer bg-white">
-    <div class="container my-auto">
-        <div class="copyright text-center my-auto">
-            <span>Copyright &copy; Your Website 2020</span>
-        </div>
-    </div>
-</footer>
+<div>
+    <!-- Life is available only in the present moment. - Thich Nhat Hanh -->
+</div>

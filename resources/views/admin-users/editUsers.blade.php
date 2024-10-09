@@ -24,7 +24,7 @@
                                 </div>
                                 <div class="form-group d-flex justify-content-center">
                                     <div class="col-sm-10 mb-3 mb-sm-0">
-                                        <select name="role" id="role" class="form-select input-role"
+                                        <select name="role" id="role" class="form-control input-role"
                                             aria-label="Default select example">
                                             <option value="" disabled selected>Pilih Role</option>
                                             <option value="admin" {{ $datas->role == 'admin' ? 'selected' : '' }}>Admin

@@ -1,4 +1,4 @@
-const mix = require("laravel-mix");
+const mix = require('laravel-mix');
 
 /*
  |--------------------------------------------------------------------------
@@ -11,27 +11,7 @@ const mix = require("laravel-mix");
  |
  */
 
-mix.js("resources/js/app.js", "public/js")
-    .postCss("resources/css/app.css", "public/css", [
+mix.js('resources/js/app.js', 'public/js')
+    .postCss('resources/css/app.css', 'public/css', [
         //
-    ])
-    .styles(
-        [
-            "resources/css/vendor/ladda.min.css", // Path ke file yang diunduh manual
-        ],
-        "public/css/ladda.css"
-    )
-    .scripts(
-        [
-            "resources/js/vendor/ladda.min.js", // Path ke file yang diunduh manual
-        ],
-        "public/js/ladda.js"
-    );
-
-mix.js("resources/js/app.js", "public/js")
-    .sass("resources/sass/app.scss", "public/css")
-    .copy(
-        "node_modules/toastr/build/toastr.min.css",
-        "public/css/toastr.min.css"
-    )
-    .copy("node_modules/toastr/build/toastr.min.js", "public/js/toastr.min.js");
+    ]);

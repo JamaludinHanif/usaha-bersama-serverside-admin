@@ -4,12 +4,35 @@
     {{ $title }}
 @endsection
 
+@section('breadcrumbs')
+<ul class="breadcrumbs" style="color: white">
+    <li class="nav-home">
+        <a href="/admin/dashboard">
+            <i class="flaticon-home" style="color: white"></i>
+        </a>
+    </li>
+    <li class="separator">
+        <i class="flaticon-right-arrow" style="color: white"></i>
+    </li>
+    <li class="nav-item">
+        <a href="/admin/users/users" style="color: white">Users</a>
+    </li>
+    <li class="separator">
+        <i class="flaticon-right-arrow" style="color: white"></i>
+    </li>
+    <li class="nav-item">
+        <a href="/admin/users/users" style="color: white">Kelola Users</a>
+    </li>
+</ul>
+@endsection
+
 @section('content')
     {{-- filter --}}
+
     <div style="width: 300px" class="col-sm-6 mb-3 mb-sm-0">
         <form action="" id="formFilter">
             <p class="h5 mb-2 text-gray-800">Filter berdasarkan role :</p>
-            <select name="roleSelected" id="roleSelected" class="form-select" aria-label="Default select example" required data-turbolinks="false">
+            <select class="form-control" name="roleSelected" id="roleSelected" required>
                 <option value="" selected>All Role</option>
                 <option value="admin">
                     Admin</option>
@@ -32,7 +55,7 @@
             class="btn btn-primary btn-icon-split">
             <span class="icon text-white-50">
                 <i class="far fa-plus-square"></i> </span>
-            <span class="text">Tambah User</span>
+            <span class="text" style="color: white">Tambah User</span>
         </a>
     </div>
 
@@ -45,7 +68,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered table-hover" id="myTableUsers" width="100%" cellspacing="0">
+                <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th style="background-color: #007bff; color: white;">Nama</th>
@@ -89,7 +112,7 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
-            $('#myTableUsers').DataTable({
+            $('#myTable').DataTable({
                 processing: true,
                 serverside: true,
                 autoWidth: false,
@@ -195,7 +218,8 @@
             })
         })
 
-        $('body').on('click', '.tombol-simpan', function() {
+        $('body').on('click', '.tombol-simpan', function(e) {
+            e.preventDefault(); // Mencegah form submit secara default
 
             var formData = new FormData();
             formData.append('_method', 'PUT');
@@ -306,7 +330,9 @@
         })
 
         // function tambah user
-        $('body').on('click', '.tombol-tambah', function() {
+        $('body').on('click', '.tombol-tambah', function(e) {
+            e.preventDefault(); // Mencegah form submit secara default
+
             var formData = new FormData();
             formData.append('name', $('#formCreate').find('[id="name"]').val());
             formData.append('username', $('#formCreate').find('[id="username"]').val());
@@ -315,6 +341,7 @@
             formData.append('email', $('#formCreate').find('[id="email"]').val());
             formData.append('password', $('#formCreate').find('[id="password"]').val());
 
+            console.log(formData);
             var loadingCreate = Ladda.create(document.querySelector('.tombol-tambah'));
             loadingCreate.start();
             $.ajax({

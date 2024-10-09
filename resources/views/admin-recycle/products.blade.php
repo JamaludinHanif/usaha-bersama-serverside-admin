@@ -2,13 +2,33 @@
 @section('title')
     {{ $title }}
 @endsection
-
+@section('breadcrumbs')
+<ul class="breadcrumbs" style="color: white">
+    <li class="nav-home">
+        <a href="/admin/dashboard">
+            <i class="flaticon-home" style="color: white"></i>
+        </a>
+    </li>
+    <li class="separator">
+        <i class="flaticon-right-arrow" style="color: white"></i>
+    </li>
+    <li class="nav-item">
+        <a href="/admin/resycle/products" style="color: white">Restore</a>
+    </li>
+    <li class="separator">
+        <i class="flaticon-right-arrow" style="color: white"></i>
+    </li>
+    <li class="nav-item">
+        <a href="/admin/resycle/products" style="color: white">Produk</a>
+    </li>
+</ul>
+@endsection
 @section('content')
     {{-- filter --}}
     <div class="d-flex" style="width: 50%">
         <div style="width: 300px" class="col-sm-6 mb-3 mb-sm-0">
             <p class="h6 mb-2 text-gray-800">Filter berdasarkan kategori:</p>
-            <select name="categorySelected" id="categorySelected" class="form-select" aria-label="Default select example"
+            <select name="categorySelected" id="categorySelected" class="form-control" aria-label="Default select example"
                 required>
                 <option value="" selected>Semua Kategori</option>
                 <option value="makanan">Makanan</option>
@@ -20,10 +40,10 @@
 
         <div style="width: 300px" class="col-sm-6 mb-3 mb-sm-0">
             <p class="h6 mb-2 text-gray-800">Filter berdasarkan satuan:</p>
-            <select name="unitSelected" id="unitSelected" class="form-select" aria-label="Default select example" required>
+            <select name="unitSelected" id="unitSelected" class="form-control" aria-label="Default select example" required>
                 <option value="" selected>Semua Satuan</option>
                 <option value="pcs">Pcs</option>
-                <option value="pak">Pak</option>
+                <option value="pack">Pack</option>
                 <option value="dos">Dos</option>
                 <option value="1/4">1/4 kg</option>
             </select>
@@ -100,7 +120,7 @@
                     data: 'name',
                     name: 'Nama'
                 }, {
-                    data: 'price',
+                    data: 'formatted_amount',
                     name: 'Harga'
                 }, {
                     data: 'unit',

@@ -6,10 +6,10 @@
         <form id="formEdit" action="">
             {{-- @csrf --}}
 
-            <div class="form-floating mb-3">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon3">Nama Produk :</span>
                 <input type="text" class="form-control input-name" name="name" id="name" value="{{ $data->name }}"
-                    placeholder="Masukan Nama Produk (masukan juga detail variant dan gram nya *opsional)">
-                <label for="floatingInput">Nama Produk (masukan juga detail variant dan gram nya *opsional)</label>
+                    placeholder="Masukan Nama Produk (masukan juga detail variant dan gram nya)" aria-describedby="basic-addon3">
                 <div class="invalid-feedback feedback-name"></div>
             </div>
 
@@ -19,15 +19,16 @@
                 <div class="invalid-feedback feedback-price"></div>
             </div>
 
-            <div class="form-floating mb-3">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon2">Jumlah Stok :</span>
                 <input type="number" value="{{ $data->stock }}" class="form-control input-stock" name="stock" id="stock"
-                    placeholder="Masukan Stok (tanpa menggunakan titik dan spasi)">
-                <label for="floatingInput">Masukan Stok (tanpa menggunakan titik dan spasi)</label>
+                    placeholder="Masukan Stok (tanpa menggunakan titik dan spasi)" aria-describedby="basic-addon2">
+                <span class="input-group-text" id="basic-addon2">{{ $data->unit }}</span>
                 <div class="invalid-feedback feedback-stock"></div>
             </div>
 
             <div class="mb-3">
-                <select name="category" id="category" class="form-select input-category" aria-label="Pilih User123"
+                <select name="category" id="category" class="form-control input-category" aria-label="Pilih User123"
                     required>
                     <option value="" disabled selected>Pilih Kategori</option>
                         <option value="makanan" {{ $data->category == 'makanan' ? 'selected' : '' }}>Makanan</option>
@@ -39,11 +40,11 @@
             </div>
 
             <div class="mb-3">
-                <select name="unit" id="unit" class="form-select input-unit"
+                <select name="unit" id="unit" class="form-control input-unit"
                     aria-label="Pilih Kategori" required>
                     <option value="" disabled selected>Pilih Satuan</option>
                         <option value="pcs" {{ $data->unit == 'pcs' ? 'selected' : '' }}>Pcs</option>
-                        <option value="pak" {{ $data->unit == 'pak' ? 'selected' : '' }}>Pak</option>
+                        <option value="pack" {{ $data->unit == 'pack' ? 'selected' : '' }}>Pack</option>
                         <option value="dos" {{ $data->unit == 'dos' ? 'selected' : '' }}>Dos</option>
                         <option value="1/4" {{ $data->unit == '1/4' ? 'selected' : '' }}>1/4 kg</option>
                 </select>
@@ -52,9 +53,8 @@
 
             <div class="mb-3">
                 <div class="form-floating">
-                    <textarea class="form-control input-image" placeholder="Masukin Gambar kmu" rows="3" name="image"
+                    <textarea class="form-control input-image" placeholder="Masukan gambar (opsional) *gambar harus berbentuk URL" rows="3" name="image"
                         id="image">{{ $data->image }}</textarea>
-                    <label for="floatingTextarea">Masukan gambar (opsional) *gambar harus berbentuk URL</label>
                     <div class="invalid-feedback feedback-image"></div>
                 </div>
             </div>

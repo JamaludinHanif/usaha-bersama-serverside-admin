@@ -61,7 +61,7 @@ class AuthController extends Controller
             return redirect()->intended('/admin/dashboard');
         }
 
-        return back()->with('loginError', 'login gagal!');
+        return back()->with('loginError', 'login gagal!, silahkan periksa kembali username dan passwordnya');
 
     }
 
@@ -180,7 +180,7 @@ class AuthController extends Controller
             'message' => 'Logout berhasil',
         ], 200);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Tangani kesalahan dan kembalikan pesan error
             return response()->json([
                 'status' => false,
@@ -230,5 +230,4 @@ class AuthController extends Controller
                     ? response()->json(['message' => __($status)], 200)
                     : response()->json(['message' => __($status)], 200);
     }
-
 }

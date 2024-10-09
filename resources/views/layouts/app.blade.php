@@ -2,175 +2,196 @@
 <html lang="en">
 
 <head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="author" content="">
-    {{-- <meta name="turbolinks-cache-control" content="no-cache"> --}}
-
-    <title>Usaha Bersama Admin</title>
-
-    {{-- bootstrap cdn --}}
-    {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> --}}
-
-    @notifyCss
-
-    <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/components/logins/login-9/assets/css/login-9.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title')</title>
+    {{-- atlantis font --}}
+    <script src="{{ asset('atlantis/assets/js/plugin/webfont/webfont.min.js') }}"></script>
+    <script>
+        WebFont.load({
+            google: {
+                "families": ["Lato:300,400,700,900"]
+            },
+            custom: {
+                "families": ["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands",
+                    "simple-line-icons"
+                ],
+                urls: ['{{ asset('atlantis/assets/css/fonts.min.css') }}']
+            },
+            active: function() {
+                sessionStorage.fonts = true;
+            }
+        });
+    </script>
+    <!-- Include CSS dari Atlantis -->
+    <link rel="stylesheet" href="{{ asset('atlantis/assets/css/bootstrap.min.css') }}">
+    <link href="{{ asset('atlantis/assets/css/atlantis.min.css') }}" rel="stylesheet">
 
     {{-- ladda --}}
-    <link rel="stylesheet" href="{{ url('vendor/ladda/ladda-themeless.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('ladda/ladda-themeless.min.css') }}">
 
     {{-- sweetalert cdn --}}
-    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"> --}}
-
-    <!-- Custom fonts for this template -->
-    <link href="{{ url('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="{{ url('css/sb-admin-2.min.css') }}" rel="stylesheet">
-
-    {{-- select2 --}}
-    <link rel="stylesheet" href="{{ url('vendor/select2/select2.css') }}">
-    <link rel="stylesheet" href="{{ url('css/select2-atlantis.css') }}">
-
-    <!-- Turbolinks CDN -->
-    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js"></script>
-    <script>
-        Turbolinks.start();
-    </script> --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
     {{-- pace js --}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-flash.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-flash.min.css">
+    <style>
+        .pace .pace-progress {
+            background: white;
+            /* Ubah menjadi warna favoritmu */
+        }
 
-    <!-- Custom styles for this page -->
-    <link href="{{ url('vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
-
-    @yield('style')
-    {{-- @livewireStyles --}}
-
-</head>
-
-<body id="page-top">
-    <div id="loading-spinner"
-        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255,255,255,0.8); z-index: 9999; text-align: center;">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <div class="spinner-border" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Page Wrapper -->
-    <div id="wrapper">
-
-        <!-- Sidebar -->
-        {{-- @livewire('sidebar') --}}
-        @include('components.side-bar')
-        <!-- End of Sidebar -->
-
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
-
-            <!-- Main Content -->
-            <div id="content">
-
-                <!-- Topbar -->
-                <x-nav-bar></x-nav-bar>
-                <!-- End of Topbar -->
-
-                <!-- Begin Page Content -->
-                <div class="container-fluid">
-
-                    <!-- Page Heading -->
-                    <h1 class="h3 mb-4 text-gray-800">@yield('title')</h1>
-                    <div class="" style="height: 35px"></div>
-
-                    @yield('content')
-
-                    @yield('modal')
-
-                </div>
-                <!-- /.container-fluid -->
-
-            </div>
-            <!-- End of Main Content -->
-
-            <!-- Footer -->
-            <!-- End of Footer -->
-
-        </div>
-        <!-- End of Content Wrapper -->
-
-    </div>
-    <!-- End of Page Wrapper -->
-
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-
-    <!-- Logout Modal-->
-    <x-logout-alert></x-logout-alert>
-
-    <!-- Bootstrap core JavaScript-->
-    <script src="{{ url('vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ url('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-
-    {{-- chart js --}}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="{{ url('vendor/jquery-easing/jquery.easing.min.js') }}"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="{{ url('js/sb-admin-2.min.js') }}"></script>
-
-    {{-- ladda --}}
-    <script src="{{ url('vendor/ladda/spin.min.js') }}"></script>
-    <script src="{{ url('vendor/ladda/ladda.min.js') }}"></script>
-    <script src="{{ url('vendor/ladda/ladda.jquery.min.js') }}"></script>
-
-    <!-- Page level plugins -->
-    <script src="{{ url('vendor/datatables/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ url('vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="{{ url('js/demo/datatables-demo.js') }}"></script>
-
-    {{-- toast alert --}}
-    <script src="{{ url('vendor/bootstrap-5-toast-snackbar/src/toast.js') }}"></script>
-
-    {{-- setup.js --}}
-    <script src="{{ url('js/mySetup.js') }}"></script>
+        .pace .pace-activity {
+            border-top-color: white;
+            /* Ubah warna lingkaran */
+            border-left-color: white;
+        }
+    </style>
 
     {{-- select2 --}}
-    <script src="{{ url('vendor/select2/select2.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('select2/select2.css') }}">
+    <link rel="stylesheet" href="{{ asset('select2/select2-atlantis.css') }}">
+
+    @yield('style')
+</head>
+
+<body>
+
+    <div class="wrapper">
+        {{-- header --}}
+        @include('components.nav-bar')
+
+        {{-- sidebar --}}
+        @include('components.side-bar')
+
+        <div class="main-panel">
+            <div class="content">
+
+                <div class="panel-header bg-primary-gradient">
+                    <div class="page-inner py-5">
+                        <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
+                            <div>
+                                <h2 class="text-white pb-2 fw-bold">@yield('title')</h2>
+                                <h5 class="text-white op-7 mb-2">@yield('title2')</h5>
+                                <div class="" style="height: 10px"></div>
+                                @yield('breadcrumbs')
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-inner"> {{-- mt--5 --}}
+                    @yield('content')
+                </div>
+            </div>
+            @yield('modal')
+            <footer class="footer">
+                <div class="container-fluid">
+                    <nav class="pull-left">
+                        <ul class="nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://www.instagram.com/_ha_nif/">
+                                    Hanif Dev
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">
+                                    Help
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">
+                                    Licenses
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <div class="copyright ml-auto">
+                        2024, made with <i class="fa fa-heart heart text-danger"></i> by <a
+                            href="https://www.instagram.com/_ha_nif/">Jamaludin Hanif</a>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+
+
+    <!--   Core JS Files   -->
+    <script src="{{ asset('atlantis/assets/js/core/jquery.3.2.1.min.js') }}"></script>
+    <script src="{{ asset('atlantis/assets/js/core/popper.min.js') }}"></script>
+    <script src="{{ asset('atlantis/assets/js/core/bootstrap.min.js') }}"></script>
+
+    <!-- jQuery UI -->
+    <script src="{{ asset('atlantis/assets/js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js') }}"></script>
+    <script src="{{ asset('atlantis/assets/js/plugin/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js') }}"></script>
+
+    <!-- jQuery Scrollbar -->
+    <script src="{{ asset('atlantis/assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
+
+    <!-- Chart JS -->
+    <script src="{{ asset('atlantis/assets/js/plugin/chart.js/chart.min.js') }}"></script>
+
+    <!-- jQuery Sparkline -->
+    <script src="{{ asset('atlantis/assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js') }}"></script>
+
+    <!-- Chart Circle -->
+    <script src="{{ asset('atlantis/assets/js/plugin/chart-circle/circles.min.js') }}"></script>
+
+    <!-- Datatables -->
+    <script src="{{ asset('atlantis/assets/js/plugin/datatables/datatables.min.js') }}"></script>
+
+    <!-- Bootstrap Notify -->
+    <script src="{{ asset('atlantis/assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
 
     {{-- pace js --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
 
-    {{-- bootstrap cdn --}}
-    {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script> --}}
+    <!-- jQuery Vector Maps -->
+    <script src="{{ asset('atlantis/assets/js/plugin/jqvmap/jquery.vmap.min.js') }}"></script>
+    <script src="{{ asset('atlantis/assets/js/plugin/jqvmap/maps/jquery.vmap.world.js') }}"></script>
 
     <!-- Tambahkan JS SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    @include('sweetalert::alert')
+
+    {{-- ladda --}}
+    <script src="{{ asset('ladda/spin.min.js') }}"></script>
+    <script src="{{ asset('ladda/ladda.min.js') }}"></script>
+    <script src="{{ asset('ladda/ladda.jquery.min.js') }}"></script>
+
+    <!-- Atlantis JS -->
+    <script src="{{ asset('atlantis/assets/js/atlantis.min.js') }}"></script>
+
+    {{-- select2 --}}
+    <script src="{{ asset('select2/select2.min.js') }}"></script>
+
+    <!-- Atlantis DEMO methods, don't include it in your project! -->
+    {{-- <script src="{{ asset('atlantis/assets/js/setting-demo.js') }}"></script> --}}
+    <script src="{{ asset('atlantis/assets/js/demo.js') }}"></script>
+
+    <script>
+        $(document).ready(function() {
+
+            $(document).on('click', 'a', function(e) {
+                var href = $(this).attr('href');
+
+                if (href && href !== "#" && href.indexOf('#') === -1) {
+                    $('#loading-spinner').show();
+                    setTimeout(() => {
+                        $('#loading-spinner').hide();
+                    }, 500);
+                }
+            });
+        });
+    </script>
 
     <script>
         $(document).ready(function() {
             // Mendapatkan URL saat ini
             var path = window.location.pathname;
 
-            // Menambahkan kelas 'active' pada elemen nav-item yang sesuai
-            $(".nav-item a.nav-link").each(function() {
+            // Menambahkan kelas 'active' pada elemen nav-item dan sub-item yang sesuai
+            $(".nav-item a").each(function() {
                 var href = $(this).attr('href');
                 if (path === href) {
                     $(this).closest(".nav-item").addClass("active");
@@ -183,42 +204,19 @@
             });
 
             // Menambahkan kelas 'active' dan 'show' pada item collapse jika salah satu item di dalamnya aktif
-            $(".collapse-item").each(function() {
+            $(".nav-collapse a").each(function() {
                 var href = $(this).attr('href');
                 if (path === href) {
                     $(this).closest(".collapse").addClass("show");
-                    $(this).closest(".nav-item").addClass("active").find(".nav-link").attr("aria-expanded",
-                            "true")
-                        .removeClass('collapsed');
+                    $(this).closest(".nav-item").addClass("active").find("a").attr("aria-expanded", "true");
                     $(this).addClass("active");
                 }
             });
-
-            // // loading
-            $(document).on('click', 'a', function(e) {
-                var href = $(this).attr('href');
-
-                if (href && href !== "#" && href.indexOf('#') === -1) {
-                    $('#loading-spinner').show();
-                    setTimeout(() => {
-                        $('#loading-spinner').hide();
-                    }, 500);
-                }
-            });
-
-            // $(window).on('load', function() {
-            //
-            // });
         });
     </script>
 
 
-
-    {{-- @livewireScripts --}}
-    {{-- @include('notify::messages') --}}
-    @notifyJs
-    @yield('scripts')
-
+    @yield('scripts') <!-- Stack tambahan untuk JS khusus tiap halaman -->
 </body>
 
 </html>

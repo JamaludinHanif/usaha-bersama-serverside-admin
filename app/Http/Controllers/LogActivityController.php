@@ -41,16 +41,17 @@ class LogActivityController extends Controller
 
         return Datatables::of($data)
             ->addColumn('name', function ($row) {
-                return $row->user ? $row->user->name : '';
+                return $row->user ? $row->user->name : 'Pengguna Telah Dihapus';
             })
             ->addColumn('username', function ($row) {
-                return $row->user ? $row->user->username : '';
+                return $row->user ? $row->user->username : 'Pengguna Telah Dihapus';
             })
             ->addColumn('role', function ($row) {
-                return $row->user ? $row->user->role : '';
+                return $row->user ? $row->user->role : 'Pengguna Telah Dihapus';
             })
             ->addColumn('formatted_created_at', function ($row) {
-                return $row->created_at ? $row->created_at->format('d-m-Y H:i:s') : '';
+                $formattedDate = 'Tanggal: ' . $row->created_at->format('d-m-Y') . ', Pukul: ' . $row->created_at->format('H:i:s');
+                return $row->created_at ? $formattedDate : '';
             })
             ->addColumn('activity', function($row) {
                 $btnClass = $row->action == 'login' ? 'btn-info' : 'btn-warning';
@@ -61,5 +62,4 @@ class LogActivityController extends Controller
             ->rawColumns(['activity'])
             ->make(true);
     }
-
 }
