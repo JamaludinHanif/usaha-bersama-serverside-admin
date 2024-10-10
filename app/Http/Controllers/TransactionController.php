@@ -67,6 +67,17 @@ class TransactionController extends Controller
             ->make(true);
     }
 
+    // untuk memformat nomor agar 62087xxx
+    public static function idPhoneNumberFormat($phone)
+    {
+        $output = $phone;
+        $output = substr($output, 0, 1) == '0' ? "62" . substr($output, 1) : $output;
+        $output = substr($output, 0, 3) == '+62' ? substr($output, 1) : $output;
+        $output = substr($output, 0, 2) != '62' ? "62" . $output : $output;
+
+        return $output;
+    }
+
     // api user
     public function checkOutV1(Request $request)
     {
@@ -221,34 +232,64 @@ class TransactionController extends Controller
         Log::info('PDF save attempted.');
 
         // mengirimkan pdf ke email
-        if (file_exists(storage_path('app/public' . $filePath)) && $request->email) {
-            // Mengirim email dengan lampiran PDF
-            Mail::to($request->email)->send(new SendInvoice(storage_path('app/public' . $filePath)));
-            // mengirim via whatsapp
-            $body = [
-                "api_key" => "iH21K14bt2p78TkhHbnjr2ffPVfGaB",
-                "sender" => "6285161310017",
-                "number" => "6285161310017",
-                "media_type" => "document",
-                "caption" => "Berikut adalah Invoice pembelian anda",
-                "url" => storage_path('app/public' . $filePath),
-                // "url" => "https://heyzine.com/flip-book/df0c6086ba.html"
-                // "url" => "https://2264-103-242-107-171.ngrok-free.app/storage/maul.png"
-            ];
-            $responseApiWa = Http::withHeaders([
-                'Content-Type' => 'application/json',
-            ])->post('https://wa.sinkron.com/send-media', $body);
+        if (file_exists(storage_path('app/public' . $filePath))) {
+            $formattedPhone = $this->idPhoneNumberFormat($request->noHp);
+            // return $request->methodSending . " - " . $formattedPhone;
+            if ($request->methodSending == 'email') {
+                // Mengirim email dengan lampiran PDF
+                Mail::to($request->email)->send(new SendInvoice(storage_path('app/public' . $filePath)));
 
-            unlink(storage_path('app/public' . $filePath));
+                unlink(storage_path('app/public' . $filePath));
 
-            return response()->json([
-                'status' => true,
-                'message' => 'PDF telah dibuat dan dikirim sebagai: ' . $filePath,
-                'responApiWa' => $responseApiWa->json(),
-                'body' => $body,
-                'urlBody' => storage_path('app/public' . $filePath),
-                'data' => $request->all(),
-            ], 200);
+                return response()->json([
+                    'status' => true,
+                    'message' => 'PDF telah dibuat dan dikirim sebagai: ' . $filePath,
+                    'data' => $request->all(),
+                ], 200);
+            } else if ($request->methodSending == 'whatsapp') {
+                // mengirim via whatsapp
+                $body = [
+                    "api_key" => "iH21K14bt2p78TkhHbnjr2ffPVfGaB",
+                    "sender" => "6285161310017",
+                    "number" => $formattedPhone,
+                    "media_type" => "document",
+                    "caption" => "Berikut adalah Invoice pembelian anda",
+                    "url" => url('storage' . $filePath),
+                ];
+                $responseApiWa = Http::withHeaders([
+                    'Content-Type' => 'application/json',
+                ])->post('https://wa.sinkron.com/send-media', $body);
+
+                unlink(storage_path('app/public' . $filePath));
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'PDF telah dibuat dan dikirim sebagai: ' . $filePath,
+                    'responApiWa' => $responseApiWa->json(),
+                    'data' => $request->all(),
+                ], 200);
+            } else {
+                $body = [
+                    "api_key" => "iH21K14bt2p78TkhHbnjr2ffPVfGaB",
+                    "sender" => "6285161310017",
+                    "number" => "6285161310017",
+                    "media_type" => "document",
+                    "caption" => "Berikut adalah Invoice pembelian anda",
+                    "url" => url('storage' . $filePath),
+                ];
+                $responseApiWa = Http::withHeaders([
+                    'Content-Type' => 'application/json',
+                ])->post('https://wa.sinkron.com/send-media', $body);
+
+                unlink(storage_path('app/public' . $filePath));
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'PDF telah dibuat dan dikirim sebagai: ' . $filePath,
+                    'responApiWa' => $responseApiWa->json(),
+                    'data' => $request->all(),
+                ], 200);
+            }
         } else {
             return 'Error: File PDF tidak dapat disimpan.';
         }
