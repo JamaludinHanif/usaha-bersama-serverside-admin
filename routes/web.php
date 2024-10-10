@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TesController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
@@ -79,3 +80,6 @@ Route::prefix('admin')->middleware(['is_admin'])->group(function () {
         Route::get('/products/{id}/destroy', [ProductController::class, 'destroy']);
     });
 });
+
+// tes
+Route::get('/tesWa', [TesController::class, 'tesWa']);

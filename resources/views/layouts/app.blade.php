@@ -47,6 +47,21 @@
             /* Ubah warna lingkaran */
             border-left-color: white;
         }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            border: 0.25em solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            animation: spinner-border 0.75s linear infinite;
+        }
+
+        @keyframes spinner-border {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 
     {{-- select2 --}}
@@ -66,6 +81,7 @@
             </div>
         </div>
     </div>
+
 
     <div class="wrapper">
         {{-- header --}}

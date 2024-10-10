@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Product;
 use App\Mail\SendInvoice;
+use App\Models\Transaction;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\TransactionItem;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
@@ -223,11 +224,29 @@ class TransactionController extends Controller
         if (file_exists(storage_path('app/public' . $filePath)) && $request->email) {
             // Mengirim email dengan lampiran PDF
             Mail::to($request->email)->send(new SendInvoice(storage_path('app/public' . $filePath)));
+            // mengirim via whatsapp
+            $body = [
+                "api_key" => "iH21K14bt2p78TkhHbnjr2ffPVfGaB",
+                "sender" => "6285161310017",
+                "number" => "6285161310017",
+                "media_type" => "document",
+                "caption" => "Berikut adalah Invoice pembelian anda",
+                "url" => storage_path('app/public' . $filePath),
+                // "url" => "https://heyzine.com/flip-book/df0c6086ba.html"
+                // "url" => "https://2264-103-242-107-171.ngrok-free.app/storage/maul.png"
+            ];
+            $responseApiWa = Http::withHeaders([
+                'Content-Type' => 'application/json',
+            ])->post('https://wa.sinkron.com/send-media', $body);
+
             unlink(storage_path('app/public' . $filePath));
 
             return response()->json([
                 'status' => true,
                 'message' => 'PDF telah dibuat dan dikirim sebagai: ' . $filePath,
+                'responApiWa' => $responseApiWa->json(),
+                'body' => $body,
+                'urlBody' => storage_path('app/public' . $filePath),
                 'data' => $request->all(),
             ], 200);
         } else {
