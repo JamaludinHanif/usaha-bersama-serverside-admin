@@ -120,6 +120,7 @@
                     url: `{{ url('/api/users/users-json') }}`,
                     data: function(d) {
                         let roleSelected = $('#roleSelected').val();
+                        console.log('role', roleSelected)
                         if (roleSelected) {
                             d.role = roleSelected; // Kirim role ke server
                         } else {
@@ -153,7 +154,7 @@
         $('#formFilter').find('[name="roleSelected"]').change(function(e) {
             e.preventDefault();
             // console.log('Role changed:', $(this).val()); // Log perubahan
-            $('#myTableUsers').DataTable().ajax.reload();
+            $('#myTable').DataTable().ajax.reload();
         });
 
         $('#generatePdfBtn').click(function() {

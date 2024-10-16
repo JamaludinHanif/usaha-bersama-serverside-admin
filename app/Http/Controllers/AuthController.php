@@ -198,9 +198,9 @@ class AuthController extends Controller
         $status = Password::sendResetLink(
             $request->only('email'),
             function ($user, $token) {
-                $frontendUrl = config('app.frontend_url') . '/reset-password/' . $token;
+                // $frontendUrl = $token;
                 // Kirim link reset password yang mengarah ke frontend
-                $user->sendPasswordResetNotification($frontendUrl);
+                $user->sendPasswordResetNotification($token);
             }
         );
 

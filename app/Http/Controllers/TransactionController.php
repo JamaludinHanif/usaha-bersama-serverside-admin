@@ -266,6 +266,8 @@ class TransactionController extends Controller
                     'status' => true,
                     'message' => 'PDF telah dibuat dan dikirim sebagai: ' . $filePath,
                     'responApiWa' => $responseApiWa->json(),
+                    'body' => $body,
+                    'method' => $request->methodSending,
                     'data' => $request->all(),
                 ], 200);
             } else {
