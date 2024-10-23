@@ -73,6 +73,34 @@
                         </ul>
                     </div>
                 </li>
+                {{-- Transaction --}}
+                <li class="nav-section">
+                    <span class="sidebar-mini-icon">
+                        <i class="fa fa-ellipsis-h"></i>
+                    </span>
+                    <h4 class="text-section">TRANSAKSI</h4>
+                </li>
+                <li class="nav-item">
+                    <a data-toggle="collapse" aria-expanded="false" href="#transaction">
+                        <i class="fas fa-money-check-alt"></i>
+                        <p>Transaksi</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse" id="transaction">
+                        <ul class="nav nav-collapse">
+                            <li class="{{ Request::is('admin/transaction/transaction') ? 'active' : '' }}">
+                                <a href="/admin/transaction/transaction">
+                                    <span class="sub-item">History Transaksi</span>
+                                </a>
+                            </li>
+                            <li class="{{ Request::is('admin/transaction/interest') ? 'active' : '' }}">
+                                <a href="/admin/transaction/interest">
+                                    <span class="sub-item">Kelola Bunga</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
                 {{-- recycle bin --}}
                 <li class="nav-section">
                     <span class="sidebar-mini-icon">

@@ -36,6 +36,8 @@
                 <option value="" selected>All Role</option>
                 <option value="admin">
                     Admin</option>
+                <option value="kasir">
+                    Kasir</option>
                 <option value="user">
                     User</option>
             </select>
@@ -75,6 +77,7 @@
                             <th style="background-color: #007bff; color: white;">Nama Pengguna</th>
                             <th style="background-color: #007bff; color: white;">Peran Sebagai</th>
                             <th style="background-color: #007bff; color: white;">Email</th>
+                            <th style="background-color: #007bff; color: white;">No Hp</th>
                             <th style="background-color: #007bff; color: white;">Gambar</th>
                             <th style="background-color: #007bff; color: white;">Aksi</th>
                         </tr>
@@ -100,10 +103,6 @@
                 <div class="modal-body">
                     <div class="" id="page"></div>
                 </div>
-                {{-- <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="/auth/logout">Logout</a>
-                </div> --}}
             </div>
         </div>
     </div>
@@ -141,6 +140,9 @@
                 }, {
                     data: 'email',
                     name: 'Email'
+                }, {
+                    data: 'formatted_noHp',
+                    name: 'formatted_noHp'
                 }, {
                     data: 'imageUser',
                     name: 'Image'
@@ -183,12 +185,6 @@
 
         });
 
-        // $('#role').change(function(e) {
-        //     e.preventDefault();
-        //     console.log('Role changed:', $(this).val()); // Log perubahan
-        //     $('#myTable').DataTable().ajax.reload();
-        // });
-
         function create() {
             $.get("{{ url('/admin/users/create') }}", {}, function(data, status) {
                 $("#page").html(data);
@@ -228,6 +224,7 @@
             formData.append('username', $('#formEdit').find('[id="username"]').val());
             formData.append('role', $('#formEdit').find('[id="role"]').val());
             formData.append('email', $('#formEdit').find('[id="email"]').val());
+            formData.append('no_hp', $('#formEdit').find('[id="no_hp"]').val());
             formData.append('password', $('#formEdit').find('[id="password"]').val());
 
             var fileInput = $('#formEdit').find('[id="image"]')[0].files[0];
@@ -294,6 +291,13 @@
                             $('.input-image').removeClass('is-invalid').addClass('is-valid');
                             $('.feedback-image').html('');
                         }
+                        if (response.errors.no_hp) {
+                            $('.input-no_hp').addClass('is-invalid')
+                            $('.feedback-no_hp').html(response.errors.no_hp)
+                        } else {
+                            $('.input-no_hp').removeClass('is-invalid').addClass('is-valid');
+                            $('.feedback-no_hp').html('');
+                        }
                         if (response.errors.email) {
                             $('.input-email').addClass('is-invalid')
                             $('.feedback-email').html(response.errors.email)
@@ -340,6 +344,7 @@
             formData.append('role', $('#formCreate').find('[id="roles"]').val());
             formData.append('image', $('#formCreate').find('[id="image"]')[0].files[0]);
             formData.append('email', $('#formCreate').find('[id="email"]').val());
+            formData.append('no_hp', $('#formCreate').find('[id="no_hp"]').val());
             formData.append('password', $('#formCreate').find('[id="password"]').val());
 
             console.log(formData);
@@ -399,6 +404,13 @@
                         } else {
                             $('.input-image').removeClass('is-invalid').addClass('is-valid');
                             $('.feedback-image').html('');
+                        }
+                        if (response.errors.no_hp) {
+                            $('.input-no_hp').addClass('is-invalid')
+                            $('.feedback-no_hp').html(response.errors.no_hp)
+                        } else {
+                            $('.input-no_hp').removeClass('is-invalid').addClass('is-valid');
+                            $('.feedback-no_hp').html('');
                         }
                         if (response.errors.email) {
                             $('.input-email').addClass('is-invalid')

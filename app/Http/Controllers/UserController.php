@@ -47,10 +47,14 @@ class UserController extends Controller
 
         return Datatables::of($data)
         ->addColumn('role', function($data) {
-            $btnClass = $data->role == 'admin' ? 'btn-info' : 'btn-warning';
+            $btnClass = $data->role == 'admin' ? 'btn-info' : ($data->role == 'kasir' ? 'btn-success' : 'btn-warning');
             return '<center><div class="btn ' . $btnClass . ' btn-icon-split">
                         <span class="text">' . $data->role . '</span>
                     </div></center>';
+        })
+        ->addColumn('formatted_noHp', function($data){
+            $urlWhatsapp = "https://wa.me/" . $data->no_hp;
+            return '<a href="' . $urlWhatsapp . '" target="_blank">' . $data->no_hp . '</a>';
         })
         ->addColumn('action', function($data){
             return view('admin-users.action')->with('data', $data);
@@ -66,7 +70,7 @@ class UserController extends Controller
                         <img src="' . $imageUrl . '" width="50" alt="">
                     </div>';
         })
-        ->rawColumns(['role', 'imageUser', 'action'])
+        ->rawColumns(['role', 'imageUser', 'action', 'formatted_noHp'])
         ->make(true);
     }
 
@@ -89,9 +93,10 @@ class UserController extends Controller
         $rules = [
             'name' => 'required|max:100',
             'username' => ['required', 'min:3', 'max:100', 'unique:users'],
-            'role' => 'required|in:admin,user',
+            'role' => 'required|in:admin,user,kasir',
             'email' => ['required', 'email:dns', 'unique:users'],
-            'password' => 'required|min:5|max:100'
+            'password' => 'required|min:5|max:100',
+            'no_hp' => 'required|unique:users'
         ];
 
         // Menambahkan aturan untuk gambar hanya jika nilai gambar tidak sama dengan "undefined"
@@ -107,13 +112,15 @@ class UserController extends Controller
             'username.max' => 'Username maksimal 100 karakter',
             'username.unique' => 'Username sudah digunakan',
             'role.required' => 'Role wajib diisi',
-            'role.in' => 'Role harus salah satu dari admin atau user',
+            'role.in' => 'Role harus salah satu dari admin atau user atau kasir',
             'image.image' => 'File harus berupa gambar/foto',
             'image.mimes' => 'File gambar harus berformat jpeg, png, jpg, gif, svg',
             'image.max' => 'Ukuran gambar maksimal 2MB',
             'email.required' => 'Email wajib diisi',
             'email.email' => 'Email tidak valid',
             'email.unique' => 'Email sudah digunakan',
+            'no_hp.required' => 'Nomor Hp wajib diisi',
+            'no_hp.unique' => 'Nomor Hp sudah digunakan',
             'password.required' => 'Password wajib diisi',
             'password.min' => 'Password minimal 5 karakter',
             'password.max' => 'Password maksimal 100 karakter',
@@ -127,6 +134,7 @@ class UserController extends Controller
                 'username' => $request->username,
                 'role' => $request->role,
                 'email' => $request->email,
+                'no_hp' => $request->no_hp,
                 'password' => bcrypt($request->password)
             ];
 
@@ -174,7 +182,7 @@ class UserController extends Controller
 
         $rules = [
             'name' => 'required|max:100',
-            'role' => 'required|in:admin,user',
+            'role' => 'required|in:admin,user,kasir',
             'username' => [
                 'required',
                 'min:3',
@@ -186,6 +194,7 @@ class UserController extends Controller
                 'email:dns',
                 Rule::unique('users')->ignore($user->id) // Mengabaikan validasi unique untuk ID yang sedang diupdate
             ],
+            'no_hp' => ['required', Rule::unique('users')->ignore($user->id)]
         ];
 
         // Menambahkan aturan untuk gambar hanya jika nilai gambar tidak sama dengan "undefined"
@@ -207,13 +216,15 @@ class UserController extends Controller
             'username.max' => 'Username maksimal 100 karakter',
             'username.unique' => 'Username sudah digunakan',
             'role.required' => 'Role wajib diisi',
-            'role.in' => 'Role harus salah satu dari admin atau user',
+            'role.in' => 'Role harus salah satu dari admin atau user atau kasir',
             'image.image' => 'File harus berupa gambar/foto',
             'image.mimes' => 'File gambar harus berformat jpeg, png, jpg, gif, svg',
             'image.max' => 'Ukuran gambar maksimal 2MB',
             'email.required' => 'Email wajib diisi',
             'email.email' => 'Email tidak valid',
             'email.unique' => 'Email sudah digunakan',
+            'no_hp.required' => 'Nomor Hp wajib diisi',
+            'no_hp.unique' => 'Nomor Hp sudah digunakan',
             'password.required' => 'Password wajib diisi',
             'password.min' => 'Password minimal 5 karakter',
             'password.max' => 'Password maksimal 100 karakter',
@@ -381,7 +392,8 @@ class UserController extends Controller
             'name' => 'required|max:100',
             'username' => ['required', 'min:3', 'max:100', 'unique:users'],
             'email' => ['required', 'email:dns', 'unique:users'],
-            'password' => 'required|min:5|max:100'
+            'password' => 'required|min:5|max:100',
+            'no_hp' => 'required|unique:users'
         ];
 
         $validasi = Validator::make($data, $rules, [
@@ -394,6 +406,8 @@ class UserController extends Controller
             'email.required' => 'Email wajib diisi',
             'email.email' => 'Email tidak valid',
             'email.unique' => 'Email sudah digunakan',
+            'no_hp.required' => 'Nomor Hp wajib diisi',
+            'no_hp.unique' => 'Nomor Hp sudah digunakan',
             'password.required' => 'Password wajib diisi',
             'password.min' => 'Password minimal 5 karakter',
             'password.max' => 'Password maksimal 100 karakter',
@@ -410,6 +424,7 @@ class UserController extends Controller
                 'username' => $request->username,
                 'role' => $request->role,
                 'email' => $request->email,
+                'no_hp' => $request->no_hp,
                 'password' => bcrypt($request->password)
             ];
 

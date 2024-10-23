@@ -8,6 +8,7 @@ use App\Http\Controllers\TesController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\InterestController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LogActivityController;
 use App\Http\Controllers\TransactionController;
@@ -64,7 +65,10 @@ Route::prefix('admin')->middleware(['is_admin'])->group(function () {
 
     // products
     Route::prefix('transaction')->group(function () {
-        Route::get('/transaction', [TransactionController::class, 'showAll'])->name('transaction');
+        Route::get('/transaction', [TransactionController::class, 'showAll']);
+        // kelola bunga
+        Route::get('/interest', [InterestController::class, 'index']);
+        Route::get('/create-interest', [InterestController::class, 'create']);
     });
 
     // recycle bin

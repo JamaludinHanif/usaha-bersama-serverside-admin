@@ -22,17 +22,25 @@
                                         <div class="invalid-feedback feedback-username"></div>
                                     </div>
                                 </div>
-                                <div class="form-group d-flex justify-content-center">
-                                    <div class="col-sm-10 mb-3 mb-sm-0">
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
                                         <select name="role" id="role" class="form-control input-role"
                                             aria-label="Default select example">
                                             <option value="" disabled selected>Pilih Role</option>
                                             <option value="admin" {{ $datas->role == 'admin' ? 'selected' : '' }}>Admin
                                             </option>
+                                            <option value="kasir" {{ $datas->role == 'kasir' ? 'selected' : '' }}>Kasir
+                                            </option>
                                             <option value="user" {{ $datas->role == 'user' ? 'selected' : '' }}>User
                                             </option>
                                         </select>
                                         <div class="invalid-feedback feedback-role"></div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <input type="number" name="no_hp"
+                                            class="form-control form-control-user input-no_hp"
+                                            id="no_hp" value="{{ $datas->no_hp }}" placeholder="No Hp, contoh 62851613100" >
+                                            <div class="invalid-feedback feedback-no_hp"></div>
                                     </div>
                                 </div>
                                 <div class="form-group row align-items-center">

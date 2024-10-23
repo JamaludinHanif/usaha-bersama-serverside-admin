@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Distributor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
@@ -18,9 +19,14 @@ class Product extends Model
         'category',
         'image',
         'stock',
+        "distributor_id",
         'expired_date'
     ];
 
+    public function distributor()
+    {
+        return $this->belongsTo(Distributor::class);
+    }
 }
 
 

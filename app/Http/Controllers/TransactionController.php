@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\Product;
 use App\Mail\SendInvoice;
+use App\Models\InterestBill;
+use App\Models\PaymentCode;
+use App\Models\Product;
 use App\Models\Transaction;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use App\Models\TransactionItem;
-use Illuminate\Support\Facades\Log;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\Validator;
 
 class TransactionController extends Controller
 {
@@ -24,7 +25,7 @@ class TransactionController extends Controller
     {
         return view('admin-transaction.transaction', [
             'title' => 'History Transaksi',
-            'datas' => Transaction::all()
+            'datas' => Transaction::all(),
         ]);
     }
 
@@ -57,10 +58,10 @@ class TransactionController extends Controller
             ->addColumn('formatted_created_at', function ($row) {
                 return $row->created_at ? $row->created_at->format('d-m-Y H:i:s') : '';
             })
-            ->addColumn('action', function($data){
+            ->addColumn('action', function ($data) {
                 return view('admin-transaction.action')->with('data', $data);
             })
-            ->addColumn('formatted_amount', function($row) {
+            ->addColumn('formatted_amount', function ($row) {
                 return $row->total_amount ? 'Rp ' . number_format($row->total_amount, 0, ',', '.') : '';
             })
             ->rawColumns(['action', 'username', 'formatted_amount', 'formatted_created_at'])
@@ -81,69 +82,15 @@ class TransactionController extends Controller
     // api user
     public function checkOutV1(Request $request)
     {
+
         $formattedDate = now()->format('dmy:s');
         $noInvoice = 'INV-' . $formattedDate . '-' . $request->userId;
-
-        // Data yang akan dimasukkan ke dalam PDF
-        $data123 = [
-            'data' => [
-                "id" => 1,
-                "price" => 23000,
-                "quantity" => 1,
-                "totalPrice" => 0,
-                "value" => [
-                    "id" => 3,
-                    "category" => "minuman",
-                    "created_at" => "2024-09-20T02:23:51.000000Z",
-                    "deleted_at" => null,
-                    "expired_date" => null,
-                    "image" => "https://down-id.img.susercontent.com/file/id-11134207-7r98v-ltd9jl2olv6v94",
-                    "label" => "Teh gelas cup kecil isi 24   -dos",
-                    "name" => "Teh gelas cup kecil isi 24",
-                    "price" => 23000,
-                    "stock" => 5,
-                    "unit" => "dos",
-                    "updated_at" => "2024-09-20T02:23:51.000000Z",
-                    "value" => 3
-                ]
-                ],
-                [
-                    "id" => 1,
-                    "price" => 23000,
-                    "quantity" => 3,
-                    "totalPrice" => 0,
-                    "value" => [
-                        "id" => 3,
-                        "category" => "minuman",
-                        "created_at" => "2024-09-20T02:23:51.000000Z",
-                        "deleted_at" => null,
-                        "expired_date" => null,
-                        "image" => "https://down-id.img.susercontent.com/file/id-11134207-7r98v-ltd9jl2olv6v94",
-                        "label" => "Teh gelas cup kecil isi 24   -dos",
-                        "name" => "Teh gelas cup kecil isi 24",
-                        "price" => 23000,
-                        "stock" => 5,
-                        "unit" => "dos",
-                        "updated_at" => "2024-09-20T02:23:51.000000Z",
-                        "value" => 3
-                    ]
-                    ],
-            'totalPrice' => 23000
-            ];
-
-        $data = [
-            'data' => $request->all(),
-            'name' => $request->name,
-            'noInvoice' => $noInvoice
-        ];
-
-        // return $data;
 
         // database section
         $totalAmount = 0;
         $productItems = [];
 
-        foreach ($request->data['data'] as $productData) {
+        foreach ($request->data as $productData) {
             // Pastikan 'value' dan 'id' atau 'product_id' tersedia sebelum mengaksesnya
             if (isset($productData['value']['id'])) {
                 $product = Product::find($productData['value']['id']);
@@ -169,10 +116,12 @@ class TransactionController extends Controller
 
         if ($totalAmount > 0) {
             $transaction = Transaction::create([
-                                'total_amount' => $totalAmount,
-                                'kode_invoice' => $noInvoice,
-                                'user_id' => $request->userId
-                            ]);
+                'total_amount' => $totalAmount,
+                'kode_invoice' => $noInvoice,
+                'user_id' => $request->userId,
+                'type' => $request->methodPayment,
+                'status' => 'pending',
+            ]);
 
             foreach ($productItems as $item) {
                 TransactionItem::create([
@@ -185,7 +134,94 @@ class TransactionController extends Controller
                 Product::find($item['product_id'])->decrement('stock', $item['quantity']);
             }
 
+            // make code payment
+            do {
+                $uniqueCode = Str::upper(Str::random(8)); // membuat kode acak
+            } while (PaymentCode::where('code', $uniqueCode)->exists());
+
+            if ($request->methodPayment == "paylater") {
+                PaymentCode::create([
+                    'transaction_id' => $transaction->id,
+                    'user_id' => $request->userId,
+                    'code' => $uniqueCode,
+                    'type' => $request->methodPayment,
+                    'type_sending' => $request->methodSending,
+                    'status' => "pending",
+                    'amount' => 0,
+                    'cashier_id' => null,
+                    'interest_id' => $request->interest_id,
+                ]);
+            } else {
+                PaymentCode::create([
+                    'transaction_id' => $transaction->id,
+                    'user_id' => $request->userId,
+                    'code' => $uniqueCode,
+                    'type' => $request->methodPayment,
+                    'type_sending' => $request->methodSending,
+                    'status' => "pending",
+                    'amount' => $totalAmount,
+                    'cashier_id' => null,
+                    'interest_id' => null,
+                ]);
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Generate Kode Pembayaran Berhasil',
+                'code' => $uniqueCode,
+                'data' => $request->all(),
+            ], 200);
         }
+    }
+
+    public function getDataTransactionForCashier(Request $request)
+    {
+        $data = PaymentCode::where('code', $request->code)->first();
+
+        $dataProduct = TransactionItem::where('transaction_id', $data->transaction_id)->with('product')->get();
+        $totalAmount = Transaction::where('id', $data->transaction_id)->select('total_amount')->first();
+
+        $userData = User::where('id', $data->user_id)->first();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'get data transaksi succes',
+            'userData' => $userData,
+            'totalHargaBarang' => $totalAmount->total_amount,
+            'data' => $data,
+            'dataProduct' => $dataProduct,
+        ], 200);
+    }
+
+    public function confirmPayment(Request $request)
+    {
+
+        $data = PaymentCode::where('code', $request->code)->first();
+
+        $dataProduct = TransactionItem::where('transaction_id', $data->transaction_id)->with('product')->get();
+        $dataTransaction = Transaction::where('id', $data->transaction_id)->first();
+        $dataBunga = InterestBill::where('id', $data->interest_id)->first();
+
+        $userData = User::where('id', $data->user_id)->first();
+
+        // return response()->json([
+        //     'status' => true,
+        //     'message' => 'Konfirmasi Pembayaran Berhasil',
+        //     'userData' => $userData,
+        //     'totalHargaBarang' => $dataTransaction,
+        //     'data' => $data->type_sending,
+        //     'dataProduct' => $dataProduct,
+        //     'cashier_id' => $request->cashier_id,
+        //     'dataBunga' => $dataBunga,
+        // ], 200);
+
+        $dataPdf = [
+            'name' => $request->name,
+            'dataProduk' => $dataProduct,
+            'totalHarga' => $dataTransaction->total_amount,
+            'dataBunga' => $dataBunga,
+            'noInvoice' => $dataTransaction->kode_invoice,
+        ];
 
         // testing
         // $string = json_encode($cart);
@@ -196,12 +232,11 @@ class TransactionController extends Controller
         //     'data' => $data
         // ]);
 
-
         // instance mPDF
         $mpdf = new \Mpdf\Mpdf();
 
         // view sebagai konten PDF
-        $html = view('pdf.invoiceV1', $data)->render();
+        $html = view('pdf.invoiceV1', $dataPdf)->render();
 
         // Menulis HTML ke dalam PDF
         $mpdf->WriteHTML($html);
@@ -220,24 +255,22 @@ class TransactionController extends Controller
         Log::info('Saving PDF to: ' . $filePath);
         Log::info('PDF content type: ' . gettype($pdfContent));
         Log::info('PDF content length: ' . strlen($pdfContent));
-            if (Storage::disk('public')->put($filePath, $pdfContent)) {
-                Log::info('PDF saved successfully.');
-            } else {
-                Log::error('Failed to save PDF.');
-            }
-            Log::info('Attempting to save PDF...');
+        if (Storage::disk('public')->put($filePath, $pdfContent)) {
+            Log::info('PDF saved successfully.');
+        } else {
+            Log::error('Failed to save PDF.');
+        }
+        Log::info('Attempting to save PDF...');
 
         // menyimpan pdf di folder invoices
         Storage::disk('public')->put($filePath, $pdfContent);
         Log::info('PDF save attempted.');
 
-        // mengirimkan pdf ke email
+        // mengirimkan pdf
         if (file_exists(storage_path('app/public' . $filePath))) {
-            $formattedPhone = $this->idPhoneNumberFormat($request->noHp);
-            // return $request->methodSending . " - " . $formattedPhone;
-            if ($request->methodSending == 'email') {
+            if ($data->type_sending == 'email') {
                 // Mengirim email dengan lampiran PDF
-                Mail::to($request->email)->send(new SendInvoice(storage_path('app/public' . $filePath)));
+                Mail::to($userData->email)->send(new SendInvoice(storage_path('app/public' . $filePath)));
 
                 unlink(storage_path('app/public' . $filePath));
 
@@ -246,12 +279,12 @@ class TransactionController extends Controller
                     'message' => 'PDF telah dibuat dan dikirim sebagai: ' . $filePath,
                     'data' => $request->all(),
                 ], 200);
-            } else if ($request->methodSending == 'whatsapp') {
+            } else if ($data->type_sending == 'whatsapp') {
                 // mengirim via whatsapp
                 $body = [
                     "api_key" => "iH21K14bt2p78TkhHbnjr2ffPVfGaB",
                     "sender" => "6285161310017",
-                    "number" => $formattedPhone,
+                    "number" => $userData->no_hp,
                     "media_type" => "document",
                     "caption" => "Berikut adalah Invoice pembelian anda",
                     "url" => url('storage' . $filePath),
@@ -282,6 +315,9 @@ class TransactionController extends Controller
                 $responseApiWa = Http::withHeaders([
                     'Content-Type' => 'application/json',
                 ])->post('https://wa.sinkron.com/send-media', $body);
+
+                // Mengirim email dengan lampiran PDF
+                Mail::to($userData->email)->send(new SendInvoice(storage_path('app/public' . $filePath)));
 
                 unlink(storage_path('app/public' . $filePath));
 

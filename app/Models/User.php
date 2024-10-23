@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Paylater;
 use App\Models\LogActivity;
+use App\Models\PaymentCode;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordNotification;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Notifications\CustomResetPasswordNotification;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordNotification;
 
 class User extends Authenticatable
 {
@@ -29,6 +31,8 @@ class User extends Authenticatable
         'username',
         'email',
         'image',
+        'no_hp',
+        'debt_limit',
         'password',
     ];
 
@@ -37,6 +41,16 @@ class User extends Authenticatable
     public function activityLogs()
     {
         return $this->hasMany(LogActivity::class);
+    }
+
+    public function paylater()
+    {
+        return $this->hasMany(Paylater::class);
+    }
+
+    public function paymentCode()
+    {
+        return $this->hasMany(PaymentCode::class);
     }
 
     public function sendPasswordResetNotification($token)
@@ -70,14 +84,25 @@ class User extends Authenticatable
 //     'name' => 'Jamaludin Hanif',
 //     'role' => 'admin',
 //     'username' => 'Jamal',
-//     'email' => 'newhanif@gmail.com',
+//     'email' => 'newhanif743@gmail.com',
+//     'no_hp' => '6285161310018',
 //     'password' => bcrypt('12345')
 // ])
 
 // User::create([
 //     'name' => 'Amanda Damayanti',
+//     'role' => 'kasir',
+//     'username' => 'amanda',
+//     'email' => 'amandadmyntii@gmail.com',
+//     'no_hp' => '6283823538374',
+//     'password' => bcrypt('hanifganteng')
+// ])
+
+// User::create([
+//     'name' => 'Muhammad Maulana Latif Al-Amin',
 //     'role' => 'user',
-//     'username' => 'amay',
-//     'email' => 'mnddmyt@gmail.com',
+//     'username' => 'maul',
+//     'email' => 'sra352285@gmail.com',
+//     'no_hp' => '6285161310017',
 //     'password' => bcrypt('12345')
-// ]);
+// ])

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->integer('stock');
             $table->date('expired_date')->nullable();
+            $table->foreignId('distributor_id')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

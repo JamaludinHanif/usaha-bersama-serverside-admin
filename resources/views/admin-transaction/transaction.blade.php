@@ -2,54 +2,36 @@
 @section('title')
     {{ $title }}
 @endsection
-@section('style')
-    <style>
-        .breadcrumb {
-            list-style: none;
-            display: flex;
-            padding: 10px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-        }
-
-        .breadcrumb li {
-            /* margin-right: 10px; */
-        }
-
-        .breadcrumb li a {
-            text-decoration: none;
-            color: #007bff;
-        }
-
-        .breadcrumb li a:hover {
-            text-decoration: none;
-        }
-
-        .breadcrumb li::after {
-            content: '';
-            /* margin-left: 10px; */
-        }
-
-        .breadcrumb li:last-child::after {
-            content: '';
-        }
-    </style>
-@endsection
-
 @section('breadcrumbs')
-    <div class="breadcrumb">
-        {{ Breadcrumbs::render('transactions') }}
-    </div>
+<ul class="breadcrumbs" style="color: white">
+    <li class="nav-home">
+        <a href="/admin/dashboard">
+            <i class="flaticon-home" style="color: white"></i>
+        </a>
+    </li>
+    <li class="separator">
+        <i class="flaticon-right-arrow" style="color: white"></i>
+    </li>
+    <li class="nav-item">
+        <a href="/admin/transaction/transaction" style="color: white">Transaksi</a>
+    </li>
+    <li class="separator">
+        <i class="flaticon-right-arrow" style="color: white"></i>
+    </li>
+    <li class="nav-item">
+        <a href="/admin/transaction/transaction" style="color: white">History Transaksi</a>
+    </li>
+</ul>
 @endsection
 
 @section('content')
     <h1 class="h5 mb-3 text-gray-800">Filter berdasarkan tanggal :</h1>
     <!-- Input untuk filter tanggal -->
-    <div class="row d-flex align-items-end">
+    <div class="" style="width: 300px">
         <form action="" id="formFilter">
-            <div class="col-md-3">
+            <div class="form-group">
                 <label for="start_date" class="form-label">Tanggal : </label>
-                <input type="date" id="date" name="date" class="form-control" placeholder="Start Date">
+                <input type="date" id="date" name="date" class="form-control datepicker" placeholder="">
             </div>
         </form>
     </div>

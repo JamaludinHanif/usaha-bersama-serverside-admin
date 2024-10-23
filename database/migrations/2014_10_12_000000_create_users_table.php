@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->string('password');
             $table->string('email')->unique()->nullable();
+            $table->string('no_hp')->unique()->nullable();
+            $table->integer('debt_limit')->nullable(); // by default 100.000
             $table->softDeletes();
             $table->timestamps();
         });

@@ -13,17 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('paylaters', function (Blueprint $table) {
             $table->id();
-            $table->integer('total_amount');
-            $table->string('kode_invoice');
-            $table->string('type');  // cash & paylater
-            $table->string('status');  //
-            $table->foreignId('user_id')->constrained();
+            $table->integer('debt_remaining');
+            $table->foreignId('user_id');
+            $table->foreignId('transaction_id');
+            $table->foreignId('interest_id');
+            $table->string('status'); // done & unDone
+            $table->date('due_date');
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('paylaters');
     }
 };

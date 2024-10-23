@@ -13,17 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('interest_bills', function (Blueprint $table) {
             $table->id();
-            $table->integer('total_amount');
-            $table->string('kode_invoice');
-            $table->string('type');  // cash & paylater
-            $table->string('status');  //
-            $table->foreignId('user_id')->constrained();
+            $table->string('name');
+            $table->integer('interest');
+            $table->integer('amount_day');
+            $table->string('unit_date');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
@@ -32,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('interest_bills');
     }
 };

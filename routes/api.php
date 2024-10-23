@@ -3,9 +3,10 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\EmailController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\InterestController;
 use App\Http\Controllers\LogActivityController;
 use App\Http\Controllers\TransactionController;
 
@@ -63,7 +64,15 @@ Route::prefix('users')->group(function () {
 Route::prefix('transactions')->group(function () {
     // admin
     Route::get('/transactions-json', [TransactionController::class, 'showDataJsonAdmin']);
+    // kelola bunga (admin)
+    Route::get('/interest-json', [InterestController::class, 'showAll']);
+    Route::post('/interest', [InterestController::class, 'store']);
+    Route::delete('/interest/{id}', [InterestController::class, 'delete']);
+    // kelola bunga (api)
+    Route::get('/all-interest', [InterestController::class, "showAllApi"]);
     // user
     Route::post('/pre-checkout', [TransactionController::class, 'preCheckout']);
     Route::post('/checkout', [TransactionController::class, 'checkOutV1']);
+    Route::get('/detail-payment', [TransactionController::class, 'getDataTransactionForCashier']);
+    Route::post('/confirm-payment', [TransactionController::class, 'confirmPayment']);
 });

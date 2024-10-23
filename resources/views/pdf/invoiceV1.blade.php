@@ -89,14 +89,17 @@
     <div class="container">
         {{-- @dd($data['noInvoice']) --}}
         @php
-            // Mengambil data dari $data123
-            // $itemsList = $data['data']; // ambil data yang diperlukan
+            $totalPrice = $totalHarga ?? 0;
+            $interest = $dataBunga->interest ?? 0;
+            $result = ($totalPrice * $interest) / 100;
+            $totalWithInterest = $totalPrice + ($totalPrice * $interest) / 100;
         @endphp
         <table style="width: 100%;">
             <tr>
                 <td>
                     <div>
-                        <img src="https://jamaludinhanif.github.io/portofolio-hanif/dist/img/logo%20by%20tegar.png" width="50" alt="Company Logo">
+                        <img src="https://jamaludinhanif.github.io/portofolio-hanif/dist/img/logo%20by%20tegar.png"
+                            width="50" alt="Company Logo">
                         <br>
                         Jamal Industri
                     </div>
@@ -152,13 +155,15 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($data['data']['data'] as $items)
+                @foreach ($dataProduk as $items)
                     <tr>
-                        <td>{{ $items['value']['name'] ?? $items['value']['product']['name'] }}</td>
+                        <td>{{ $items['product']['name'] ?? $items['product']['name'] }}</td>
                         <td>{{ $items['quantity'] ?? 0 }}</td>
-                        <td>Rp. {{ number_format($items['value']['price'] ?? $items['value']['product']['price'], 0, ',', '.') }}</td>
                         <td>Rp.
-                            {{ number_format(($items['value']['price'] ?? $items['value']['product']['price']) * ($items['quantity'] ?? 1), 0, ',', '.') }}
+                            {{ number_format($items['product']['price'] ?? $items['product']['price'], 0, ',', '.') }}
+                        </td>
+                        <td>Rp.
+                            {{ number_format(($items['product']['price'] ?? $items['product']['price']) * ($items['quantity'] ?? 1), 0, ',', '.') }}
                         </td>
                     </tr>
                 @endforeach
@@ -166,10 +171,12 @@
         </table>
 
         <div class="total">
-            <h3>Subtotal: Rp. {{ number_format($data['data']['totalPrice'] ?? 0, 0, ',', '.') }}</h3>
-            <h3>Tax (0%): Rp. 0</h3>
-            <h3>Total: Rp. {{ number_format($data['data']['totalPrice'] ?? 0, 0, ',', '.') }}</h3>
+            <h3>Subtotal: Rp. {{ number_format($totalHarga ?? 0, 0, ',', '.') }}</h3>
+                <h3>Bunga ({{ $dataBunga->interest ?? 0 }}%): Rp. {{ number_format($result ?? 0, 0, ',', '.') }}</h3>
+                <h3>Total: Rp. {{ number_format($totalWithInterest ?? 0, 0, ',', '.') }}</h3>
         </div>
+
+
 
         <div class="" style="height: 30px"></div>
 

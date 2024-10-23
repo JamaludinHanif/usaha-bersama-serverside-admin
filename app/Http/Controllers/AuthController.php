@@ -121,7 +121,8 @@ class AuthController extends Controller
             'name' => 'required|max:100',
             'username' => ['required', 'min:3', 'max:100', 'unique:users'],
             'email' => ['required', 'email:dns', 'unique:users'],
-            'password' => 'required|min:5|max:100'
+            'password' => 'required|min:5|max:100',
+            'no_hp' => 'required|unique:users'
         ];
 
         $validasi = Validator::make($data, $rules, [
@@ -134,6 +135,8 @@ class AuthController extends Controller
             'email.required' => 'Email wajib diisi',
             'email.email' => 'Email tidak valid',
             'email.unique' => 'Email sudah digunakan',
+            'no_hp.required' => 'Nomor Hp wajib diisi',
+            'no_hp.unique' => 'Nomor Hp sudah digunakan',
             'password.required' => 'Password wajib diisi',
             'password.min' => 'Password minimal 5 karakter',
             'password.max' => 'Password maksimal 100 karakter',
@@ -150,6 +153,7 @@ class AuthController extends Controller
                 'username' => $request->username,
                 'role' => $request->role,
                 'email' => $request->email,
+                'no_hp' => $request->no_hp,
                 'password' => bcrypt($request->password)
             ];
 
