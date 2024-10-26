@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\LogActivity;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
@@ -38,8 +38,12 @@ class AuthController extends Controller
     {
         $credentials = $request->validate([
             'username' => 'required',
-            'password' => 'required'
+            'password' => 'required',
+            'captcha' => ['required', 'captcha'],
         ]);
+
+        // Ambil kredensial tanpa g-recaptcha-response
+        $credentials = $request->only('username', 'password');
 
         if (Auth::attempt($credentials)) {
             $userId = Auth::id();
@@ -65,13 +69,17 @@ class AuthController extends Controller
 
     }
 
+    public function reloadCaptcha()
+    {
+        return response()->json(['captcha' => captcha_img('')]);
+    }
 
     // apiiii
     public function authenticateApi(Request $request)
     {
         $credentials = $request->validate([
             'username' => 'required',
-            'password' => 'required'
+            'password' => 'required',
         ]);
 
         if (Auth::attempt($credentials)) {
@@ -122,7 +130,7 @@ class AuthController extends Controller
             'username' => ['required', 'min:3', 'max:100', 'unique:users'],
             'email' => ['required', 'email:dns', 'unique:users'],
             'password' => 'required|min:5|max:100',
-            'no_hp' => 'required|unique:users'
+            'no_hp' => 'required|unique:users',
         ];
 
         $validasi = Validator::make($data, $rules, [
@@ -154,7 +162,7 @@ class AuthController extends Controller
                 'role' => $request->role,
                 'email' => $request->email,
                 'no_hp' => $request->no_hp,
-                'password' => bcrypt($request->password)
+                'password' => bcrypt($request->password),
             ];
 
             User::create($data);
@@ -170,19 +178,19 @@ class AuthController extends Controller
     {
         try {
 
-        $userId = $request->userId;
-        Auth::logout();
+            $userId = $request->userId;
+            Auth::logout();
 
-        // log activity
-        LogActivity::create([
-            'user_id' => $userId,
-            'action' => 'melakukan logout',
-        ]);
+            // log activity
+            LogActivity::create([
+                'user_id' => $userId,
+                'action' => 'melakukan logout',
+            ]);
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Logout berhasil',
-        ], 200);
+            return response()->json([
+                'status' => true,
+                'message' => 'Logout berhasil',
+            ], 200);
 
         } catch (Exception $e) {
             // Tangani kesalahan dan kembalikan pesan error
@@ -209,8 +217,8 @@ class AuthController extends Controller
         );
 
         return $status === Password::RESET_LINK_SENT
-                    ? response()->json(['message' => __($status)], 200)
-                    : response()->json(['message' => __($status)], 400);
+        ? response()->json(['message' => __($status)], 200)
+        : response()->json(['message' => __($status)], 400);
     }
 
     public function resetPassword(Request $request)
@@ -231,7 +239,7 @@ class AuthController extends Controller
         );
 
         return $status === Password::PASSWORD_RESET
-                    ? response()->json(['message' => __($status)], 200)
-                    : response()->json(['message' => __($status)], 200);
+        ? response()->json(['message' => __($status)], 200)
+        : response()->json(['message' => __($status)], 200);
     }
 }

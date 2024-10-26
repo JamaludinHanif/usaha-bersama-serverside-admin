@@ -94,14 +94,18 @@
             $result = ($totalPrice * $interest) / 100;
             $totalWithInterest = $totalPrice + ($totalPrice * $interest) / 100;
         @endphp
+        <div class="">
+            {{-- <img src="{{ asset('kop-surat.png') }}" style="width: 100%" alt=""> --}}
+            <img src="{{ public_path('kop-surat-2.png') }}" style="width: 100%" alt="">
+        </div>
         <table style="width: 100%;">
             <tr>
                 <td>
                     <div>
-                        <img src="https://jamaludinhanif.github.io/portofolio-hanif/dist/img/logo%20by%20tegar.png"
+                        {{-- <img src="https://jamaludinhanif.github.io/portofolio-hanif/dist/img/logo%20by%20tegar.png"
                             width="50" alt="Company Logo">
                         <br>
-                        Jamal Industri
+                        Jamal Industri --}}
                     </div>
                 </td>
                 <td style="text-align: right;">
@@ -119,7 +123,7 @@
                 <td>
                     Nama Pembeli
                 </td>
-                <td>
+                <td>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
                     : {{ $name ?? 'Pembeli yng terhormat' }}
                 </td>
             </tr>
@@ -180,13 +184,27 @@
 
         <div class="" style="height: 30px"></div>
 
-        <div class="">
-            <h4>Check My Sosial Media</h4>
-            <p></p>
-            <p>Instagram : @_ha_nif</p>
-            <p>No. Hp : 0851-6131-0017</p>
-            <p>Email : newhanif743@gmail.com</p>
-        </div>
+        <table style="width: 100%;">
+            <tr>
+                <td>
+                    <div class="">
+                        <h4>Check My Sosial Media</h4>
+                        <p></p>
+                        <p>Instagram : @_ha_nif</p>
+                        <p>No. Hp : 0851-6131-0017</p>
+                        <p>Email : newhanif743@gmail.com</p>
+                    </div>
+                </td>
+                <td style="text-align: right;">
+                    <div>
+                        <img src="https://jamaludinhanif.github.io/portofolio-hanif/dist/img/logo%20by%20tegar.png"
+                            width="50" alt="Company Logo">
+                        <br>
+                        Jamal Industri
+                    </div>
+                </td>
+            </tr>
+        </table>
 
         <div class="footer">
             <p>Terima kasih atas Transaksi anda 🙏🙏</p>

@@ -239,6 +239,36 @@
                                     </div>
                                 </div>
 
+                                <!-- Menampilkan pesan error captcha -->
+                                @if ($errors->has('g-recaptcha-response'))
+                                    <div class="alert alert-danger">
+                                        {{ $errors->first('g-recaptcha-response') }}
+                                    </div>
+                                @endif
+
+                                {{-- {!! NoCaptcha::renderJs() !!}
+                                <div class="form-group">
+                                    {!! NoCaptcha::display() !!}
+                                </div> --}}
+
+                                {{-- <div class="" style="height: 20px"></div> --}}
+
+                                    <div class="form-group" style="margin-right: 10px;">
+                                        <div class="captcha">
+                                            <span>{!! captcha_img('') !!}</span>
+                                            <button type="button" class="btn btn-success reload ml-3" id="reload">&#x21bb;</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input id="captcha" style="width: 50%;" placeholder="Masukan Captcha" type="text" class="form-control" name="captcha" value="" required>
+                                        @error('captcha')
+                                            <label for="" class="text-danger">{{ $message }}</label>
+                                        @enderror
+                                    </div>
+
+
+
                                 <div class="form-group m-0">
                                     <button type="submit" id="submitButton"
                                         class="btn btn-primary btn-block ladda-button">
@@ -274,6 +304,10 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
     </script>
+
+    <!--   Core JS Files   -->
+    <script src="{{ asset('atlantis/assets/js/core/jquery.3.2.1.min.js') }}"></script>
+
     <!-- Bootstrap Notify -->
     <script src="{{ asset('atlantis/assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
     <script>
@@ -302,9 +336,9 @@
                 }).css({
                     position: 'absolute',
                     right: 10,
-                    top: ($this.outerHeight() / 2) - 12,
+                    top: ($this.outerHeight() / 2) - 22,
                     padding: '2px 7px',
-                    fontSize: 12,
+                    fontSize: 20,
                     cursor: 'pointer',
                 }));
 
@@ -332,6 +366,23 @@
                 });
             });
 
+        });
+
+        $(document).ready(function() {
+            $('#reload').click(function() {
+                $.ajax({
+                    type: 'GET',
+                    url: '{{ route('reload-captcha') }}',
+                    success: function(data) {
+                        // Pastikan ada elemen dengan class .captcha
+                        $(".captcha span").html(data.captcha);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error loading captcha:", status, error);
+                        alert("Failed to reload captcha. Please try again.");
+                    }
+                });
+            });
         });
     </script>
 

@@ -21,6 +21,7 @@ class PaymentCode extends Model
         // 'path_invoice',
         'transaction_id',
         'user_id',
+        'cashier_id',
         'interest_id'
     ];
 

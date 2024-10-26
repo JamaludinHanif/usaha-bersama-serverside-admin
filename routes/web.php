@@ -34,6 +34,7 @@ Route::get('/', function () {
 Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'authenticate']);
     Route::get('/logout', [AuthController::class, 'logout']);
+    Route::get('/reload-captcha',[AuthController::class, 'reloadCaptcha'])->name('reload-captcha');
 });
 
 Route::prefix('admin')->middleware(['is_admin'])->group(function () {

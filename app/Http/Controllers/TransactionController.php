@@ -216,7 +216,7 @@ class TransactionController extends Controller
         // ], 200);
 
         $dataPdf = [
-            'name' => $request->name,
+            'name' => $userData->name,
             'dataProduk' => $dataProduct,
             'totalHarga' => $dataTransaction->total_amount,
             'dataBunga' => $dataBunga,
@@ -265,6 +265,15 @@ class TransactionController extends Controller
         // menyimpan pdf di folder invoices
         Storage::disk('public')->put($filePath, $pdfContent);
         Log::info('PDF save attempted.');
+
+        $data->update([
+            'status' => "success",
+            'cashier_id' => $request->cashier_id,
+        ]);
+
+        $dataTransaction->update([
+            'status' => 'success',
+        ]);
 
         // mengirimkan pdf
         if (file_exists(storage_path('app/public' . $filePath))) {

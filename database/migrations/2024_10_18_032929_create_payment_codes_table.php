@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('amount');
             $table->foreignId('transaction_id');
             $table->foreignId('user_id');
+            $table->foreignId('cashier_id')->nullable();
             $table->foreignId('interest_id')->nullable();
             $table->timestamps();
         });
