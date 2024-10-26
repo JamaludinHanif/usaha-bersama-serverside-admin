@@ -18,6 +18,7 @@ class PaymentCode extends Model
         'status',
         'amount',
         'type_sending',
+        'new_payment',
         // 'path_invoice',
         'transaction_id',
         'user_id',

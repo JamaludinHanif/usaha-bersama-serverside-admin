@@ -215,6 +215,22 @@ class TransactionController extends Controller
         //     'dataBunga' => $dataBunga,
         // ], 200);
 
+        // database section
+        // if ($data->type == "paylater") {
+        //     Paylater::create([
+        //         'sisa_hutang' =>
+        //     ]);
+        // };
+
+        $data->update([
+            'status' => "success",
+            'cashier_id' => $request->cashier_id,
+        ]);
+
+        $dataTransaction->update([
+            'status' => 'success',
+        ]);
+
         $dataPdf = [
             'name' => $userData->name,
             'dataProduk' => $dataProduct,
@@ -265,15 +281,6 @@ class TransactionController extends Controller
         // menyimpan pdf di folder invoices
         Storage::disk('public')->put($filePath, $pdfContent);
         Log::info('PDF save attempted.');
-
-        $data->update([
-            'status' => "success",
-            'cashier_id' => $request->cashier_id,
-        ]);
-
-        $dataTransaction->update([
-            'status' => 'success',
-        ]);
 
         // mengirimkan pdf
         if (file_exists(storage_path('app/public' . $filePath))) {
@@ -339,6 +346,31 @@ class TransactionController extends Controller
             }
         } else {
             return 'Error: File PDF tidak dapat disimpan.';
+        }
+    }
+
+    public function cekStatusPayment(Request $request)
+    {
+        $data = PaymentCode::where('code', $request->code)->first();
+
+        if ($data->status == "success") {
+            return response()->json([
+                'status' => true,
+                'message' => "pembayaran berhasil",
+                'data' => $data->status,
+            ], 200);
+        } else if ($data->status == "pending") {
+            return response()->json([
+                'status' => true,
+                'message' => "menunggu konfirmasi dari kasir",
+                'data' => $data->status,
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => true,
+                'message' => "pembayaran gagal silahkan checkout ulang",
+                'data' => $data->status,
+            ], 200);
         }
     }
 

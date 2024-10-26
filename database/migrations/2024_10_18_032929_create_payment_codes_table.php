@@ -21,6 +21,7 @@ return new class extends Migration
             // $table->string('path_invoice');
             $table->string('status'); // succes & failed & pending
             $table->integer('amount');
+            $table->boolean('new_payment');
             $table->foreignId('transaction_id');
             $table->foreignId('user_id');
             $table->foreignId('cashier_id')->nullable();

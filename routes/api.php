@@ -73,6 +73,8 @@ Route::prefix('transactions')->group(function () {
     // user
     Route::post('/pre-checkout', [TransactionController::class, 'preCheckout']);
     Route::post('/checkout', [TransactionController::class, 'checkOutV1']);
+    Route::get('/cek-status-payment', [TransactionController::class, 'cekStatusPayment']);
+    // kasir
     Route::get('/detail-payment', [TransactionController::class, 'getDataTransactionForCashier']);
     Route::post('/confirm-payment', [TransactionController::class, 'confirmPayment']);
 });
