@@ -16,12 +16,12 @@ return new class extends Migration
         Schema::create('payment_codes', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('type'); // cash & paylater
+            $table->string('type'); // cash & paylater $ pay_bill
             $table->string('type_sending');
             // $table->string('path_invoice');
             $table->string('status'); // succes & failed & pending
             $table->integer('amount');
-            $table->boolean('new_payment');
+            $table->boolean('new_purchase'); // 1 artinya ya, 0 artinya tidak
             $table->foreignId('transaction_id');
             $table->foreignId('user_id');
             $table->foreignId('cashier_id')->nullable();

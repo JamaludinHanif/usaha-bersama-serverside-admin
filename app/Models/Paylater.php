@@ -17,7 +17,7 @@ class Paylater extends Model
         'transaction_id',
         'user_id',
         'interest_id',
-        'status',
+        'status', // 1 artinya belum lunas sedangkan 2 artinya lunas
         'due_date',
     ];
 

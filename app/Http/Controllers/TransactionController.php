@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\SendInvoice;
-use App\Models\InterestBill;
-use App\Models\PaymentCode;
-use App\Models\Product;
-use App\Models\Transaction;
-use App\Models\TransactionItem;
+use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Product;
+use App\Models\Paylater;
+use App\Mail\SendInvoice;
+use App\Models\PaymentCode;
+use App\Models\Transaction;
+use Illuminate\Support\Str;
+use App\Models\InterestBill;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Models\TransactionItem;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class TransactionController extends Controller
@@ -147,6 +149,7 @@ class TransactionController extends Controller
                     'type' => $request->methodPayment,
                     'type_sending' => $request->methodSending,
                     'status' => "pending",
+                    'new_purchase' => true,
                     'amount' => 0,
                     'cashier_id' => null,
                     'interest_id' => $request->interest_id,
@@ -159,6 +162,7 @@ class TransactionController extends Controller
                     'type' => $request->methodPayment,
                     'type_sending' => $request->methodSending,
                     'status' => "pending",
+                    'new_purchase' => true,
                     'amount' => $totalAmount,
                     'cashier_id' => null,
                     'interest_id' => null,
@@ -178,19 +182,30 @@ class TransactionController extends Controller
     {
         $data = PaymentCode::where('code', $request->code)->first();
 
-        $dataProduct = TransactionItem::where('transaction_id', $data->transaction_id)->with('product')->get();
-        $totalAmount = Transaction::where('id', $data->transaction_id)->select('total_amount')->first();
+        if ($data->new_purchase = 1) {
+            $dataProduct = TransactionItem::where('transaction_id', $data->transaction_id)->with('product')->get();
+            $totalAmount = Transaction::where('id', $data->transaction_id)->select('total_amount')->first();
 
-        $userData = User::where('id', $data->user_id)->first();
+            $userData = User::where('id', $data->user_id)->first();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'get data transaksi succes',
-            'userData' => $userData,
-            'totalHargaBarang' => $totalAmount->total_amount,
-            'data' => $data,
-            'dataProduct' => $dataProduct,
-        ], 200);
+            return response()->json([
+                'status' => true,
+                'message' => 'get data transaksi succes',
+                'userData' => $userData,
+                'totalHargaBarang' => $totalAmount->total_amount,
+                'data' => $data,
+                'dataProduct' => $dataProduct,
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => true,
+                'message' => 'get data transaksi succes',
+                'userData' => $userData,
+                'totalHargaBarang' => $totalAmount->total_amount,
+                'data' => $data,
+                'dataProduct' => $dataProduct,
+            ], 200);
+        }
     }
 
     public function confirmPayment(Request $request)
@@ -198,38 +213,67 @@ class TransactionController extends Controller
 
         $data = PaymentCode::where('code', $request->code)->first();
 
-        $dataProduct = TransactionItem::where('transaction_id', $data->transaction_id)->with('product')->get();
-        $dataTransaction = Transaction::where('id', $data->transaction_id)->first();
-        $dataBunga = InterestBill::where('id', $data->interest_id)->first();
+        if ($data->new_purchase == 1) {
+            $dataProduct = TransactionItem::where('transaction_id', $data->transaction_id)->with('product')->get();
+            $dataTransaction = Transaction::where('id', $data->transaction_id)->first();
+            $userData = User::where('id', $data->user_id)->first();
+            if ($data->type == "paylater") {
+                $dataBunga = InterestBill::where('id', $data->interest_id)->first();
+                if ($dataBunga->unit_date == "hari") {
+                    $jatuhTempo = Carbon::now()->addDays($dataBunga->amount_day);
+                } else {
+                    $jatuhTempo = Carbon::now()->addWeeks($dataBunga->amount_day);
+                }
+                $totalHargaTagihanPaylater = $dataTransaction->total_amount + ($dataTransaction->total_amount * ($dataBunga->interest / 100));
+                Paylater::create([
+                    'debt_remaining' => $totalHargaTagihanPaylater,
+                    'user_id' => $data->user_id,
+                    'transaction_id' => $dataTransaction->id,
+                    'interest_id' => $dataBunga->id,
+                    'status' => "1", // 1 artinya belum lunas sedangkan 2 artinya lunas
+                    'due_date' => $jatuhTempo,
+                ]);
+                $data->update([
+                    'status' => "success",
+                    'cashier_id' => $request->cashier_id,
+                ]);
 
-        $userData = User::where('id', $data->user_id)->first();
+                $dataTransaction->update([
+                    'status' => 'success',
+                ]);
+            } else if ($data->type == "cash") {
+                $data->update([
+                    'status' => "success",
+                    'cashier_id' => $request->cashier_id,
+                ]);
+
+                $dataTransaction->update([
+                    'status' => 'success',
+                ]);
+            } else {
+                $data->update([
+                    'status' => "success",
+                    'cashier_id' => $request->cashier_id,
+                ]);
+
+                $dataTransaction->update([
+                    'status' => 'success',
+                ]);
+            }
+        }
 
         // return response()->json([
         //     'status' => true,
         //     'message' => 'Konfirmasi Pembayaran Berhasil',
         //     'userData' => $userData,
         //     'totalHargaBarang' => $dataTransaction,
-        //     'data' => $data->type_sending,
+        //     'data' => $data,
         //     'dataProduct' => $dataProduct,
         //     'cashier_id' => $request->cashier_id,
         //     'dataBunga' => $dataBunga,
+        //     'totalTagihan' => $totalHargaTagihanPaylater,
+        //     'jatuhTempo' => $jatuhTempo,
         // ], 200);
-
-        // database section
-        // if ($data->type == "paylater") {
-        //     Paylater::create([
-        //         'sisa_hutang' =>
-        //     ]);
-        // };
-
-        $data->update([
-            'status' => "success",
-            'cashier_id' => $request->cashier_id,
-        ]);
-
-        $dataTransaction->update([
-            'status' => 'success',
-        ]);
 
         $dataPdf = [
             'name' => $userData->name,

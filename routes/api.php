@@ -44,14 +44,15 @@ Route::prefix('product')->group(function () {
     Route::post('/my-cart', [UserController::class, 'myCart']);
 });
 
-// untuk admin
 Route::prefix('products')->group(function () {
+    // untuk admin
     Route::get('/products-json', [ProductController::class, 'showAll']);
     Route::post('/products', [ProductController::class, 'store']);
     Route::delete('/products/{id}', [ProductController::class, 'deleteProduct']);
     Route::put('/products/{id}', [ProductController::class, 'update']);
 });
 
+// untuk admin
 Route::prefix('users')->group(function () {
     Route::get('/users-json', [UserController::class, 'showAll']);
     Route::post('/users', [UserController::class, 'store']);
@@ -59,6 +60,11 @@ Route::prefix('users')->group(function () {
     Route::put('/users/{id}', [UserController::class, 'updateUser2']);
     // log-activity
     Route::get('/log-activities-json', [LogActivityController::class, 'showDataJson']);
+});
+
+// untuk user
+Route::prefix('user')->group(function () {
+    Route::get('/my-bill', [UserController::class, 'myBill']);
 });
 
 Route::prefix('transactions')->group(function () {
@@ -70,11 +76,12 @@ Route::prefix('transactions')->group(function () {
     Route::delete('/interest/{id}', [InterestController::class, 'delete']);
     // kelola bunga (api)
     Route::get('/all-interest', [InterestController::class, "showAllApi"]);
-    // user
+    // user (api)
     Route::post('/pre-checkout', [TransactionController::class, 'preCheckout']);
     Route::post('/checkout', [TransactionController::class, 'checkOutV1']);
     Route::get('/cek-status-payment', [TransactionController::class, 'cekStatusPayment']);
-    // kasir
+    Route::post('/payment-bill', [UserController::class, 'paymentBill']);
+    // kasir (api)
     Route::get('/detail-payment', [TransactionController::class, 'getDataTransactionForCashier']);
     Route::post('/confirm-payment', [TransactionController::class, 'confirmPayment']);
 });

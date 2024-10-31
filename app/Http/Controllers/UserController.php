@@ -2,24 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\Paylater;
 use App\Models\ReedemCode;
 // use App\Exports\UsersExport;
 // use App\Imports\UsersImport;
 // use App\Exports\TemplateImport;
-use Illuminate\Http\Request;
 // use Intervention\Image\Facades\Image;
-use Illuminate\Validation\Rule;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Yajra\DataTables\Facades\DataTables;
-
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Hash;
 // use Intervention\Image\ImageManager;
 // use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Yajra\DataTables\Facades\DataTables;
+
 // use Intervention\Image\Drivers\Gd\Driver;
 
 class UserController extends Controller
@@ -46,32 +44,32 @@ class UserController extends Controller
         }
 
         return Datatables::of($data)
-        ->addColumn('role', function($data) {
-            $btnClass = $data->role == 'admin' ? 'btn-info' : ($data->role == 'kasir' ? 'btn-success' : 'btn-warning');
-            return '<center><div class="btn ' . $btnClass . ' btn-icon-split">
+            ->addColumn('role', function ($data) {
+                $btnClass = $data->role == 'admin' ? 'btn-info' : ($data->role == 'kasir' ? 'btn-success' : 'btn-warning');
+                return '<center><div class="btn ' . $btnClass . ' btn-icon-split">
                         <span class="text">' . $data->role . '</span>
                     </div></center>';
-        })
-        ->addColumn('formatted_noHp', function($data){
-            $urlWhatsapp = "https://wa.me/" . $data->no_hp;
-            return '<a href="' . $urlWhatsapp . '" target="_blank">' . $data->no_hp . '</a>';
-        })
-        ->addColumn('action', function($data){
-            return view('admin-users.action')->with('data', $data);
-        })
-        ->addColumn('imageUser', function($data) {
-            // Ganti $data->image dengan $data->image untuk mendapatkan nilai gambar dari data
-            $imageUrl = $data->image == null
+            })
+            ->addColumn('formatted_noHp', function ($data) {
+                $urlWhatsapp = "https://wa.me/" . $data->no_hp;
+                return '<a href="' . $urlWhatsapp . '" target="_blank">' . $data->no_hp . '</a>';
+            })
+            ->addColumn('action', function ($data) {
+                return view('admin-users.action')->with('data', $data);
+            })
+            ->addColumn('imageUser', function ($data) {
+                // Ganti $data->image dengan $data->image untuk mendapatkan nilai gambar dari data
+                $imageUrl = $data->image == null
                 ? 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'
                 : asset('storage/' . $data->image);
 
-            // Kembalikan HTML yang diinginkan
-            return '<div class="d-flex justify-content-center">
+                // Kembalikan HTML yang diinginkan
+                return '<div class="d-flex justify-content-center">
                         <img src="' . $imageUrl . '" width="50" alt="">
                     </div>';
-        })
-        ->rawColumns(['role', 'imageUser', 'action', 'formatted_noHp'])
-        ->make(true);
+            })
+            ->rawColumns(['role', 'imageUser', 'action', 'formatted_noHp'])
+            ->make(true);
     }
 
     public function store(Request $request)
@@ -96,12 +94,12 @@ class UserController extends Controller
             'role' => 'required|in:admin,user,kasir',
             'email' => ['required', 'email:dns', 'unique:users'],
             'password' => 'required|min:5|max:100',
-            'no_hp' => 'required|unique:users'
+            'no_hp' => 'required|unique:users',
         ];
 
         // Menambahkan aturan untuk gambar hanya jika nilai gambar tidak sama dengan "undefined"
         if ($request->input('image') !== 'undefined') {
-            $rules['image'] = ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg'];//, 'max:2048'];
+            $rules['image'] = ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg']; //, 'max:2048'];
         }
 
         $validasi = Validator::make($data, $rules, [
@@ -135,7 +133,7 @@ class UserController extends Controller
                 'role' => $request->role,
                 'email' => $request->email,
                 'no_hp' => $request->no_hp,
-                'password' => bcrypt($request->password)
+                'password' => bcrypt($request->password),
             ];
 
             if ($request->hasFile('image')) {
@@ -146,7 +144,7 @@ class UserController extends Controller
                 $manager = new ImageManager(Driver::class);
                 $imageProcessed = $manager->read($image);
 
-                $imageProcessed->cover(500, 500);;
+                $imageProcessed->cover(500, 500);
 
                 // Simpan gambar ke storage
                 $path = $request->file('image')->storeAs('uploads', $filename, 'public');
@@ -168,7 +166,7 @@ class UserController extends Controller
         // dd($id);
         return view('admin-users.editUsers', [
             'title' => 'Edit User',
-            'datas' => User::where('id', $id)->first()
+            'datas' => User::where('id', $id)->first(),
         ]);
         // $data = Quotes::where('id', $id)->first();
         // return response()->json(['data' => $data]);
@@ -187,19 +185,19 @@ class UserController extends Controller
                 'required',
                 'min:3',
                 'max:100',
-                Rule::unique('users')->ignore($user->id) // Mengabaikan validasi unique untuk ID yang sedang diupdate
+                Rule::unique('users')->ignore($user->id), // Mengabaikan validasi unique untuk ID yang sedang diupdate
             ],
             'email' => [
                 'required',
                 'email:dns',
-                Rule::unique('users')->ignore($user->id) // Mengabaikan validasi unique untuk ID yang sedang diupdate
+                Rule::unique('users')->ignore($user->id), // Mengabaikan validasi unique untuk ID yang sedang diupdate
             ],
-            'no_hp' => ['required', Rule::unique('users')->ignore($user->id)]
+            'no_hp' => ['required', Rule::unique('users')->ignore($user->id)],
         ];
 
         // Menambahkan aturan untuk gambar hanya jika nilai gambar tidak sama dengan "undefined"
         if ($request->input('image') !== 'undefined') {
-            $rules['image'] = ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg'];//, 'max:2048'];
+            $rules['image'] = ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg']; //, 'max:2048'];
         }
 
         // Tambahkan validasi password jika diisi
@@ -309,31 +307,31 @@ class UserController extends Controller
         $data = $query->get();
 
         return Datatables::of($data)
-        ->addColumn('role', function($data) {
-            $btnClass = $data->role == 'admin' ? 'btn-info' : 'btn-warning';
-            return '<center><div class="btn ' . $btnClass . ' btn-icon-split">
+            ->addColumn('role', function ($data) {
+                $btnClass = $data->role == 'admin' ? 'btn-info' : 'btn-warning';
+                return '<center><div class="btn ' . $btnClass . ' btn-icon-split">
                         <span class="text">' . $data->role . '</span>
                     </div></center>';
-        })
-        ->addColumn('action', function($data){
-            return view('admin-recycle.action')->with('data', $data);
-        })
-        ->addColumn('formatted_deleted_at', function ($row) {
-            return $row->deleted_at ? $row->deleted_at->format('d-m-Y H:i:s') : '';
-        })
-        ->addColumn('imageUser', function($data) {
-            // Ganti $data->image dengan $data->image untuk mendapatkan nilai gambar dari data
-            $imageUrl = $data->image == null
+            })
+            ->addColumn('action', function ($data) {
+                return view('admin-recycle.action')->with('data', $data);
+            })
+            ->addColumn('formatted_deleted_at', function ($row) {
+                return $row->deleted_at ? $row->deleted_at->format('d-m-Y H:i:s') : '';
+            })
+            ->addColumn('imageUser', function ($data) {
+                // Ganti $data->image dengan $data->image untuk mendapatkan nilai gambar dari data
+                $imageUrl = $data->image == null
                 ? 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'
                 : asset('storage/' . $data->image);
 
-            // Kembalikan HTML yang diinginkan
-            return '<div class="d-flex justify-content-center">
+                // Kembalikan HTML yang diinginkan
+                return '<div class="d-flex justify-content-center">
                         <img src="' . $imageUrl . '" width="50" alt="">
                     </div>';
-        })
-        ->rawColumns(['role', 'imageUser', 'formatted_deleted_at', 'action'])
-        ->make(true);
+            })
+            ->rawColumns(['role', 'imageUser', 'formatted_deleted_at', 'action'])
+            ->make(true);
     }
 
     public function restore($id)
@@ -351,7 +349,6 @@ class UserController extends Controller
 
         return response()->json(['success' => 'Berhasil mendestroy data']);
     }
-
 
     // excellll
     public function export()
@@ -375,97 +372,7 @@ class UserController extends Controller
         return Excel::download(new TemplateImport, 'template-user.xlsx');
     }
 
-
     // APIIIIII
-    public function indexApi()
-    {
-        return User::all();
-    }
-
-    // Simpan post baru
-    public function register(Request $request)
-    {
-
-        $data = $request->all();
-
-        $rules = [
-            'name' => 'required|max:100',
-            'username' => ['required', 'min:3', 'max:100', 'unique:users'],
-            'email' => ['required', 'email:dns', 'unique:users'],
-            'password' => 'required|min:5|max:100',
-            'no_hp' => 'required|unique:users'
-        ];
-
-        $validasi = Validator::make($data, $rules, [
-            'name.required' => 'Nama wajib diisi',
-            'name.max' => 'Nama maksimal 100 karakter',
-            'username.required' => 'Username wajib diisi',
-            'username.min' => 'Username minimal 3 karakter',
-            'username.max' => 'Username maksimal 100 karakter',
-            'username.unique' => 'Username sudah digunakan',
-            'email.required' => 'Email wajib diisi',
-            'email.email' => 'Email tidak valid',
-            'email.unique' => 'Email sudah digunakan',
-            'no_hp.required' => 'Nomor Hp wajib diisi',
-            'no_hp.unique' => 'Nomor Hp sudah digunakan',
-            'password.required' => 'Password wajib diisi',
-            'password.min' => 'Password minimal 5 karakter',
-            'password.max' => 'Password maksimal 100 karakter',
-        ]);
-
-        if ($validasi->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => $validasi->errors(),
-            ], 200);
-        } else {
-            $data = [
-                'name' => $request->name,
-                'username' => $request->username,
-                'role' => $request->role,
-                'email' => $request->email,
-                'no_hp' => $request->no_hp,
-                'password' => bcrypt($request->password)
-            ];
-
-            User::create($data);
-            return response()->json([
-                'status' => true,
-                'message' => 'Berhasil membuat akun, Silahkan Login',
-            ], 200);
-        }
-
-    }
-
-    // Tampilkan satu post
-    public function showApi($id)
-    {
-        $post = User::findOrFail($id);
-        return response()->json($post);
-    }
-
-    // Update post yang ada
-    public function updateApi(Request $request, $id)
-    {
-        $request->validate([
-            'title' => 'sometimes|required|string|max:255',
-            'content' => 'sometimes|required|string',
-        ]);
-
-        $post = User::findOrFail($id);
-        $post->update($request->all());
-
-        return response()->json($post);
-    }
-
-    // Hapus post
-    public function destroyApi($id)
-    {
-        $post = User::findOrFail($id);
-        $post->delete();
-
-        return response()->json(null, 204);
-    }
 
     public function myCart(Request $request)
     {
@@ -502,5 +409,69 @@ class UserController extends Controller
             'message' => 'Berhasil fetch data keranjang',
             'data' => $formattedData,
         ], 200);
+    }
+
+    public function myBill(Request $request)
+    {
+        // $data = Paylater::where('user_id', $request->userId)->with('transaction', 'interest')->get();
+        // $dataProduct = TransactionItem::where('transaction_id', $data->transaction->id)->with('product')->get();
+
+        // return response()->json([
+        //     'status' => true,
+        //     'message' => 'Berhasil fetch data Tagihan',
+        //     'data' => $data,
+        //     'dataProduct' => $dataProduct,
+        // ], 200);
+
+        $data = Paylater::where('user_id', $request->userId)
+            ->with(['transaction.items.product', 'interest'])
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Berhasil fetch data Tagihan',
+            'data' => $data,
+        ], 200);
+
+    }
+
+    public function paymentBill(Request $request)
+    {
+        if ($request->role == "pembeli") {
+            // make code payment
+            do {
+                $uniqueCode = Str::upper(Str::random(8)); // membuat kode acak
+            } while (PaymentCode::where('code', $uniqueCode)->exists());
+
+            PaymentCode::create([
+                'transaction_id' => $request->transactionId,
+                'user_id' => $request->userId,
+                'code' => $uniqueCode,
+                'type' => "pay_bill",
+                'type_sending' => $request->methodSending, //
+                'status' => "pending",
+                'new_purchase' => false,
+                'amount' => $request->nominalPayment,
+                'cashier_id' => null,
+                'interest_id' => $request->interestId,
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Berhasil generate kode pembayaran',
+                'data' => $request->all(),
+                'code' => $uniqueCode,
+            ], 200);
+        } else {
+            $data = Paylater::where('id', $request->paylaterId)->get();
+
+            $data->decrement('debt_remaining', $request->nominalPayment);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'berhasil konfirmasi pembayaran',
+                'data' => $data,
+            ], 200);
+        }
     }
 }
