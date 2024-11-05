@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('type');  // cash & paylater
             $table->string('status');  //
             $table->foreignId('user_id')->constrained();
+            $table->foreignId('interest_id')->nullable();
             $table->timestamps();
         });
     }

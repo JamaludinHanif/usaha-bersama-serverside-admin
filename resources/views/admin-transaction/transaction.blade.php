@@ -53,6 +53,7 @@
                         <tr>
                             <th style="background-color: #007bff; color: white;">Kode Invoice</th>
                             <th style="background-color: #007bff; color: white;">Nama Pengguna</th>
+                            <th style="background-color: #007bff; color: white;">Status</th>
                             <th style="background-color: #007bff; color: white;">Total Pembelian</th>
                             <th style="background-color: #007bff; color: white;">Waktu</th>
                             <th style="background-color: #007bff; color: white;">Aksi</th>
@@ -79,6 +80,10 @@
                     {
                         data: 'username',
                         name: 'username'
+                    },
+                    {
+                        data: 'status_formatted',
+                        name: 'status_formatted'
                     },
                     {
                         data: 'formatted_amount',

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Paylater;
 use App\Models\PaymentCode;
+use App\Models\InterestBill;
 use App\Models\TransactionItem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,6 +26,10 @@ class Transaction extends Model
     public function paylater()
     {
         return $this->hasOne(Paylater::class);
+    }
+
+    public function interest(){
+        return $this->belongsTo(InterestBill::class);
     }
 
     public function user()

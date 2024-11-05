@@ -26,6 +26,7 @@ return new class extends Migration
             $table->foreignId('user_id');
             $table->foreignId('cashier_id')->nullable();
             $table->foreignId('interest_id')->nullable();
+            $table->foreignId('paylater_id')->nullable();
             $table->timestamps();
         });
     }

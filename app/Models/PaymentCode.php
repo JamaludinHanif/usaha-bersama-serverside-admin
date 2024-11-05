@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
+use App\Models\Paylater;
 use App\Models\Transaction;
 use App\Models\InterestBill;
 use Illuminate\Database\Eloquent\Model;
@@ -23,7 +24,8 @@ class PaymentCode extends Model
         'transaction_id',
         'user_id',
         'cashier_id',
-        'interest_id'
+        'interest_id',
+        'paylater_id'
     ];
 
     public function transaction()
@@ -38,5 +40,9 @@ class PaymentCode extends Model
 
     public function interest(){
         return $this->belongsTo(InterestBill::class);
+    }
+
+    public function paylater(){
+        return $this->belongsTo(Paylater::class);
     }
 }

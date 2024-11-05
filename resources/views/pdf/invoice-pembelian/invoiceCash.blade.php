@@ -99,14 +99,14 @@
 <body>
     <div class="container">
         {{-- @dd($data['noInvoice']) --}}
-        @php
+        {{-- @php
             $interest = $dataBunga->interest ?? 0;
             // new purchase
             $totalPrice = $totalHarga ?? 0;
             $result = ($totalPrice * $interest) / 100;
             $totalWithInterest = $totalPrice + ($totalPrice * $interest) / 100;
             // bill
-        @endphp
+        @endphp --}}
         <div class="">
             {{-- <img src="{{ asset('kop-surat.png') }}" style="width: 100%" alt=""> --}}
             <img src="{{ public_path('kop-surat-2.png') }}" style="width: 100%" alt="">
@@ -161,7 +161,7 @@
                     Jenis Pembayaran
                 </td>
                 <td>
-                    : {!! $paymentType ?? 'cash' !!}
+                    : Cash
                 </td>
             </tr>
         </table>
@@ -170,81 +170,36 @@
 
         <div class="" style="height: 30px;"></div>
 
-        @if ($newPurchase == 1)
-            <table class="table">
-                <thead>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nama</th>
+                    <th>Kuantitas</th>
+                    <th>Harga Satuan</th>
+                    <th>Total Harga</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($dataProduk as $items)
                     <tr>
-                        <th>Nama</th>
-                        <th>Kuantitas</th>
-                        <th>Harga Satuan</th>
-                        <th>Total Harga</th>
+                        <td>{{ $items['product']['name'] ?? $items['product']['name'] }}</td>
+                        <td>{{ $items['quantity'] ?? 0 }}</td>
+                        <td>Rp.
+                            {{ number_format($items['product']['price'] ?? $items['product']['price'], 0, ',', '.') }}
+                        </td>
+                        <td>Rp.
+                            {{ number_format(($items['product']['price'] ?? $items['product']['price']) * ($items['quantity'] ?? 1), 0, ',', '.') }}
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach ($dataProduk as $items)
-                        <tr>
-                            <td>{{ $items['product']['name'] ?? $items['product']['name'] }}</td>
-                            <td>{{ $items['quantity'] ?? 0 }}</td>
-                            <td>Rp.
-                                {{ number_format($items['product']['price'] ?? $items['product']['price'], 0, ',', '.') }}
-                            </td>
-                            <td>Rp.
-                                {{ number_format(($items['product']['price'] ?? $items['product']['price']) * ($items['quantity'] ?? 1), 0, ',', '.') }}
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                @endforeach
+            </tbody>
+        </table>
 
-            <div class="total">
-                <h3>Subtotal: Rp. {{ number_format($totalHarga ?? 0, 0, ',', '.') }}</h3>
-                <h3>Bunga ({{ $dataBunga->interest ?? 0 }}%): Rp. {{ number_format($result ?? 0, 0, ',', '.') }}</h3>
-                <h3>Total: Rp. {{ number_format($totalWithInterest ?? 0, 0, ',', '.') }}</h3>
-            </div>
-        @else
-            @php
-                $sisaHutang = $dataPaylater->debt_remaining - $nominalPembayaran;
-            @endphp
-            <hr>
-            <div class="" style="height: 40px;"></div>
-            <table class="table2">
-                <tr>
-
-                    <td>
-                        Total Hutang Kamu
-                    </td>
-                    <td>
-                        : Rp. {{ number_format($dataPaylater->debt_remaining ?? 0, 0, ',', '.') }}
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        Nominal Pembayaran Kamu
-                    </td>
-                    <td>
-                        : Rp. {{ number_format($nominalPembayaran ?? 0, 0, ',', '.') }}
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        Tanggal Jatuh Tempo
-                    </td>
-                    <td>
-                        : {{ \Carbon\Carbon::parse($dataPaylater->due_date)->format('d-F-Y') }}
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        Sisa Hutang Kamu
-                    </td>
-                    <td>
-                        : Rp. {{ number_format($sisaHutang ?? 0, 0, ',', '.') }}
-                    </td>
-                </tr>
-            </table>
-            <div class="" style="height: 40px;"></div>
-            <hr>
-        @endif
+        <div class="total">
+            <h3>Subtotal: Rp. {{ number_format($totalHarga ?? 0, 0, ',', '.') }}</h3>
+            <h3>Bunga (0%): Rp. 0</h3>
+            <h3>Total: Rp. {{ number_format($totalHarga ?? 0, 0, ',', '.') }}</h3>
+        </div>
 
 
         <div class="" style="height: 30px"></div>

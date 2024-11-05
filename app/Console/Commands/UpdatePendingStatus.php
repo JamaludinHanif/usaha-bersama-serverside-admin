@@ -2,9 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Models\PaymentCode;
 use Carbon\Carbon;
+use App\Models\PaymentCode;
+use App\Models\Transaction;
+use Illuminate\Console\Command;
 
 class UpdatePendingStatus extends Command
 {
@@ -28,7 +29,9 @@ class UpdatePendingStatus extends Command
             $transaction->update(['status' => 'failed']);
 
             // Hapus kode pembayaran yang terkait dengan transaksi ini
-            PaymentCode::where('transaction_id', $transaction->id)->delete();
+            $paymentCode = PaymentCode::where('transaction_id', $transaction->id)->update([
+                'status' => 'failed'
+            ]);
         }
     }
 }

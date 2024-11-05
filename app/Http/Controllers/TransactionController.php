@@ -2,25 +2,55 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\User;
-use App\Models\Product;
-use App\Models\Paylater;
 use App\Mail\SendInvoice;
-use App\Models\PaymentCode;
-use App\Models\Transaction;
-use Illuminate\Support\Str;
 use App\Models\InterestBill;
-use Illuminate\Http\Request;
+use App\Models\Paylater;
+use App\Models\PaymentCode;
+use App\Models\Product;
+use App\Models\Transaction;
 use App\Models\TransactionItem;
-use Illuminate\Support\Facades\Log;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class TransactionController extends Controller
 {
+    // api whatsapp
+    public function curlApiWhatsapp($urlApiWhatsapp, $body)
+    {
+        // Inisialisasi cURL
+        $ch = curl_init();
+
+        // Mengatur opsi cURL
+        curl_setopt($ch, CURLOPT_URL, $urlApiWhatsapp);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+        ]);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10); // Timeout 10 detik
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
+
+        // Eksekusi cURL dan ambil respons
+        $response = curl_exec($ch);
+        $error = curl_error($ch);
+
+        // Tutup koneksi cURL
+        curl_close($ch);
+
+        // Cek apakah ada error
+        if ($error) {
+            return "cURL Error: " . $error;
+        }
+
+        return $response;
+    }
 
     // admin
     public function showAll()
@@ -58,7 +88,7 @@ class TransactionController extends Controller
                 return $row->user ? $row->user->username : '';
             })
             ->addColumn('formatted_created_at', function ($row) {
-                return $row->created_at ? $row->created_at->format('d-m-Y H:i:s') : '';
+                return $row->created_at ? $row->created_at->format('d-m-Y (H:i:s)') : '';
             })
             ->addColumn('action', function ($data) {
                 return view('admin-transaction.action')->with('data', $data);
@@ -66,7 +96,13 @@ class TransactionController extends Controller
             ->addColumn('formatted_amount', function ($row) {
                 return $row->total_amount ? 'Rp ' . number_format($row->total_amount, 0, ',', '.') : '';
             })
-            ->rawColumns(['action', 'username', 'formatted_amount', 'formatted_created_at'])
+            ->addColumn('status_formatted', function ($row) {
+                $btnClass = $row->status == 'success' ? 'btn-success' : ($row->status == 'pending' ? 'btn-warning' : 'btn-danger');
+                return '<center><div class="btn ' . $btnClass . ' btn-icon-split">
+                        <span class="text">' . $row->status . '</span>
+                    </div></center>';
+            })
+            ->rawColumns(['action', 'username', 'status_formatted', 'formatted_amount', 'formatted_created_at'])
             ->make(true);
     }
 
@@ -123,6 +159,7 @@ class TransactionController extends Controller
                 'user_id' => $request->userId,
                 'type' => $request->methodPayment,
                 'status' => 'pending',
+                'interest_id' => $request->interestId,
             ]);
 
             foreach ($productItems as $item) {
@@ -212,13 +249,32 @@ class TransactionController extends Controller
     {
 
         $data = PaymentCode::where('code', $request->code)->first();
+        $dataProduct = TransactionItem::where('transaction_id', $data->transaction_id)->with('product')->get();
+        $dataTransaction = Transaction::where('id', $data->transaction_id)->first();
+        $userData = User::where('id', $data->user_id)->first();
+        $dataPaylater = Paylater::where('id', $data->paylater_id)->first();
+        if (isset($data->interest_id)) {
+            $dataBunga = InterestBill::where('id', $data->interest_id)->first();
+        };
+        $paymentType = [];
+
+        // return response()->json([
+        //     'status' => true,
+        //     'message' => 'Konfirmasi Pembayaran Berhasil',
+        //     'userData' => $userData,
+        //     'totalHargaBarang' => $dataTransaction,
+        //     'data' => $data,
+        //     'dataProduct' => $dataProduct,
+        //     'cashier_id' => $request->cashier_id,
+        //     'dataPaylater' => $dataPaylater,
+        //     // 'dataBunga' => $dataBunga,
+        //     // 'totalTagihan' => $totalHargaTagihanPaylater,
+        //     // 'jatuhTempo' => $jatuhTempo,
+        // ], 200);
 
         if ($data->new_purchase == 1) {
-            $dataProduct = TransactionItem::where('transaction_id', $data->transaction_id)->with('product')->get();
-            $dataTransaction = Transaction::where('id', $data->transaction_id)->first();
-            $userData = User::where('id', $data->user_id)->first();
             if ($data->type == "paylater") {
-                $dataBunga = InterestBill::where('id', $data->interest_id)->first();
+                $paymentType = "Pembelian Paylater";
                 if ($dataBunga->unit_date == "hari") {
                     $jatuhTempo = Carbon::now()->addDays($dataBunga->amount_day);
                 } else {
@@ -241,7 +297,23 @@ class TransactionController extends Controller
                 $dataTransaction->update([
                     'status' => 'success',
                 ]);
-            } else if ($data->type == "cash") {
+
+                $dataPdf = [
+                    'noInvoice' => $dataTransaction->kode_invoice,
+                    'name' => $userData->name,
+                    // pembelian baru
+                    'dataProduk' => $dataProduct,
+                    'totalHarga' => $dataTransaction->total_amount,
+                    'dataBunga' => $dataBunga,
+                ];
+
+                // instance mPDF
+                $mpdf = new \Mpdf\Mpdf();
+                // view sebagai konten PDF
+                $html = view('pdf.invoice-pembelian.invoicePaylater', $dataPdf)->render();
+            } else if ($data->type == "tunai") {
+                // dd($data->type);
+                $paymentType = "Pembayaran Cash";
                 $data->update([
                     'status' => "success",
                     'cashier_id' => $request->cashier_id,
@@ -250,38 +322,68 @@ class TransactionController extends Controller
                 $dataTransaction->update([
                     'status' => 'success',
                 ]);
+
+                $dataPdf = [
+                    'noInvoice' => $dataTransaction->kode_invoice,
+                    'name' => $userData->name,
+                    // pembelian baru
+                    'dataProduk' => $dataProduct,
+                    'totalHarga' => $dataTransaction->total_amount,
+                ];
+                // instance mPDF
+                $mpdf = new \Mpdf\Mpdf();
+                // view sebagai konten PDF
+                $html = view('pdf.invoice-pembelian.invoiceCash', $dataPdf)->render();
             } else {
                 $data->update([
-                    'status' => "success",
+                    'status' => "failed",
                     'cashier_id' => $request->cashier_id,
                 ]);
 
                 $dataTransaction->update([
-                    'status' => 'success',
+                    'status' => 'failed',
                 ]);
             }
+        } else {
+            $paymentType = "Pembayaran Tagihan";
+            $data->update([
+                'status' => "success",
+                'cashier_id' => $request->cashier_id,
+            ]);
+
+            $dataPaylater->decrement('debt_remaining', $data->amount);
+
+            $dataTransaction->update([
+                'status' => 'success',
+            ]);
+
+            $dataPdf = [
+                'noInvoice' => $dataTransaction->kode_invoice,
+                'name' => $userData->name,
+                // pembayaran tagihan
+                'nominalPembayaran' => $data->amount,
+                'dataPaylater' => $dataPaylater,
+            ];
+
+            // instance mPDF
+            $mpdf = new \Mpdf\Mpdf();
+            // view sebagai konten PDF
+            $html = view('pdf.invoice-pembelian.invoicePembayaranTagihan', $dataPdf)->render();
         }
 
-        // return response()->json([
-        //     'status' => true,
-        //     'message' => 'Konfirmasi Pembayaran Berhasil',
-        //     'userData' => $userData,
-        //     'totalHargaBarang' => $dataTransaction,
-        //     'data' => $data,
-        //     'dataProduct' => $dataProduct,
-        //     'cashier_id' => $request->cashier_id,
-        //     'dataBunga' => $dataBunga,
-        //     'totalTagihan' => $totalHargaTagihanPaylater,
-        //     'jatuhTempo' => $jatuhTempo,
-        // ], 200);
-
-        $dataPdf = [
-            'name' => $userData->name,
-            'dataProduk' => $dataProduct,
-            'totalHarga' => $dataTransaction->total_amount,
-            'dataBunga' => $dataBunga,
-            'noInvoice' => $dataTransaction->kode_invoice,
-        ];
+        // $dataPdf = [
+        //     'noInvoice' => $dataTransaction->kode_invoice,
+        //     'name' => $userData->name,
+        //     'paymentType' => $paymentType,
+        //     'newPurchase' => $data->new_purchase,
+        //     // pembelian baru
+        //     'dataProduk' => $dataProduct,
+        //     'totalHarga' => $dataTransaction->total_amount,
+        //     'dataBunga' => $dataBunga ?? 0,
+        //     // pembayaran tagihan
+        //     'nominalPembayaran' => $data->amount,
+        //     'dataPaylater' => $dataPaylater,
+        // ];
 
         // testing
         // $string = json_encode($cart);
@@ -292,17 +394,12 @@ class TransactionController extends Controller
         //     'data' => $data
         // ]);
 
-        // instance mPDF
-        $mpdf = new \Mpdf\Mpdf();
-
-        // view sebagai konten PDF
-        $html = view('pdf.invoiceV1', $dataPdf)->render();
-
+        // mpdf intance
         // Menulis HTML ke dalam PDF
         $mpdf->WriteHTML($html);
 
         //  nama file unik
-        $uniqueFileName = 'invoice_' . date('Y-m-d H:i:s') . '_' . uniqid() . '.pdf';
+        $uniqueFileName = 'invoice_' . date('Y-m-d') . '_' . uniqid() . '.pdf';
 
         // konten PDF sebagai string
         $pdfContent = $mpdf->Output('', 'S');
@@ -328,6 +425,7 @@ class TransactionController extends Controller
 
         // mengirimkan pdf
         if (file_exists(storage_path('app/public' . $filePath))) {
+            $urlApiWhatsapp = "https://0443-103-242-107-171.ngrok-free.app/send";
             if ($data->type_sending == 'email') {
                 // Mengirim email dengan lampiran PDF
                 Mail::to($userData->email)->send(new SendInvoice(storage_path('app/public' . $filePath)));
@@ -342,16 +440,18 @@ class TransactionController extends Controller
             } else if ($data->type_sending == 'whatsapp') {
                 // mengirim via whatsapp
                 $body = [
-                    "api_key" => "iH21K14bt2p78TkhHbnjr2ffPVfGaB",
-                    "sender" => "6285161310017",
+                    // "api_key" => "iH21K14bt2p78TkhHbnjr2ffPVfGaB",
+                    // "sender" => "6285161310017",
+                    // "media_type" => "document",
+                    // "url" => url('storage' . $filePath),
                     "number" => $userData->no_hp,
-                    "media_type" => "document",
+                    "fileUrl" => url('storage' . $filePath),
                     "caption" => "Berikut adalah Invoice pembelian anda",
-                    "url" => url('storage' . $filePath),
                 ];
                 $responseApiWa = Http::withHeaders([
                     'Content-Type' => 'application/json',
-                ])->post('https://wa.sinkron.com/send-media', $body);
+                ])->timeout(60)
+                    ->post('https://a329-103-242-107-171.ngrok-free.app/send', $body);
 
                 unlink(storage_path('app/public' . $filePath));
 
@@ -365,16 +465,27 @@ class TransactionController extends Controller
                 ], 200);
             } else {
                 $body = [
-                    "api_key" => "iH21K14bt2p78TkhHbnjr2ffPVfGaB",
-                    "sender" => "6285161310017",
+                    // "api_key" => "iH21K14bt2p78TkhHbnjr2ffPVfGaB",
+                    // "sender" => "6285161310017",
+                    // "media_type" => "document",
+                    // "url" => url('storage' . $filePath),
+                    "fileUrl" => url('storage' . $filePath),
                     "number" => "6285161310017",
-                    "media_type" => "document",
                     "caption" => "Berikut adalah Invoice pembelian anda",
-                    "url" => url('storage' . $filePath),
                 ];
+                // Mengonversi array ke JSON
+                $jsonBody = json_encode($body);
                 $responseApiWa = Http::withHeaders([
                     'Content-Type' => 'application/json',
-                ])->post('https://wa.sinkron.com/send-media', $body);
+                ])->post($urlApiWhatsapp, $jsonBody);
+
+                // $responseApiWa = $this->curlApiWhatsapp($urlApiWhatsapp, $body);
+
+                // Log respons untuk debugging
+                \Log::info('Respons dari server:', [
+                    'status' => $responseApiWa->status(),
+                    'body' => $responseApiWa->body(),
+                ]);
 
                 // Mengirim email dengan lampiran PDF
                 Mail::to($userData->email)->send(new SendInvoice(storage_path('app/public' . $filePath)));
@@ -426,4 +537,15 @@ class TransactionController extends Controller
             'data' => $request->all(),
         ], 200);
     }
+
+// // Contoh penggunaan fungsi
+// $url = 'https://a329-103-242-107-171.ngrok-free.app/send';
+// $data = [
+//     'number' => '6285161310017',
+//     'caption' => 'Berikut adalah Invoice pembelian anda',
+// ];
+
+// $response = sendCurlRequest($url, $data);
+// echo $response;
+
 }

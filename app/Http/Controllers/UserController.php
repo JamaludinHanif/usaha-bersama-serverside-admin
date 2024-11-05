@@ -2,21 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Paylater;
-use App\Models\ReedemCode;
 // use App\Exports\UsersExport;
 // use App\Imports\UsersImport;
 // use App\Exports\TemplateImport;
 // use Intervention\Image\Facades\Image;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
+use App\Models\ReedemCode;
+use App\Models\PaymentCode;
+use App\Models\Transaction;
 // use Intervention\Image\ImageManager;
 // use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\File;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Validator;
 
 // use Intervention\Image\Drivers\Gd\Driver;
 
@@ -453,6 +456,16 @@ class UserController extends Controller
                 'new_purchase' => false,
                 'amount' => $request->nominalPayment,
                 'cashier_id' => null,
+                'interest_id' => $request->interestId,
+                'paylater_id' => $request->paylaterId
+            ]);
+
+            Transaction::create([
+                'total_amount' => $request->nominalPayment,
+                'kode_invoice' => "belum jadi",
+                'user_id' => $request->userId,
+                'type' => "payment bill",
+                'status' => 'pending',
                 'interest_id' => $request->interestId,
             ]);
 
