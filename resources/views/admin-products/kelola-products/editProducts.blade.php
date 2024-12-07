@@ -44,7 +44,7 @@
                     aria-label="Pilih Kategori" required>
                     <option value="" disabled selected>Pilih Satuan</option>
                         <option value="pcs" {{ $data->unit == 'pcs' ? 'selected' : '' }}>Pcs</option>
-                        <option value="pack" {{ $data->unit == 'pack' ? 'selected' : '' }}>Pack</option>
+                        <option value="pack" {{ $data->unit == 'pak' ? 'selected' : '' }}>Pack</option>
                         <option value="dos" {{ $data->unit == 'dos' ? 'selected' : '' }}>Dos</option>
                         <option value="1/4" {{ $data->unit == '1/4' ? 'selected' : '' }}>1/4 kg</option>
                 </select>

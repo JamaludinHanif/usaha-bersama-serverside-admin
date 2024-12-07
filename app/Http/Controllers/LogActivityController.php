@@ -19,10 +19,16 @@ class LogActivityController extends Controller
 
     public function showDataJson(Request $request)
     {
-        $data = LogActivity::query();
+        $data = LogActivity::with('user');
 
         if (isset($request->date)) {
             $data->whereDate('created_at', $request->date);
+        }
+
+        if (isset($request->role)) {
+            $data->whereHas('user', function ($query) use ($request) {
+                $query->where('role', $request->role);
+            });
         }
 
         // search datatables sistem *(jika search defaultnya error)
@@ -46,8 +52,11 @@ class LogActivityController extends Controller
             ->addColumn('username', function ($row) {
                 return $row->user ? $row->user->username : 'Pengguna Telah Dihapus';
             })
-            ->addColumn('role', function ($row) {
-                return $row->user ? $row->user->role : 'Pengguna Telah Dihapus';
+            ->addColumn('formatted_role', function ($row) {
+                $btnClass = $row->user->role == 'kasir' ? 'btn-success' : ($row->user->role == 'user' ? 'btn-warning' : 'btn-primary');
+                return '<center><div class="btn ' . $btnClass . ' btn-icon-split">
+                        <span class="text">' . $row->user->role . '</span>
+                    </div></center>';
             })
             ->addColumn('formatted_created_at', function ($row) {
                 $formattedDate = 'Tanggal: ' . $row->created_at->format('d-m-Y') . ', Pukul: ' . $row->created_at->format('H:i:s');
@@ -59,7 +68,7 @@ class LogActivityController extends Controller
                             <span class="text">' . $row->action . '</span>
                         </div>';
             })
-            ->rawColumns(['activity'])
+            ->rawColumns(['activity', 'formatted_role'])
             ->make(true);
     }
 }

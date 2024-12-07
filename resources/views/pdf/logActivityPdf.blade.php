@@ -11,6 +11,7 @@
 
         table {
             width: 100%;
+            font-size: 10px;
             border-collapse: collapse;
         }
 
@@ -50,6 +51,9 @@
 
 <body>
     {{-- <h1>Laporan Data User</h1> --}}
+    <div class="">
+        <img src="{{ public_path('kop-surat-2.png') }}" style="width: 100%" alt="">
+    </div>
     <h1>{{ $title }}</h1>
     @if ($type == 'all')
         <p>Pada tanggal : Semua Tanggal</p>
@@ -74,6 +78,7 @@
                     <td>{{ $log->user->name }}</td>
                     <td
                         style="@if ($log->user->role == 'admin') background-color: #007bff; color: white;
+                    @elseif ($log->user->role == 'kasir') background-color: #31ce36; color: white;
                     @else
                     background-color: #ffc107; color: white; @endif font-weight: bold; text-align: center">
                         {{ $log->user->role }}
@@ -87,7 +92,7 @@
                         {{ $log->action }}
 
                     </td>
-                    <td>{{ $log->created_at }}</td>
+                    <td>{{ $log->created_at->format('d-m-Y') . ', Pukul: ' . $log->created_at->format('H:i:s') }}</td>
                 </tr>
             @endforeach
         </tbody>

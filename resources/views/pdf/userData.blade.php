@@ -11,6 +11,7 @@
 
         table {
             width: 100%;
+            font-size: 10px;
             border-collapse: collapse;
         }
 
@@ -50,16 +51,21 @@
 
 <body>
     {{-- <h1>Laporan Data User</h1> --}}
+    <div class="">
+        <img src="{{ public_path('kop-surat-2.png') }}" style="width: 100%" alt="">
+    </div>
     <h1>{{ $title }}</h1>
     <p>Date: {{ $date }}</p>
     <table>
         <thead>
             <tr>
-                <th>No</th>
-                <th>Nama</th>
-                <th>Role</th>
-                <th>Username</th>
-                <th>Email</th>
+                <th style="text-align: center">No</th>
+                <th style="text-align: center">Nama</th>
+                <th style="text-align: center">Role</th>
+                <th style="text-align: center">Username</th>
+                <th style="text-align: center">Email</th>
+                <th style="text-align: center">No Hp</th>
+                <th style="text-align: center">Limit</th>
             </tr>
         </thead>
         <tbody>
@@ -69,6 +75,7 @@
                     <td>{{ $user->name }}</td>
                     <td
                         style="@if ($user->role == 'admin') background-color: #007bff; color: white;
+                    @elseif ($user->role == 'kasir') background-color: #31ce36; color: white;
                     @else
                     background-color: #ffc107; color: white; @endif font-weight: bold; text-align: center">
                         {{ $user->role }}
@@ -76,6 +83,8 @@
                     </td>
                     <td>{{ $user->username }}</td>
                     <td>{{ $user->email }}</td>
+                    <td>{{ $user->no_hp }}</td>
+                    <td>{{ $user->debt_limit }}</td>
                 </tr>
             @endforeach
         </tbody>

@@ -4,9 +4,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\EmailController;
+use App\Http\Controllers\ExcelController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\InterestController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LogActivityController;
 use App\Http\Controllers\TransactionController;
 
@@ -19,7 +21,7 @@ use App\Http\Controllers\TransactionController;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
-*/
+ */
 
 // Auth::routes();
 
@@ -44,8 +46,8 @@ Route::prefix('product')->group(function () {
     Route::post('/my-cart', [UserController::class, 'myCart']);
 });
 
+// untuk admin
 Route::prefix('products')->group(function () {
-    // untuk admin
     Route::get('/products-json', [ProductController::class, 'showAll']);
     Route::post('/products', [ProductController::class, 'store']);
     Route::delete('/products/{id}', [ProductController::class, 'deleteProduct']);
@@ -69,7 +71,8 @@ Route::prefix('user')->group(function () {
 
 Route::prefix('transactions')->group(function () {
     // admin
-    Route::get('/transactions-json', [TransactionController::class, 'showDataJsonAdmin']);
+    Route::get('/transactions-json', [HistoryController::class, 'getTransaction'])->name('index.transaction.json');
+    Route::get('/payments-json', [HistoryController::class, 'getPayment'])->name('index.payments.json');
     // kelola bunga (admin)
     Route::get('/interest-json', [InterestController::class, 'showAll']);
     Route::post('/interest', [InterestController::class, 'store']);
@@ -84,4 +87,24 @@ Route::prefix('transactions')->group(function () {
     // kasir (api)
     Route::get('/detail-payment', [TransactionController::class, 'getDataTransactionForCashier']);
     Route::post('/confirm-payment', [TransactionController::class, 'confirmPayment']);
+});
+
+Route::prefix('dashboard')->group(function () {
+    Route::get('/stats-transaction', [DashboardController::class, 'transactionChart'])->name('chart.stats.transaction');
+    Route::get('/weekly-income', [DashboardController::class, 'getWeeklyIncome'])->name('chart.weekly.income');
+    Route::get('/top-product', [DashboardController::class, 'getTopSellingProducts'])->name('top.selling.product');
+
+    // send message
+    Route::post('/send-message', [DashboardController::class, 'sendMessage'])->name('send.message');
+
+    // notes
+    Route::prefix('notes')->group(function () {
+        Route::get('/get-notes', [DashboardController::class, 'getNotes'])->name('get.notes');
+        Route::post('/store', [DashboardController::class, 'storeNotes'])->name('store.notes');
+    });
+});
+
+Route::prefix('excel')->group(function () {
+    // import
+    Route::post('/product-import', [ExcelController::class, 'productImport'])->name('excel.import.product');
 });

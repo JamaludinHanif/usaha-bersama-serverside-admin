@@ -4,15 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Mail\SendInvoice;
 use App\Models\InterestBill;
+use App\Models\LogActivity;
 use App\Models\Paylater;
 use App\Models\PaymentCode;
 use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
 use App\Models\User;
+use App\MyClass;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -21,90 +22,6 @@ use Yajra\DataTables\Facades\DataTables;
 
 class TransactionController extends Controller
 {
-    // api whatsapp
-    public function curlApiWhatsapp($urlApiWhatsapp, $body)
-    {
-        // Inisialisasi cURL
-        $ch = curl_init();
-
-        // Mengatur opsi cURL
-        curl_setopt($ch, CURLOPT_URL, $urlApiWhatsapp);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-        ]);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10); // Timeout 10 detik
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
-
-        // Eksekusi cURL dan ambil respons
-        $response = curl_exec($ch);
-        $error = curl_error($ch);
-
-        // Tutup koneksi cURL
-        curl_close($ch);
-
-        // Cek apakah ada error
-        if ($error) {
-            return "cURL Error: " . $error;
-        }
-
-        return $response;
-    }
-
-    // admin
-    public function showAll()
-    {
-        return view('admin-transaction.transaction', [
-            'title' => 'History Transaksi',
-            'datas' => Transaction::all(),
-        ]);
-    }
-
-    public function showDataJsonAdmin(Request $request)
-    {
-        $data = Transaction::query();
-
-        if (isset($request->date)) {
-            $data->whereDate('created_at', $request->date);
-        }
-
-        // search datatables sistem *(jika search defaultnya error)
-        // if ($request->has('search') && $request->search['value'] != '') {
-        //     $searchValue = $request->search['value'];
-        //     $data->where(function($query) use ($searchValue) {
-        //         $query->whereHas('user', function($query) use ($searchValue) {
-        //                 $query->where('kode_invoice', 'like', "%{$searchValue}%")
-        //                       ->orWhere('username', 'like', "%{$searchValue}%")
-        //                       ->orWhere('total_amount', 'like', "%{$searchValue}%");
-        //             })
-        //             ->orWhere('created_at', 'like', "%{$searchValue}%")
-        //             ->orWhere('action', 'like', "%{$searchValue}%");
-        //     });
-        // }
-
-        return Datatables::of($data)
-            ->addColumn('username', function ($row) {
-                return $row->user ? $row->user->username : '';
-            })
-            ->addColumn('formatted_created_at', function ($row) {
-                return $row->created_at ? $row->created_at->format('d-m-Y (H:i:s)') : '';
-            })
-            ->addColumn('action', function ($data) {
-                return view('admin-transaction.action')->with('data', $data);
-            })
-            ->addColumn('formatted_amount', function ($row) {
-                return $row->total_amount ? 'Rp ' . number_format($row->total_amount, 0, ',', '.') : '';
-            })
-            ->addColumn('status_formatted', function ($row) {
-                $btnClass = $row->status == 'success' ? 'btn-success' : ($row->status == 'pending' ? 'btn-warning' : 'btn-danger');
-                return '<center><div class="btn ' . $btnClass . ' btn-icon-split">
-                        <span class="text">' . $row->status . '</span>
-                    </div></center>';
-            })
-            ->rawColumns(['action', 'username', 'status_formatted', 'formatted_amount', 'formatted_created_at'])
-            ->make(true);
-    }
 
     // untuk memformat nomor agar 62087xxx
     public static function idPhoneNumberFormat($phone)
@@ -189,7 +106,7 @@ class TransactionController extends Controller
                     'new_purchase' => true,
                     'amount' => 0,
                     'cashier_id' => null,
-                    'interest_id' => $request->interest_id,
+                    'interest_id' => $request->interestId,
                 ]);
             } else {
                 PaymentCode::create([
@@ -205,6 +122,12 @@ class TransactionController extends Controller
                     'interest_id' => null,
                 ]);
             }
+
+            // log activity
+            LogActivity::create([
+                'user_id' => $request->userId,
+                'action' => 'melakukan pembelian',
+            ]);
 
             return response()->json([
                 'status' => true,
@@ -247,6 +170,7 @@ class TransactionController extends Controller
 
     public function confirmPayment(Request $request)
     {
+        $myClass = new MyClass();
 
         $data = PaymentCode::where('code', $request->code)->first();
         $dataProduct = TransactionItem::where('transaction_id', $data->transaction_id)->with('product')->get();
@@ -311,7 +235,7 @@ class TransactionController extends Controller
                 $mpdf = new \Mpdf\Mpdf();
                 // view sebagai konten PDF
                 $html = view('pdf.invoice-pembelian.invoicePaylater', $dataPdf)->render();
-            } else if ($data->type == "tunai") {
+            } else if ($data->type == "cash") {
                 // dd($data->type);
                 $paymentType = "Pembayaran Cash";
                 $data->update([
@@ -351,8 +275,6 @@ class TransactionController extends Controller
                 'cashier_id' => $request->cashier_id,
             ]);
 
-            $dataPaylater->decrement('debt_remaining', $data->amount);
-
             $dataTransaction->update([
                 'status' => 'success',
             ]);
@@ -369,6 +291,8 @@ class TransactionController extends Controller
             $mpdf = new \Mpdf\Mpdf();
             // view sebagai konten PDF
             $html = view('pdf.invoice-pembelian.invoicePembayaranTagihan', $dataPdf)->render();
+
+            $dataPaylater->decrement('debt_remaining', $data->amount);
         }
 
         // $dataPdf = [
@@ -425,7 +349,11 @@ class TransactionController extends Controller
 
         // mengirimkan pdf
         if (file_exists(storage_path('app/public' . $filePath))) {
-            $urlApiWhatsapp = "https://0443-103-242-107-171.ngrok-free.app/send";
+            // log activity
+            LogActivity::create([
+                'user_id' => $request->cashier_id,
+                'action' => 'mengkonfirmasi pembelian' . $data->transaction_id,
+            ]);
             if ($data->type_sending == 'email') {
                 // Mengirim email dengan lampiran PDF
                 Mail::to($userData->email)->send(new SendInvoice(storage_path('app/public' . $filePath)));
@@ -439,19 +367,8 @@ class TransactionController extends Controller
                 ], 200);
             } else if ($data->type_sending == 'whatsapp') {
                 // mengirim via whatsapp
-                $body = [
-                    // "api_key" => "iH21K14bt2p78TkhHbnjr2ffPVfGaB",
-                    // "sender" => "6285161310017",
-                    // "media_type" => "document",
-                    // "url" => url('storage' . $filePath),
-                    "number" => $userData->no_hp,
-                    "fileUrl" => url('storage' . $filePath),
-                    "caption" => "Berikut adalah Invoice pembelian anda",
-                ];
-                $responseApiWa = Http::withHeaders([
-                    'Content-Type' => 'application/json',
-                ])->timeout(60)
-                    ->post('https://a329-103-242-107-171.ngrok-free.app/send', $body);
+
+                $responseApiWa = $myClass->sendMessageWhatsapp($userData->no_hp, url('storage' . $filePath), "Berikut adalah Invoice pembelian anda");
 
                 unlink(storage_path('app/public' . $filePath));
 
@@ -464,27 +381,13 @@ class TransactionController extends Controller
                     'data' => $request->all(),
                 ], 200);
             } else {
-                $body = [
-                    // "api_key" => "iH21K14bt2p78TkhHbnjr2ffPVfGaB",
-                    // "sender" => "6285161310017",
-                    // "media_type" => "document",
-                    // "url" => url('storage' . $filePath),
-                    "fileUrl" => url('storage' . $filePath),
-                    "number" => "6285161310017",
-                    "caption" => "Berikut adalah Invoice pembelian anda",
-                ];
-                // Mengonversi array ke JSON
-                $jsonBody = json_encode($body);
-                $responseApiWa = Http::withHeaders([
-                    'Content-Type' => 'application/json',
-                ])->post($urlApiWhatsapp, $jsonBody);
 
-                // $responseApiWa = $this->curlApiWhatsapp($urlApiWhatsapp, $body);
+                $responseApiWa = $myClass->sendMessageWhatsapp($userData->no_hp, url('storage' . $filePath), "Berikut adalah Invoice pembelian anda");
 
                 // Log respons untuk debugging
                 \Log::info('Respons dari server:', [
-                    'status' => $responseApiWa->status(),
-                    'body' => $responseApiWa->body(),
+                    'status' => $responseApiWa,
+                    'body' => $responseApiWa,
                 ]);
 
                 // Mengirim email dengan lampiran PDF
@@ -495,7 +398,7 @@ class TransactionController extends Controller
                 return response()->json([
                     'status' => true,
                     'message' => 'PDF telah dibuat dan dikirim sebagai: ' . $filePath,
-                    'responApiWa' => $responseApiWa->json(),
+                    'responApiWa' => $responseApiWa,
                     'data' => $request->all(),
                 ], 200);
             }
@@ -537,15 +440,5 @@ class TransactionController extends Controller
             'data' => $request->all(),
         ], 200);
     }
-
-// // Contoh penggunaan fungsi
-// $url = 'https://a329-103-242-107-171.ngrok-free.app/send';
-// $data = [
-//     'number' => '6285161310017',
-//     'caption' => 'Berikut adalah Invoice pembelian anda',
-// ];
-
-// $response = sendCurlRequest($url, $data);
-// echo $response;
 
 }

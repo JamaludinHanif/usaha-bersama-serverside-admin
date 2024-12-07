@@ -3,25 +3,25 @@
     {{ $title }}
 @endsection
 @section('breadcrumbs')
-<ul class="breadcrumbs" style="color: white">
-    <li class="nav-home">
-        <a href="/admin/dashboard">
-            <i class="flaticon-home" style="color: white"></i>
-        </a>
-    </li>
-    <li class="separator">
-        <i class="flaticon-right-arrow" style="color: white"></i>
-    </li>
-    <li class="nav-item">
-        <a href="/admin/resycle/products" style="color: white">Restore</a>
-    </li>
-    <li class="separator">
-        <i class="flaticon-right-arrow" style="color: white"></i>
-    </li>
-    <li class="nav-item">
-        <a href="/admin/resycle/products" style="color: white">Produk</a>
-    </li>
-</ul>
+    <ul class="breadcrumbs" style="color: white">
+        <li class="nav-home">
+            <a href="/admin/dashboard">
+                <i class="flaticon-home" style="color: white"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="flaticon-right-arrow" style="color: white"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/admin/resycle/products" style="color: white">Restore</a>
+        </li>
+        <li class="separator">
+            <i class="flaticon-right-arrow" style="color: white"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/admin/resycle/products" style="color: white">Produk</a>
+        </li>
+    </ul>
 @endsection
 @section('content')
     {{-- filter --}}
@@ -160,8 +160,8 @@
             }
         })
 
-                // function restrore
-                $('body').on('click', '.tombol-restore', function() {
+        // function restrore
+        $('body').on('click', '.tombol-restore', function() {
             Swal.fire({
                 title: "Apakah kmu yakin?",
                 text: "Data akan di Restore/Recycle (diaktifkan kembali)",
@@ -177,6 +177,9 @@
                     $.ajax({
                         url: '/admin/recycle/products/' + id + '/restore',
                         type: 'GET',
+                        data: {
+                            admin_id: "{{ session('userData')->id }}"
+                        },
                         success: function(response) {
                             const Toast = Swal.mixin({
                                 toast: true,
@@ -238,6 +241,9 @@
                     $.ajax({
                         url: '/admin/recycle/products/' + id + '/destroy',
                         type: 'GET',
+                        data: {
+                            admin_id: "{{ session('userData')->id }}"
+                        },
                         success: function(response) {
                             const Toast = Swal.mixin({
                                 toast: true,

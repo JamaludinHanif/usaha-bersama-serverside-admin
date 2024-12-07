@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\MyClass;
 use App\Models\User;
-use App\Models\Paylater;
 // use App\Exports\UsersExport;
 // use App\Imports\UsersImport;
 // use App\Exports\TemplateImport;
 // use Intervention\Image\Facades\Image;
+use App\Models\Paylater;
 use App\Models\ReedemCode;
-use App\Models\PaymentCode;
-use App\Models\Transaction;
+use App\Models\LogActivity;
 // use Intervention\Image\ImageManager;
 // use Maatwebsite\Excel\Facades\Excel;
+use App\Models\PaymentCode;
+use App\Models\Transaction;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -130,6 +132,12 @@ class UserController extends Controller
         if ($validasi->fails()) {
             return response()->json(['errors' => $validasi->errors()]);
         } else {
+            // log activity
+            $userId = $request->admin_id;
+            LogActivity::create([
+                'user_id' => $userId,
+                'action' => 'membuat akun' . $request->username,
+            ]);
             $data = [
                 'name' => $request->name,
                 'username' => $request->username,
@@ -177,7 +185,6 @@ class UserController extends Controller
 
     public function updateUser2(Request $request, $id)
     {
-
         // dd($request->all());
         $user = User::findOrFail($id);
 
@@ -235,7 +242,12 @@ class UserController extends Controller
             return response()->json(['errors' => $validasi->errors()]);
         } else {
             $data = $validasi->validated();
-
+            // log activity
+            $userId = $request->admin_id;
+            LogActivity::create([
+                'user_id' => $userId,
+                'action' => 'mengubah akun' . $id,
+            ]);
             // Hash password jika diisi
             if (isset($data['password'])) {
                 $data['password'] = bcrypt($data['password']);
@@ -271,21 +283,25 @@ class UserController extends Controller
 
     }
 
-    public function deleteUserAjax($id)
+    public function deleteUserAjax(Request $request, $id)
     {
-        // dd($id);
         try {
+            // log activity
+            $userId = $request->admin_id;
+            LogActivity::create([
+                'user_id' => $userId,
+                'action' => 'menghapus akun' . $id,
+            ]);
             $user = User::findOrFail($id);
             if ($user->image) {
                 File::delete(storage_path('app/public/' . $user->image));
                 $user->update(['image' => null]);
             }
-            File::delete(storage_path('app/public/' . $user->image));
             $user->delete();
             // toast('User berhasil di ubah','success');
             return response()->json(['success' => 'Berhasil menghapus data'], 200); // Berikan respons sukses
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Gagal menghapus data '], 500); // Berikan respons error . $e->getMessage()
+            return response()->json(['error' => $e->getMessage()], 500); // Berikan respons error . $e->getMessage()
         }
     }
 
@@ -337,42 +353,30 @@ class UserController extends Controller
             ->make(true);
     }
 
-    public function restore($id)
+    public function restore(Request $request, $id)
     {
         // dd($id);
         $user = User::onlyTrashed()->where('id', $id)->restore();
-
+        // log activity
+        $userId = $request->admin_id;
+        LogActivity::create([
+            'user_id' => $userId,
+            'action' => 'merestore akun' . $id,
+        ]);
         return response()->json(['success' => 'Berhasil merestore data']);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         // dd($id);
         $user = User::onlyTrashed()->where('id', $id)->forceDelete();
-
-        return response()->json(['success' => 'Berhasil mendestroy data']);
-    }
-
-    // excellll
-    public function export()
-    {
-        return Excel::download(new UsersExport, 'users.xlsx');
-    }
-
-    public function import(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|mimes:xlsx,csv',
+        // log activity
+        $userId = $request->admin_id;
+        LogActivity::create([
+            'user_id' => $userId,
+            'action' => 'mendestroy akun' . $id,
         ]);
-
-        Excel::import(new UsersImport, $request->file('file'));
-
-        return redirect('/tes')->with('success', 'Data imported successfully!');
-    }
-
-    public function downloadTemplate()
-    {
-        return Excel::download(new TemplateImport, 'template-user.xlsx');
+        return response()->json(['success' => 'Berhasil mendestroy data']);
     }
 
     // APIIIIII
@@ -446,27 +450,27 @@ class UserController extends Controller
                 $uniqueCode = Str::upper(Str::random(8)); // membuat kode acak
             } while (PaymentCode::where('code', $uniqueCode)->exists());
 
-            PaymentCode::create([
-                'transaction_id' => $request->transactionId,
-                'user_id' => $request->userId,
-                'code' => $uniqueCode,
-                'type' => "pay_bill",
-                'type_sending' => $request->methodSending, //
-                'status' => "pending",
-                'new_purchase' => false,
-                'amount' => $request->nominalPayment,
-                'cashier_id' => null,
-                'interest_id' => $request->interestId,
-                'paylater_id' => $request->paylaterId
-            ]);
-
-            Transaction::create([
+            $transaction = Transaction::create([
                 'total_amount' => $request->nominalPayment,
                 'kode_invoice' => "belum jadi",
                 'user_id' => $request->userId,
                 'type' => "payment bill",
                 'status' => 'pending',
                 'interest_id' => $request->interestId,
+            ]);
+
+            PaymentCode::create([
+                'transaction_id' => $transaction->id,
+                'user_id' => $request->userId,
+                'code' => $uniqueCode,
+                'type' => "payment bill",
+                'type_sending' => $request->methodSending, //
+                'status' => "pending",
+                'new_purchase' => false,
+                'amount' => $request->nominalPayment,
+                'cashier_id' => null,
+                'interest_id' => $request->interestId,
+                'paylater_id' => $request->paylaterId,
             ]);
 
             return response()->json([
@@ -486,5 +490,11 @@ class UserController extends Controller
                 'data' => $data,
             ], 200);
         }
+
+        // log activity
+        LogActivity::create([
+            'user_id' => $request->userId,
+            'action' => 'melakukan pembayaran tagihan' . $request->paylaterId,
+        ]);
     }
 }

@@ -33,6 +33,11 @@ class PaymentCode extends Model
         return $this->belongsTo(Transaction::class);
     }
 
+    public function cashier()
+    {
+        return $this->belongsTo(User::class, 'cashier_id');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

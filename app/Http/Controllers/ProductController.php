@@ -2,19 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\LogActivity;
 use App\Models\Product;
-use App\Mail\SendInvoice;
 use App\Models\ReedemCode;
-use App\Models\Transaction;
-use Illuminate\Support\Str;
+use App\Models\User;
 use Illuminate\Http\Request;
-use App\Models\TransactionItem;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
-use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Yajra\DataTables\Facades\DataTables;
 
 class ProductController extends Controller
 {
@@ -23,7 +18,7 @@ class ProductController extends Controller
     {
         return view('admin-products.kelola-products.products', [
             'title' => 'Kelola Produk',
-            'users' => User::all()
+            'users' => User::all(),
         ]);
     }
 
@@ -42,53 +37,53 @@ class ProductController extends Controller
         }
 
         return Datatables::of($data)
-        ->addColumn('category', function($data) {
-            $btnClass = $data->category == 'minuman'
+            ->addColumn('category', function ($data) {
+                $btnClass = $data->category == 'minuman'
                 ? 'btn-info'
                 : ($data->category == 'makanan'
                     ? 'btn-success'
                     : ($data->category == 'pembersih'
-                    ? 'btn-danger'
-                    : 'btn-warning'));
+                        ? 'btn-danger'
+                        : 'btn-warning'));
 
-            return '<div class="' . $btnClass . '"
+                return '<div class="' . $btnClass . '"
                         style="padding-top: 5px; padding-bottom: 5px; color: white; border-radius: 10px; font-size: 15px; text-align: center;">'
-                    . $data->category .
+                . $data->category .
                     '</div>';
-        })
-        ->addColumn('unit', function($data) {
-            $btnClass2 = $data->unit == 'pcs'
-            ? 'btn-info'
-            : ($data->unit == 'dos'
-                ? 'btn-success'
-                : ($data->unit == 'pak'
-                    ? 'btn-danger'
-                    : 'btn-warning'));
+            })
+            ->addColumn('unit', function ($data) {
+                $btnClass2 = $data->unit == 'pcs'
+                ? 'btn-info'
+                : ($data->unit == 'dos'
+                    ? 'btn-success'
+                    : ($data->unit == 'pak'
+                        ? 'btn-danger'
+                        : 'btn-warning'));
 
-            return '<div class="' . $btnClass2 . '"
+                return '<div class="' . $btnClass2 . '"
                         style="padding-top: 5px; padding-bottom: 5px; color: white; border-radius: 10px; font-size: 15px; text-align: center;">'
-                    . $data->unit .
+                . $data->unit .
                     '</div>';
-        })
-        ->addColumn('action', function($data){
-            return view('admin-products.kelola-products.action')->with('data', $data);
-        })
-        ->addColumn('image', function($data) {
-            // Ganti $data->image dengan $data->image untuk mendapatkan nilai gambar dari data
-            $imageUrl = $data->image == null
+            })
+            ->addColumn('action', function ($data) {
+                return view('admin-products.kelola-products.action')->with('data', $data);
+            })
+            ->addColumn('image', function ($data) {
+                // Ganti $data->image dengan $data->image untuk mendapatkan nilai gambar dari data
+                $imageUrl = $data->image == null
                 ? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSI3-0UOb16mRek6YkvKr4wuBpEmwYfWhav0w&s'
                 : $data->image;
 
-            // Kembalikan HTML yang diinginkan
-            return '<div class="d-flex justify-content-center">
+                // Kembalikan HTML yang diinginkan
+                return '<div class="d-flex justify-content-center">
                         <img src="' . $imageUrl . '" width="50" alt="">
                     </div>';
-        })
-        ->addColumn('formatted_amount', function($row) {
-            return $row->price ? 'Rp ' . number_format($row->price, 0, ',', '.') : '';
-        })
-        ->rawColumns(['category', 'unit', 'image', 'formatted_amount', 'action'])
-        ->make(true);
+            })
+            ->addColumn('formatted_amount', function ($row) {
+                return $row->price ? 'Rp ' . number_format($row->price, 0, ',', '.') : '';
+            })
+            ->rawColumns(['category', 'unit', 'image', 'formatted_amount', 'action'])
+            ->make(true);
     }
 
     public function showFormCreate()
@@ -103,7 +98,7 @@ class ProductController extends Controller
 
         $validasi = Validator::make($request->all(), [
             'name' => 'required',
-            'price'=> 'required',
+            'price' => 'required',
             'category' => 'required',
             'unit' => 'required',
             'stock' => 'required',
@@ -118,6 +113,12 @@ class ProductController extends Controller
         if ($validasi->fails()) {
             return response()->json(['errors' => $validasi->errors()]);
         } else {
+            // log activity
+            $userId = $request->admin_id;
+            LogActivity::create([
+                'user_id' => $userId,
+                'action' => 'manambahkan produk',
+            ]);
             $data = [
                 'name' => $request->name,
                 'price' => $request->price,
@@ -136,7 +137,7 @@ class ProductController extends Controller
     {
         return view('admin-products.kelola-products.editProducts', [
             'title' => 'Edit Produk',
-            'data' => Product::where('id', $id)->first()
+            'data' => Product::where('id', $id)->first(),
         ]);
         // $data = Quotes::where('id', $id)->first();
         // return response()->json(['data' => $data]);
@@ -147,7 +148,7 @@ class ProductController extends Controller
         $produk = Product::findOrFail($id);
         $validasi = Validator::make($request->all(), [
             'name' => 'required',
-            'price'=> 'required',
+            'price' => 'required',
             'category' => 'required',
             'unit' => 'required',
             'stock' => 'required',
@@ -162,6 +163,12 @@ class ProductController extends Controller
         if ($validasi->fails()) {
             return response()->json(['errors' => $validasi->errors()]);
         } else {
+            // log activity
+            $userId = $request->admin_id;
+            LogActivity::create([
+                'user_id' => $userId,
+                'action' => 'mengubah produk' . $id,
+            ]);
             $data = [
                 'name' => $request->name,
                 'price' => $request->price,
@@ -180,11 +187,24 @@ class ProductController extends Controller
         try {
             $quote = Product::findOrFail($id);
             $quote->delete();
+            // log activity
+            $userId = $request->admin_id;
+            LogActivity::create([
+                'user_id' => $userId,
+                'action' => 'menghapus produk' . $id,
+            ]);
             // toast('User berhasil di ubah','success');
             return response()->json(['success' => 'Berhasil menghapus data'], 200); // Berikan respons sukses
         } catch (\Exception $e) {
             return response()->json(['error' => 'Gagal menghapus data: ' . $e->getMessage()], 500); // Berikan respons error
         }
+    }
+
+    public function importProduct()
+    {
+        return view('admin-products.kelola-products.importProducts', [
+            'title' => 'Import Produk',
+        ]);
     }
 
     // recycle section
@@ -210,66 +230,77 @@ class ProductController extends Controller
         }
 
         return Datatables::of($data)
-        ->addColumn('category', function($data) {
-            $btnClass = $data->category == 'minuman'
+            ->addColumn('category', function ($data) {
+                $btnClass = $data->category == 'minuman'
                 ? 'btn-info'
                 : ($data->category == 'makanan'
                     ? 'btn-success'
                     : ($data->category == 'pembersih'
-                    ? 'btn-danger'
-                    : 'btn-warning'));
+                        ? 'btn-danger'
+                        : 'btn-warning'));
 
-            return '<div class="' . $btnClass . '"
+                return '<div class="' . $btnClass . '"
                         style="padding-top: 5px; padding-bottom: 5px; color: white; border-radius: 10px; font-size: 15px; text-align: center;">'
-                    . $data->category .
+                . $data->category .
                     '</div>';
-        })
-        ->addColumn('unit', function($data) {
-            $btnClass2 = $data->unit == 'pcs'
-            ? 'btn-info'
-            : ($data->unit == 'dos'
-                ? 'btn-success'
-                : ($data->unit == 'pak'
-                    ? 'btn-danger'
-                    : 'btn-warning'));
+            })
+            ->addColumn('unit', function ($data) {
+                $btnClass2 = $data->unit == 'pcs'
+                ? 'btn-info'
+                : ($data->unit == 'dos'
+                    ? 'btn-success'
+                    : ($data->unit == 'pak'
+                        ? 'btn-danger'
+                        : 'btn-warning'));
 
-            return '<div class="' . $btnClass2 . '"
+                return '<div class="' . $btnClass2 . '"
                         style="padding-top: 5px; padding-bottom: 5px; color: white; border-radius: 10px; font-size: 15px; text-align: center;">'
-                    . $data->unit .
+                . $data->unit .
                     '</div>';
-        })
-        ->addColumn('action', function($data){
-            return view('admin-recycle.action')->with('data', $data);
-        })
-        ->addColumn('image', function($data) {
-            // Ganti $data->image dengan $data->image untuk mendapatkan nilai gambar dari data
-            $imageUrl = $data->image == null
+            })
+            ->addColumn('action', function ($data) {
+                return view('admin-recycle.action')->with('data', $data);
+            })
+            ->addColumn('image', function ($data) {
+                // Ganti $data->image dengan $data->image untuk mendapatkan nilai gambar dari data
+                $imageUrl = $data->image == null
                 ? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSI3-0UOb16mRek6YkvKr4wuBpEmwYfWhav0w&s'
                 : $data->image;
 
-            // Kembalikan HTML yang diinginkan
-            return '<div class="d-flex justify-content-center">
+                // Kembalikan HTML yang diinginkan
+                return '<div class="d-flex justify-content-center">
                         <img src="' . $imageUrl . '" width="50" alt="">
                     </div>';
-        })
-        ->addColumn('formatted_amount', function($row) {
-            return $row->price ? 'Rp ' . number_format($row->price, 0, ',', '.') : '';
-        })
-        ->rawColumns(['category', 'unit', 'image', 'formatted_amount', 'action'])
-        ->make(true);
+            })
+            ->addColumn('formatted_amount', function ($row) {
+                return $row->price ? 'Rp ' . number_format($row->price, 0, ',', '.') : '';
+            })
+            ->rawColumns(['category', 'unit', 'image', 'formatted_amount', 'action'])
+            ->make(true);
     }
 
     public function restore($id)
     {
         // dd($id);
         $product = Product::onlyTrashed()->where('id', $id)->restore();
-
+        // log activity
+        $userId = $request->admin_id;
+        LogActivity::create([
+            'user_id' => $userId,
+            'action' => 'merestore produk' . $id,
+        ]);
         return response()->json(['success' => 'Berhasil merestore data']);
     }
 
     public function destroy($id)
     {
         // dd($id);
+        // log activity
+        $userId = $request->admin_id;
+        LogActivity::create([
+            'user_id' => $userId,
+            'action' => 'menghancurkan produk' . $id,
+        ]);
         $product = Product::onlyTrashed()->where('id', $id)->forceDelete();
 
         return response()->json(['success' => 'Berhasil mendestroy data']);
@@ -279,7 +310,7 @@ class ProductController extends Controller
     public function showAllApi(Request $request)
     {
         $data = Product::all();
-        $data = $data->map(function($item) {
+        $data = $data->map(function ($item) {
             $item->value = $item->id;
             $item->label = $item->name . " " . " " . " " . "-" . $item->unit;
             return $item;
@@ -345,7 +376,6 @@ class ProductController extends Controller
 
         }
 
-
         return response()->json([
             'status' => true,
             'message' => 'berhasil membuat code',
@@ -363,7 +393,7 @@ class ProductController extends Controller
             ->get();
 
         if ($reedemCodes->isNotEmpty()) {
-            $data = $reedemCodes->map(function($reedemCode) {
+            $data = $reedemCodes->map(function ($reedemCode) {
                 return [
                     'reedem_code_id' => $reedemCode->id,
                     'code' => $reedemCode->code,
@@ -381,7 +411,7 @@ class ProductController extends Controller
                     'label' => $reedemCode->product->name . ' - ' . $reedemCode->product->unit, // Label untuk ditampilkan
                     'value' => $reedemCode->product->id, // Value untuk dipakai
                     'created_at' => $reedemCode->created_at,
-                    'updated_at' => $reedemCode->updated_at
+                    'updated_at' => $reedemCode->updated_at,
                 ];
             });
 

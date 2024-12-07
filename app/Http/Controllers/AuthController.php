@@ -28,7 +28,7 @@ class AuthController extends Controller
         // log activity
         LogActivity::create([
             'user_id' => $userId,
-            'action' => 'melakukan logout',
+            'action' => 'logout',
         ]);
 
         return redirect('/');
@@ -58,7 +58,7 @@ class AuthController extends Controller
             // log activity
             LogActivity::create([
                 'user_id' => $userId,
-                'action' => 'melakukan login',
+                'action' => 'login',
             ]);
 
             $request->session()->regenerate();

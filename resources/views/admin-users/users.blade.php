@@ -5,25 +5,25 @@
 @endsection
 
 @section('breadcrumbs')
-<ul class="breadcrumbs" style="color: white">
-    <li class="nav-home">
-        <a href="/admin/dashboard">
-            <i class="flaticon-home" style="color: white"></i>
-        </a>
-    </li>
-    <li class="separator">
-        <i class="flaticon-right-arrow" style="color: white"></i>
-    </li>
-    <li class="nav-item">
-        <a href="/admin/users/users" style="color: white">Users</a>
-    </li>
-    <li class="separator">
-        <i class="flaticon-right-arrow" style="color: white"></i>
-    </li>
-    <li class="nav-item">
-        <a href="/admin/users/users" style="color: white">Kelola Users</a>
-    </li>
-</ul>
+    <ul class="breadcrumbs" style="color: white">
+        <li class="nav-home">
+            <a href="/admin/dashboard">
+                <i class="flaticon-home" style="color: white"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="flaticon-right-arrow" style="color: white"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/admin/users/users" style="color: white">Users</a>
+        </li>
+        <li class="separator">
+            <i class="flaticon-right-arrow" style="color: white"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/admin/users/users" style="color: white">Kelola Users</a>
+        </li>
+    </ul>
 @endsection
 
 @section('content')
@@ -46,12 +46,7 @@
 
     <div class="" style="height: 35px"></div>
 
-    <div class="d-flex justify-content-between">
-
-        {{-- download pdf --}}
-        {{-- <a href="/generate-pdf" id="generatePdfBtn" class="btn btn-primary">Download PDF</a> --}}
-        <a href="#" id="generatePdfBtn" class="btn btn-primary tombol-pdf ladda-button">Download PDF</a>
-
+    <div class="d-flex justify-content-end">
         {{-- tambah user --}}
         <a href="#" data-toggle="modal" id="createButton" data-target="#insertModal"
             class="btn btn-primary btn-icon-split">
@@ -66,7 +61,24 @@
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Semua User</h6>
+            <div class="" style="display: flex;justify-content: space-between;align-items: center">
+                <h6 class="m-0 font-weight-bold text-primary">Semua User</h6>
+                <div class="" style="display: flex;justify-content: end;">
+                    <div class="">
+                        <a href="#" id="exportPdf" class="btn btn-round btn-primary export-pdf ladda-button"
+                            style="color: white">Export PDF</a>
+                    </div>
+                    <div class="ml-5">
+                        <a href="#" id="exportExcel" class="btn btn-round btn-warning export-excel ladda-button"
+                            style="color: white">Export
+                            Excel</a>
+                    </div>
+                    <div class="ml-5">
+                        <a href="#" id="importExcel" class="btn btn-round btn-success" style="color: white">Import
+                            Excel</a>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -159,8 +171,8 @@
             $('#myTable').DataTable().ajax.reload();
         });
 
-        $('#generatePdfBtn').click(function() {
-            var loadingPdf = Ladda.create(document.querySelector('.tombol-pdf'));
+        $('#exportPdf').click(function() {
+            var loadingPdf = Ladda.create(document.querySelector('.export-pdf'));
             let roleSelected = $('#roleSelected').val();
             Swal.fire({
                 title: "Ingin mendownload PDF?",
@@ -173,7 +185,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     loadingPdf.start();
-                    window.location.href = `/pdf/generate-pdf-users-data?role=${roleSelected}`;
+                    window.location.href = `/admin/pdf/user?role=${roleSelected}`;
 
                     setTimeout(() => {
                         loadingPdf.stop();
@@ -182,7 +194,17 @@
                     loadingPdf.stop();
                 }
             });
+        });
 
+        // function download excel
+        $('#exportExcel').click(function() {
+            var loadingExcel = Ladda.create(document.querySelector('.export-excel'));
+            loadingExcel.start();
+            window.location.href = '{{ route('excel.export.user') }}';
+
+            setTimeout(() => {
+                loadingExcel.stop();
+            }, 3000);
         });
 
         function create() {
@@ -226,6 +248,7 @@
             formData.append('email', $('#formEdit').find('[id="email"]').val());
             formData.append('no_hp', $('#formEdit').find('[id="no_hp"]').val());
             formData.append('password', $('#formEdit').find('[id="password"]').val());
+            formData.append('admin_id', "{{ session('userData')->id }}");
 
             var fileInput = $('#formEdit').find('[id="image"]')[0].files[0];
             if (fileInput) {
@@ -346,6 +369,7 @@
             formData.append('email', $('#formCreate').find('[id="email"]').val());
             formData.append('no_hp', $('#formCreate').find('[id="no_hp"]').val());
             formData.append('password', $('#formCreate').find('[id="password"]').val());
+            formData.append('admin_id', "{{ session('userData')->id }}");
 
             console.log(formData);
             var loadingCreate = Ladda.create(document.querySelector('.tombol-tambah'));
@@ -464,6 +488,9 @@
                     $.ajax({
                         url: '/api/users/users/' + id,
                         type: 'DELETE',
+                        data: {
+                            admin_id: "{{ session('userData')->id }}"
+                        },
                         success: function(response) {
                             const Toast = Swal.mixin({
                                 toast: true,

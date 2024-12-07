@@ -19,7 +19,7 @@
             <i class="flaticon-right-arrow" style="color: white"></i>
         </li>
         <li class="nav-item">
-            <a href="/admin/transaction/transaction" style="color: white">History Transaksi</a>
+            <a href="/admin/transaction/transaction" style="color: white">Riwayat Pembayaran</a>
         </li>
     </ul>
 @endsection
@@ -87,10 +87,11 @@
                 <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th style="background-color: #007bff; color: white;">Kode Invoice</th>
+                            <th style="background-color: #007bff; color: white;">Kode</th>
                             <th style="background-color: #007bff; color: white;">Nama Pengguna</th>
+                            <th style="background-color: #007bff; color: white;">Kasir</th>
                             <th style="background-color: #007bff; color: white;">Status</th>
-                            <th style="background-color: #007bff; color: white;">Total Pembelian</th>
+                            <th style="background-color: #007bff; color: white;">Total Pembayaran</th>
                             <th style="background-color: #007bff; color: white;">Tipe</th>
                             <th style="background-color: #007bff; color: white;">Waktu</th>
                             <th style="background-color: #007bff; color: white;">Aksi</th>
@@ -110,15 +111,19 @@
                 serverSide: true,
                 autoWidth: false,
                 ajax: {
-                    url: "{{ route('index.transaction.json') }}",
+                    url: "{{ route('index.payments.json') }}",
                 },
                 columns: [{
-                        data: 'kode_invoice',
-                        name: 'kode_invoice'
+                        data: 'code',
+                        name: 'code'
                     },
                     {
                         data: 'username',
                         name: 'username'
+                    },
+                    {
+                        data: 'cashier',
+                        name: 'cashier'
                     },
                     {
                         data: 'status_formatted',
@@ -150,7 +155,7 @@
                     let class_id = $('#formFilter').find('[name="class_id"]').val();
 
                     settings.ajax =
-                        `{{ route('index.transaction.json') }}?date=${date}&class_id=${class_id}&status=${statusSelected}&type=${typeSelected}`;
+                        `{{ route('index.payments.json') }}?date=${date}&class_id=${class_id}&status=${statusSelected}&type=${typeSelected}`;
                 }
             });
 
@@ -188,7 +193,7 @@
                     if (result.isConfirmed) {
                         loadingPdf.start();
                         window.location.href =
-                            `/admin/pdf/transaction?status=${statusSelected}&type=${typeSelected}&date=${date}`;
+                            `/admin/pdf/payment?status=${statusSelected}&type=${typeSelected}&date=${date}`;
                         // window.location.href = `{{ route('pdf.transaction') }}`;
 
                         setTimeout(() => {
@@ -205,7 +210,7 @@
             $('#exportExcel').click(function() {
                 var loadingExcel = Ladda.create(document.querySelector('.export-excel'));
                 loadingExcel.start();
-                window.location.href = '{{ route('excel.export.transaction') }}';
+                window.location.href = '{{ route('excel.export.payment') }}';
 
                 setTimeout(() => {
                     loadingExcel.stop();

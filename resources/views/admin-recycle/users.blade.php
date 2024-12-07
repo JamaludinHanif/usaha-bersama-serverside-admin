@@ -164,6 +164,9 @@
                     $.ajax({
                         url: '/admin/recycle/users/' + id + '/restore',
                         type: 'GET',
+                        data: {
+                            admin_id: "{{ session('userData')->id }}"
+                        },
                         success: function(response) {
                             const Toast = Swal.mixin({
                                 toast: true,
@@ -225,6 +228,9 @@
                     $.ajax({
                         url: '/admin/recycle/users/' + id + '/destroy',
                         type: 'GET',
+                        data: {
+                            admin_id: "{{ session('userData')->id }}"
+                        },
                         success: function(response) {
                             const Toast = Swal.mixin({
                                 toast: true,

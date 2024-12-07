@@ -13,14 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('paylaters', function (Blueprint $table) {
+        Schema::create('notes', function (Blueprint $table) {
             $table->id();
-            $table->integer('debt_remaining');
             $table->foreignId('user_id');
-            $table->foreignId('transaction_id');
-            $table->foreignId('interest_id');
-            $table->string('status'); // 1 artinya belum lunas sedangkan 2 artinya lunas
-            $table->date('due_date');
+            $table->string('status'); // 1 artinya belum selesai sedangkan 2 artinya selesai
+            $table->string('note');
             $table->timestamps();
         });
     }
@@ -32,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('paylaters');
+        Schema::dropIfExists('notes');
     }
 };

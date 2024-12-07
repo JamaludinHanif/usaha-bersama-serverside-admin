@@ -163,6 +163,7 @@
         })
 
         $('body').on('click', '.tombol-tambah', function() {
+            // alert('{{ session('userData')->name }}')
             var loadingCreate = Ladda.create(document.querySelector('.tombol-tambah'));
             loadingCreate.start();
             $.ajax({
@@ -173,6 +174,7 @@
                     interest: $('#formCreate').find('[id="interest"]').val(),
                     amount_day: $('#formCreate').find('[id="amount_day"]').val(),
                     unit_date: $('#formCreate').find('[id="unit_date"]').val(),
+                    admin_id: '{{ session('userData')->id }}'
                 },
                 success: function(response) {
                     const Toast = Swal.mixin({

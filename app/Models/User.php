@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Note;
 use App\Models\Paylater;
 use App\Models\LogActivity;
 use App\Models\PaymentCode;
@@ -51,6 +52,11 @@ class User extends Authenticatable
     public function paymentCode()
     {
         return $this->hasMany(PaymentCode::class);
+    }
+
+    public function notes()
+    {
+        return $this->hasMany(Note::class);
     }
 
     public function sendPasswordResetNotification($token)

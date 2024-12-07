@@ -44,7 +44,7 @@
                             </li>
                             <li class="{{ Request::is('admin/users/log-activities') ? 'active' : '' }}">
                                 <a href="/admin/users/log-activities">
-                                    <span class="sub-item">Log-Aktifitas</span>
+                                    <span class="sub-item">Log Aktivitas</span>
                                 </a>
                             </li>
                         </ul>
@@ -90,7 +90,12 @@
                         <ul class="nav nav-collapse">
                             <li class="{{ Request::is('admin/transaction/transaction') ? 'active' : '' }}">
                                 <a href="/admin/transaction/transaction">
-                                    <span class="sub-item">History Transaksi</span>
+                                    <span class="sub-item">Riwayat Transaksi</span>
+                                </a>
+                            </li>
+                            <li class="{{ Request::is('admin/transaction/payments') ? 'active' : '' }}">
+                                <a href="/admin/transaction/payments">
+                                    <span class="sub-item">Riwayat Pembayaran</span>
                                 </a>
                             </li>
                             <li class="{{ Request::is('admin/transaction/interest') ? 'active' : '' }}">
@@ -137,9 +142,9 @@
                     </a>
                 </li>
                 <li class="mx-4 mt-2">
-                    <a href="https://usaha-bersama.hanifdev.my.id" class="btn btn-primary btn-block"><span
-                            class="btn-label mr-2"> <i class="fa fa-heart"></i>
-                        </span>Usaha Bersama</a>
+                    <a href="{{ route('auth.logout') }}" class="btn btn-primary btn-block"><span
+                            class="btn-label mr-2"> <i class="fas fa-sign-out-alt"></i>
+                        </span>Logout</a>
                 </li>
             </ul>
         </div>
