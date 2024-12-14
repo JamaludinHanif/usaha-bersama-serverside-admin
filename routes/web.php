@@ -81,6 +81,7 @@ Route::prefix('admin')->middleware(['is_admin'])->group(function () {
         Route::get('/{id}/detail', [HistoryController::class, 'getDetailTransaction'])->name('transaction.detail');
         // riwayat pembayaran
         Route::get('/payments', [HistoryController::class, 'indexPayment'])->name('index.payments');
+        Route::get('/{id}/detail-payment', [HistoryController::class, 'getDetailPayment'])->name('payment.detail');
         // kelola bunga
         Route::get('/interest', [InterestController::class, 'index']);
         Route::get('/create-interest', [InterestController::class, 'create']);

@@ -74,12 +74,14 @@ class DashboardController extends Controller
             ];
         });
 
+        // top kasir
         $topCashiers = PaymentCode::select('cashier_id', \DB::raw('SUM(amount) as total_sales'))
             ->groupBy('cashier_id') // Kelompokkan berdasarkan cashier_id
             ->orderByDesc('total_sales') // Urutkan berdasarkan total_sales yang terbesar
             ->take(7) // Ambil 5 kasir teratas
             ->get();
 
+            // top pembeli
         $topBuyers = PaymentCode::select('user_id', \DB::raw('SUM(amount) as total_sales'))
             ->groupBy('user_id')
             ->orderByDesc('total_sales')

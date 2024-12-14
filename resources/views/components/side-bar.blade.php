@@ -134,13 +134,13 @@
                         </ul>
                     </div>
                 </li>
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a href="widgets.html">
                         <i class="fas fa-desktop"></i>
                         <p>Widgets</p>
                         <span class="badge badge-success">4</span>
                     </a>
-                </li>
+                </li> --}}
                 <li class="mx-4 mt-2">
                     <a href="{{ route('auth.logout') }}" class="btn btn-primary btn-block"><span
                             class="btn-label mr-2"> <i class="fas fa-sign-out-alt"></i>

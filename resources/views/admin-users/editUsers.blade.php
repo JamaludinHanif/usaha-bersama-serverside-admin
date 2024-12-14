@@ -22,6 +22,13 @@
                                         <div class="invalid-feedback feedback-username"></div>
                                     </div>
                                 </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon1">Rp.</span>
+                                    <input type="number" name="debt_limit" value="{{ $datas->debt_limit }}" id="debt_limit" class="form-control input-debt_limit"
+                                        placeholder="Masukan Limit (tanpa menggunakan titik dan spasi)"
+                                        aria-describedby="basic-addon1">
+                                    <div class="invalid-feedback feedback-debt_limit"></div>
+                                </div>
                                 <div class="form-group row">
                                     <div class="col-sm-6 mb-3 mb-sm-0">
                                         <select name="role" id="role" class="form-control input-role"
@@ -43,7 +50,7 @@
                                             <div class="invalid-feedback feedback-no_hp"></div>
                                     </div>
                                 </div>
-                                <div class="form-group row align-items-center">
+                                {{-- <div class="form-group row align-items-center">
                                     <div class="mb-3 mb-sm-0 d-flex justify-content-center col">
                                         <img src="{{ $datas->image == null ? 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png' : asset('storage/' . $datas->image) }}"
                                             width="100" alt="">
@@ -55,7 +62,7 @@
                                             name="image">
                                         <div class="invalid-feedback feedback-image"></div>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <div class="form-group row">
                                     <div class="col-sm-6">
                                         <input type="email" name="email"

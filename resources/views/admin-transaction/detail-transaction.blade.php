@@ -3,46 +3,134 @@
     {{ $title }}
 @endsection
 @section('breadcrumbs')
-<ul class="breadcrumbs" style="color: white">
-    <li class="nav-home">
-        <a href="/admin/dashboard">
-            <i class="flaticon-home" style="color: white"></i>
-        </a>
-    </li>
-    <li class="separator">
-        <i class="flaticon-right-arrow" style="color: white"></i>
-    </li>
-    <li class="nav-item">
-        <a href="/admin/transaction/transaction" style="color: white">Transaksi</a>
-    </li>
-    <li class="separator">
-        <i class="flaticon-right-arrow" style="color: white"></i>
-    </li>
-    <li class="nav-item">
-        <a href="/admin/transaction/transaction" style="color: white">History Transaksi</a>
-    </li>
-    <li class="separator">
-        <i class="flaticon-right-arrow" style="color: white"></i>
-    </li>
-    <li class="nav-item">
-        <a href="#" style="color: white">Detail Transaksi</a>
-    </li>
-</ul>
+    <ul class="breadcrumbs" style="color: white">
+        <li class="nav-home">
+            <a href="/admin/dashboard">
+                <i class="flaticon-home" style="color: white"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="flaticon-right-arrow" style="color: white"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/admin/transaction/transaction" style="color: white">Transaksi</a>
+        </li>
+        <li class="separator">
+            <i class="flaticon-right-arrow" style="color: white"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/admin/transaction/transaction" style="color: white">Riwayat Transaksi</a>
+        </li>
+        <li class="separator">
+            <i class="flaticon-right-arrow" style="color: white"></i>
+        </li>
+        <li class="nav-item">
+            <a href="#" style="color: white">Detail Transaksi</a>
+        </li>
+    </ul>
 @endsection
 
 @section('content')
-<div class="row">
-    <div class="card c">
-        <div class="card body">
-            User
+    {{-- @dd($datas) --}}
+    <div class="container my-5">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4>Detail Transaksi</h4>
+            </div>
+            <div class="card-body">
+                <!-- Informasi Transaksi -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <table>
+                            <tr>
+                                <td>
+                                    <span class="mx-2">ID Transaksi</span>
+                                </td>
+                                <td>: <span class="fw-bold mx-1">#{{ $datas->kode_invoice }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="mx-2">Tanggal</span>
+                                </td>
+                                <td>: <span class="fw-bold mx-1">{{ $datas->created_at->format('d-m-Y (H:i:s)') }}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="mx-2">Type</span></td>
+                                <td>: <span
+                                        class="badge text-white fw-bold mx-1 {{ $datas->type == 'paylater' ? 'bg-warning' : ($datas->type == 'cash' || $datas->type == 'tunai' ? 'bg-success' : 'bg-info') }}">
+                                        {{ $datas->type }}
+                                    </span></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table>
+                            <tr>
+                                <td><span class="mx-2">Nama Pelanggan</span></td>
+                                <td>: <span class="fw-bold mx-1">{{ $datas->user->name }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="mx-2">Status</span></td>
+                                <td>: <span
+                                        class="badge text-white fw-bold mx-1 {{ $datas->status == 'pending' ? 'bg-warning' : ($datas->status == 'success' ? 'bg-success' : 'bg-danger') }}">
+                                        {{ $datas->status }}
+                                    </span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="mx-2">Invoice/Nota</span></td>
+                                <td>: <span class="fw-bold mx-1"><a href="#">Download Invoice</a></span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tabel Item Transaksi -->
+                @if ($datas->items->count() > 0)
+                    <h5 class="mb-3">Daftar Item</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Produk</th>
+                                    <th>Jumlah</th>
+                                    <th>Harga Satuan</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($datas->items as $index => $item)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $item->product->name }}</td>
+                                        <td>{{ $item->quantity }} {{ $item->product->unit }}</td>
+                                        <td>Rp. {{ number_format($item->product->price, 0, ',', '.') }}</td>
+                                        <td>Rp. {{ number_format($item->price, 0, ',', '.') }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="4" class="text-end">Total Harga :</th>
+                                    <th>Rp. {{ number_format($datas->total_amount, 0, ',', '.') }}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                @else
+                    <p class="fw-bold my-5" style="text-align: center;font-size: 1.5rem">
+                        Total Pembayaran Tagihan : Rp. {{ number_format($datas->total_amount, 0, ',', '.') }}
+                    </p>
+                @endif
+
+                <!-- Tombol Aksi -->
+                <div class="" style="margin-top: 50px">
+                    <a href="javascript:history.back()" class="btn btn-secondary">Kembali</a>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="card">
-        <div class="card body">
-            Barang yang dibeli
-        </div>
-    </div>
-</div>
 @endsection
 
 @section('scripts')

@@ -160,6 +160,7 @@ class AuthController extends Controller
                 'name' => $request->name,
                 'username' => $request->username,
                 'role' => $request->role,
+                'debt_limit' => 50000,
                 'email' => $request->email,
                 'no_hp' => $request->no_hp,
                 'password' => bcrypt($request->password),

@@ -40,7 +40,6 @@ class ExcelController extends Controller
     public function productExport()
     {
         // log activity
-        dd(session('userData')->name);
         $userId = session('userData')->id;
         LogActivity::create([
             'user_id' => $userId,

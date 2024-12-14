@@ -73,6 +73,9 @@ class UserController extends Controller
                         <img src="' . $imageUrl . '" width="50" alt="">
                     </div>';
             })
+            ->addColumn('formattedLimit', function ($data) {
+                return 'Rp. ' . number_format($data->debt_limit, 0, ',', '.' ?? '-');
+            })
             ->rawColumns(['role', 'imageUser', 'action', 'formatted_noHp'])
             ->make(true);
     }
@@ -97,6 +100,7 @@ class UserController extends Controller
             'name' => 'required|max:100',
             'username' => ['required', 'min:3', 'max:100', 'unique:users'],
             'role' => 'required|in:admin,user,kasir',
+            'debt_limit' => 'required',
             'email' => ['required', 'email:dns', 'unique:users'],
             'password' => 'required|min:5|max:100',
             'no_hp' => 'required|unique:users',
@@ -114,6 +118,7 @@ class UserController extends Controller
             'username.min' => 'Username minimal 3 karakter',
             'username.max' => 'Username maksimal 100 karakter',
             'username.unique' => 'Username sudah digunakan',
+            'debt_limit.required' => 'Limit hutang wajib di isi',
             'role.required' => 'Role wajib diisi',
             'role.in' => 'Role harus salah satu dari admin atau user atau kasir',
             'image.image' => 'File harus berupa gambar/foto',
@@ -141,6 +146,7 @@ class UserController extends Controller
             $data = [
                 'name' => $request->name,
                 'username' => $request->username,
+                'debt_limit' => $request->debt_limit,
                 'role' => $request->role,
                 'email' => $request->email,
                 'no_hp' => $request->no_hp,
@@ -191,6 +197,7 @@ class UserController extends Controller
         $rules = [
             'name' => 'required|max:100',
             'role' => 'required|in:admin,user,kasir',
+            'debt_limit' => 'required',
             'username' => [
                 'required',
                 'min:3',
@@ -223,6 +230,7 @@ class UserController extends Controller
             'username.min' => 'Username minimal 3 karakter',
             'username.max' => 'Username maksimal 100 karakter',
             'username.unique' => 'Username sudah digunakan',
+            'debt_limit.required' => 'Limit hutang wajib di isi',
             'role.required' => 'Role wajib diisi',
             'role.in' => 'Role harus salah satu dari admin atau user atau kasir',
             'image.image' => 'File harus berupa gambar/foto',
@@ -278,7 +286,7 @@ class UserController extends Controller
             }
 
             User::where('id', $id)->update($data);
-            return response()->json(['success' => 'Berhasi mengupdate data']);
+            return response()->json(['success' => 'Berhasil mengupdate data']);
         }
 
     }

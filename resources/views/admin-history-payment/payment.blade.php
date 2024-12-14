@@ -87,7 +87,6 @@
                 <table class="table table-bordered table-hover" id="myTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th style="background-color: #007bff; color: white;">Kode</th>
                             <th style="background-color: #007bff; color: white;">Nama Pengguna</th>
                             <th style="background-color: #007bff; color: white;">Kasir</th>
                             <th style="background-color: #007bff; color: white;">Status</th>
@@ -113,10 +112,7 @@
                 ajax: {
                     url: "{{ route('index.payments.json') }}",
                 },
-                columns: [{
-                        data: 'code',
-                        name: 'code'
-                    },
+                columns: [
                     {
                         data: 'username',
                         name: 'username'

@@ -131,20 +131,25 @@
                         <div class="card-title">List stok habis</div>
                     </div>
                     <div class="card-body" style="height: 400px;overflow-y: auto">
-                        <div class="card-list">
-                            <div class="item-list">
-                                <div class="avatar">
-                                    <img src="../assets/img/jm_denis.jpg" alt="..." class="avatar-img rounded-circle">
+                        @foreach (App\Models\Product::where('stock', 0)->get() as $index => $product)
+                            <div class="">
+                                <div class="d-flex align-content-center">
+                                    <div class="d-flex ml-auto align-items-center mr-3">
+                                        <h4 class="fw-bold">{{ $index + 1 }}.</h4>
+                                    </div>
+                                    <div class="avatar">
+                                        <img src="{{ $product->image }}" alt="..."
+                                            class="avatar-img rounded-circle">
+                                    </div>
+                                    <div class="flex-1 pt-1 ml-2">
+                                        <h6 class="fw-bold mb-1">{{ $product->name }}</h6>
+                                        <small
+                                            class="">{{ $product->category }}</small>
+                                    </div>
                                 </div>
-                                <div class="info-user ml-3">
-                                    <div class="username">Jimmy Denis</div>
-                                    <div class="status">Graphic Designer</div>
-                                </div>
-                                <button class="btn btn-icon btn-primary btn-round btn-xs">
-                                    <i class="fa fa-plus"></i>
-                                </button>
+                                <div class="separator-dashed"></div>
                             </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -167,7 +172,8 @@
                                 </div>
                                 <div class="flex-1 pt-1 ml-2">
                                     <h5 class="fw-bold mb-1">{{ $topCashier->cashier->username }}</h5>
-                                    <small class="text-muted">{{ \Illuminate\Support\Str::limit($topCashier->cashier->name, 20, '...') }}</small>
+                                    <small
+                                        class="text-muted">{{ \Illuminate\Support\Str::limit($topCashier->cashier->name, 20, '...') }}</small>
                                 </div>
                                 <div class="d-flex ml-auto align-items-center">
                                     <h4 class="text-info fw-bold">Rp.
@@ -197,7 +203,8 @@
                                 </div>
                                 <div class="flex-1 pt-1 ml-2">
                                     <h5 class="fw-bold mb-1">{{ $topBuyer->user->username }}</h5>
-                                    <small class="text-muted">{{ \Illuminate\Support\Str::limit($topBuyer->user->name, 20, '...') }}</small>
+                                    <small
+                                        class="text-muted">{{ \Illuminate\Support\Str::limit($topBuyer->user->name, 20, '...') }}</small>
                                 </div>
                                 <div class="d-flex ml-auto align-items-center">
                                     <h4 class="text-info fw-bold">Rp.
@@ -241,7 +248,8 @@
                                         <h6 class="fw-bold mb-1">Total Terjual : <span class="fw-extrabold"
                                                 style="font-size: 15px">{{ $topSellingProduct['total_quantity'] }}
                                                 {{ $topSellingProduct['products']->unit }}</span></h6>
-                                        <small class="">{{ \Illuminate\Support\Str::limit($topSellingProduct['products']->name, 35, '...') }}</small>
+                                        <small
+                                            class="">{{ \Illuminate\Support\Str::limit($topSellingProduct['products']->name, 35, '...') }}</small>
                                     </div>
                                 </div>
                                 <div class="separator-dashed"></div>

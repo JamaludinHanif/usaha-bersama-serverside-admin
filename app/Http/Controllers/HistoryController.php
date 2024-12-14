@@ -21,7 +21,7 @@ class HistoryController extends Controller
 
     public function getTransaction(Request $request)
     {
-        $data = Transaction::query();
+        $data = Transaction::orderBy('created_at', 'desc');
 
         if (isset($request->date)) {
             $data->whereDate('created_at', $request->date);
@@ -64,7 +64,7 @@ class HistoryController extends Controller
 
     public function getDetailTransaction($id)
     {
-        $data = Transaction::where('id', $id)->with(['user', 'items'])->get();
+        $data = Transaction::where('id', $id)->with(['user', 'interest', 'items.product'])->first();
 
         return view('admin-transaction.detail-transaction', [
             'title' => 'Detail Transaksi',
@@ -83,7 +83,7 @@ class HistoryController extends Controller
 
     public function getPayment(Request $request)
     {
-        $data = PaymentCode::query();
+        $data = PaymentCode::orderBy('created_at', 'desc');
 
         if (isset($request->date)) {
             $data->whereDate('created_at', $request->date);
@@ -129,11 +129,23 @@ class HistoryController extends Controller
 
     public function getDetailPayment($id)
     {
-        $data = PaymentCode::where('id', $id)->with(['user', 'items'])->get();
+        $data = PaymentCode::where('id', $id)->with(['user', 'cashier', 'transaction', 'interest'])->first();
 
-        return view('admin-transaction.detail-transaction', [
-            'title' => 'Detail Transaksi',
+        return view('admin-history-payment.detail-payment', [
+            'title' => 'Detail Pembayaran',
             'datas' => $data,
         ]);
+    }
+
+    // api
+    public function myHistory(Request $request)
+    {
+        $data = PaymentCode::where('user_id', $request->userId)->orderBy('created_at', 'desc')->with(['user', 'cashier', 'transaction.items.product', 'interest'])->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'berhasil get data History',
+            'data' => $data,
+        ], 200);
     }
 }

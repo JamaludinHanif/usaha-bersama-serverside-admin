@@ -87,10 +87,10 @@
                         <tr>
                             <th style="background-color: #007bff; color: white;">Nama</th>
                             <th style="background-color: #007bff; color: white;">Nama Pengguna</th>
+                            <th style="background-color: #007bff; color: white;">Limit Hutang</th>
                             <th style="background-color: #007bff; color: white;">Peran Sebagai</th>
                             <th style="background-color: #007bff; color: white;">Email</th>
                             <th style="background-color: #007bff; color: white;">No Hp</th>
-                            <th style="background-color: #007bff; color: white;">Gambar</th>
                             <th style="background-color: #007bff; color: white;">Aksi</th>
                         </tr>
                     </thead>
@@ -147,6 +147,9 @@
                     data: 'username',
                     name: 'Nama Pengguna'
                 }, {
+                    data: 'formattedLimit',
+                    name: 'formattedLimit'
+                }, {
                     data: 'role',
                     name: 'Peran Sebagai'
                 }, {
@@ -155,9 +158,6 @@
                 }, {
                     data: 'formatted_noHp',
                     name: 'formatted_noHp'
-                }, {
-                    data: 'imageUser',
-                    name: 'Image'
                 }, {
                     data: 'action',
                     name: 'Aksi'
@@ -244,16 +244,12 @@
             formData.append('_method', 'PUT');
             formData.append('name', $('#formEdit').find('[id="name"]').val());
             formData.append('username', $('#formEdit').find('[id="username"]').val());
+            formData.append('debt_limit', $('#formEdit').find('[id="debt_limit"]').val());
             formData.append('role', $('#formEdit').find('[id="role"]').val());
             formData.append('email', $('#formEdit').find('[id="email"]').val());
             formData.append('no_hp', $('#formEdit').find('[id="no_hp"]').val());
             formData.append('password', $('#formEdit').find('[id="password"]').val());
             formData.append('admin_id', "{{ session('userData')->id }}");
-
-            var fileInput = $('#formEdit').find('[id="image"]')[0].files[0];
-            if (fileInput) {
-                formData.append('image', fileInput);
-            }
 
             var id = $(this).attr('data-id');
             console.log('tesss tombol edit', id);
@@ -277,7 +273,6 @@
                             toast.onmouseleave = Swal.resumeTimer;
                         }
                     });
-                    // console.log($('#user_id').val());
                     if (response.errors) {
                         console.log(response.errors);
                         loadingCreate.stop();
@@ -285,56 +280,22 @@
                             icon: "warning",
                             title: 'Tambah Data Gagal'
                         });
-                        // validasi pesan error
-                        if (response.errors.name) {
-                            $('.input-name').addClass('is-invalid')
-                            $('.feedback-name').html(response.errors.name)
-                        } else {
-                            $('.input-name').removeClass('is-invalid').addClass('is-valid');
-                            $('.feedback-name').html('');
-                        }
-                        if (response.errors.username) {
-                            $('.input-username').addClass('is-invalid')
-                            $('.feedback-username').html(response.errors.username)
-                        } else {
-                            $('.input-username').removeClass('is-invalid').addClass('is-valid');
-                            $('.feedback-username').html('');
-                        }
-                        if (response.errors.role) {
-                            $('.input-role').addClass('is-invalid')
-                            $('.feedback-role').html(response.errors.role)
-                        } else {
-                            $('.input-role').removeClass('is-invalid').addClass('is-valid');
-                            $('.feedback-role').html('');
-                        }
-                        if (response.errors.image) {
-                            $('.input-image').addClass('is-invalid')
-                            $('.feedback-image').html(response.errors.image)
-                        } else {
-                            $('.input-image').removeClass('is-invalid').addClass('is-valid');
-                            $('.feedback-image').html('');
-                        }
-                        if (response.errors.no_hp) {
-                            $('.input-no_hp').addClass('is-invalid')
-                            $('.feedback-no_hp').html(response.errors.no_hp)
-                        } else {
-                            $('.input-no_hp').removeClass('is-invalid').addClass('is-valid');
-                            $('.feedback-no_hp').html('');
-                        }
-                        if (response.errors.email) {
-                            $('.input-email').addClass('is-invalid')
-                            $('.feedback-email').html(response.errors.email)
-                        } else {
-                            $('.input-email').removeClass('is-invalid').addClass('is-valid');
-                            $('.feedback-email').html('');
-                        }
-                        if (response.errors.password) {
-                            $('.input-password').addClass('is-invalid')
-                            $('.feedback-password').html(response.errors.password)
-                        } else {
-                            $('.input-password').removeClass('is-invalid').addClass('is-valid');
-                            $('.feedback-password').html('');
-                        }
+
+                        // Daftar input dan feedback yang ingin divalidasi
+                        const fields = ['name', 'username', 'role', 'debt_limit', 'no_hp', 'email',
+                            'password'
+                        ];
+
+                        fields.forEach(field => {
+                            if (response.errors[field]) {
+                                $(`.input-${field}`).addClass('is-invalid');
+                                $(`.feedback-${field}`).html(response.errors[field]);
+                            } else {
+                                $(`.input-${field}`).removeClass('is-invalid').addClass(
+                                    'is-valid');
+                                $(`.feedback-${field}`).html('');
+                            }
+                        });
                     } else {
                         loadingCreate.stop();
                         Toast.fire({
@@ -365,7 +326,7 @@
             formData.append('name', $('#formCreate').find('[id="name"]').val());
             formData.append('username', $('#formCreate').find('[id="username"]').val());
             formData.append('role', $('#formCreate').find('[id="roles"]').val());
-            formData.append('image', $('#formCreate').find('[id="image"]')[0].files[0]);
+            formData.append('debt_limit', $('#formCreate').find('[id="debt_limit"]').val());
             formData.append('email', $('#formCreate').find('[id="email"]').val());
             formData.append('no_hp', $('#formCreate').find('[id="no_hp"]').val());
             formData.append('password', $('#formCreate').find('[id="password"]').val());
@@ -400,56 +361,22 @@
                             icon: "warning",
                             title: 'Tambah Data Gagal'
                         });
-                        // validasi pesan error
-                        if (response.errors.name) {
-                            $('.input-name').addClass('is-invalid')
-                            $('.feedback-name').html(response.errors.name)
-                        } else {
-                            $('.input-name').removeClass('is-invalid').addClass('is-valid');
-                            $('.feedback-name').html('');
-                        }
-                        if (response.errors.username) {
-                            $('.input-username').addClass('is-invalid')
-                            $('.feedback-username').html(response.errors.username)
-                        } else {
-                            $('.input-username').removeClass('is-invalid').addClass('is-valid');
-                            $('.feedback-username').html('');
-                        }
-                        if (response.errors.role) {
-                            $('.input-role').addClass('is-invalid')
-                            $('.feedback-role').html(response.errors.role)
-                        } else {
-                            $('.input-role').removeClass('is-invalid').addClass('is-valid');
-                            $('.feedback-role').html('');
-                        }
-                        if (response.errors.image) {
-                            $('.input-image').addClass('is-invalid')
-                            $('.feedback-image').html(response.errors.image)
-                        } else {
-                            $('.input-image').removeClass('is-invalid').addClass('is-valid');
-                            $('.feedback-image').html('');
-                        }
-                        if (response.errors.no_hp) {
-                            $('.input-no_hp').addClass('is-invalid')
-                            $('.feedback-no_hp').html(response.errors.no_hp)
-                        } else {
-                            $('.input-no_hp').removeClass('is-invalid').addClass('is-valid');
-                            $('.feedback-no_hp').html('');
-                        }
-                        if (response.errors.email) {
-                            $('.input-email').addClass('is-invalid')
-                            $('.feedback-email').html(response.errors.email)
-                        } else {
-                            $('.input-email').removeClass('is-invalid').addClass('is-valid');
-                            $('.feedback-email').html('');
-                        }
-                        if (response.errors.password) {
-                            $('.input-password').addClass('is-invalid')
-                            $('.feedback-password').html(response.errors.password)
-                        } else {
-                            $('.input-password').removeClass('is-invalid').addClass('is-valid');
-                            $('.feedback-password').html('');
-                        }
+
+                        // Daftar input dan feedback yang ingin divalidasi
+                        const fields = ['name', 'username', 'role', 'debt_limit', 'no_hp', 'email',
+                            'password'
+                        ];
+
+                        fields.forEach(field => {
+                            if (response.errors[field]) {
+                                $(`.input-${field}`).addClass('is-invalid');
+                                $(`.feedback-${field}`).html(response.errors[field]);
+                            } else {
+                                $(`.input-${field}`).removeClass('is-invalid').addClass(
+                                    'is-valid');
+                                $(`.feedback-${field}`).html('');
+                            }
+                        });
                     } else {
                         loadingCreate.stop();
                         Toast.fire({
@@ -459,6 +386,7 @@
                         $('#myTable').DataTable().ajax.reload();
                         $('.close').click();
                     }
+
                 },
                 error: function(xhr, status, error) {
                     // Tampilkan notifikasi error jika gagal

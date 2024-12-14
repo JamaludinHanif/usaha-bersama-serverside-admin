@@ -7,7 +7,7 @@ class MyClass
 {
     public function sendMessageWhatsapp($number, $message, $fileUrl = null, $caption = null)
     {
-        $urlApiWhatsapp = "https://a949-103-242-107-171.ngrok-free.app/send";
+        $urlApiWhatsapp = "https://d0e5-182-0-251-121.ngrok-free.app/send";
 
         $body = [
             "number" => $number,

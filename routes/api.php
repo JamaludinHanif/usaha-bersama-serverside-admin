@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PdfController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ExcelController;
@@ -62,6 +63,8 @@ Route::prefix('users')->group(function () {
     Route::put('/users/{id}', [UserController::class, 'updateUser2']);
     // log-activity
     Route::get('/log-activities-json', [LogActivityController::class, 'showDataJson']);
+    // history
+    Route::get('/my-history', [HistoryController::class, 'myHistory']);
 });
 
 // untuk user
@@ -108,3 +111,6 @@ Route::prefix('excel')->group(function () {
     // import
     Route::post('/product-import', [ExcelController::class, 'productImport'])->name('excel.import.product');
 });
+
+
+Route::get('/export-invoice', [PdfController::class, 'exportInvoice']);
