@@ -35,11 +35,6 @@
             height: 100%;
         } */
 
-        body.my-login-page {
-            background-color: #f7f9fb;
-            font-size: 14px;
-        }
-
         .my-login-page .brand {
             width: 90px;
             height: 90px;
@@ -115,10 +110,9 @@
             height: 100vh;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             overflow: auto;
-            background: linear-gradient(315deg, rgba(101, 0, 94, 1) 3%, rgba(60, 132, 206, 1) 38%, rgba(48, 238, 226, 1) 68%, rgba(255, 25, 25, 1) 98%);
-            animation: gradient 15s ease infinite;
+            font-size: 14px;
+            background-color: skyblue;
             background-size: 400% 400%;
-            background-attachment: fixed;
         }
 
         @keyframes gradient {
@@ -187,13 +181,14 @@
 
 <body class="my-login-page">
     <section class="h-100">
-        <div class="container h-100">
-            <div class="row justify-content-md-center h-100">
+        <div class="container d-flex justify-content-center align-items-center vh-100">
+            <div class="row justify-content-md-center">
                 <div class="card-wrapper">
-                    <div class="brand">
+                    {{-- <div class="brand">
                         <img src="https://jamaludinhanif.github.io/portofolio-hanif/dist/img/logo%20by%20tegar.png"
                             alt="logo">
-                    </div>
+                    </div> --}}
+                    <div class="" style="height: 20px"></div>
                     <div class="card fat">
                         <div class="card-body">
                             @if (session()->has('loginError'))
@@ -253,21 +248,19 @@
 
                                 {{-- <div class="" style="height: 20px"></div> --}}
 
-                                    <div class="form-group" style="margin-right: 10px;">
-                                        <div class="captcha">
-                                            <span>{!! captcha_img('') !!}</span>
-                                            <button type="button" class="btn btn-success reload ml-3" id="reload">&#x21bb;</button>
-                                        </div>
+                                <div class="form-group" style="margin-right: 10px;">
+                                    <div class="captcha">
+                                        <span>{!! captcha_img('') !!}</span>
+                                        <button type="button" class="btn btn-success reload ml-3" id="reload">&#x21bb;</button>
                                     </div>
+                                </div>
 
-                                    <div class="form-group">
-                                        <input id="captcha" style="width: 50%;" placeholder="Masukan Captcha" type="text" class="form-control" name="captcha" value="" required>
-                                        @error('captcha')
-                                            <label for="" class="text-danger">{{ $message }}</label>
-                                        @enderror
-                                    </div>
-
-
+                                <div class="form-group">
+                                    <input id="captcha" style="width: 50%;" placeholder="Masukan Captcha" type="text" class="form-control" name="captcha" value="" required>
+                                    @error('captcha')
+                                        <label for="" class="text-danger">{{ $message }}</label>
+                                    @enderror
+                                </div>
 
                                 <div class="form-group m-0">
                                     <button type="submit" id="submitButton"
@@ -286,6 +279,7 @@
                 </div>
             </div>
         </div>
+
 
         <div>
             <div class="wave"></div>

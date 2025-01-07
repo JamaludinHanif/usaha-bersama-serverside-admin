@@ -23,7 +23,7 @@
     <nav class="navbar navbar-header navbar-expand-lg" data-background-color="blue2">
 
         <div class="container-fluid">
-            <div class="collapse" id="search-nav">
+            {{-- <div class="collapse" id="search-nav">
                 <form class="navbar-left navbar-form nav-search mr-md-3">
                     <div class="input-group">
                         <div class="input-group-prepend">
@@ -252,7 +252,7 @@
                         </div>
                     </ul>
                 </li>
-            </ul>
+            </ul> --}}
         </div>
     </nav>
     <!-- End Navbar -->

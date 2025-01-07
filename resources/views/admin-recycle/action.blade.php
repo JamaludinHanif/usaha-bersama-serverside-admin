@@ -3,7 +3,7 @@
         <a href="#" data-id="{{ $data->id }}" class="btn btn-primary tombol-restore btn-icon-split btn-sm">
             <span class="icon text-white-50">
                 <i class="fas fa-recycle"></i> </span>
-            <span class="text" style="color: white">Recycle</span>
+            <span class="text" style="color: white">Restore</span>
         </a>
         <a href="#" data-id="{{ $data->id }}" class="btn btn-danger btn-circle tombol-del btn-sm"
             {{-- onclick="returnconfirm('kamuyakin??')" --}}>

@@ -75,16 +75,23 @@
             @foreach ($logs as $index => $log)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $log->user->name }}</td>
-                    <td
-                        style="@if ($log->user->role == 'admin') background-color: #007bff; color: white;
-                    @elseif ($log->user->role == 'kasir') background-color: #31ce36; color: white;
+                    <td>{{ $log->user->name ?? 'Pengguna Telah Dihapus' }}</td>
+                    @if (isset($log->user->role))
+                        <td
+                            style="@if ($log->user->role == 'admin') background-color: #007bff; color: white;
+                        @elseif ($log->user->role == 'seller') background-color: #31ce36; color: white;
+                        @else
+                        background-color: #ffc107; color: white; @endif font-weight: bold; text-align: center">
+                            {{ $log->user->role ?? 'Pengguna Telah Dihapus' }}
+                        </td>
                     @else
-                    background-color: #ffc107; color: white; @endif font-weight: bold; text-align: center">
-                        {{ $log->user->role }}
-
-                    </td>
-                    <td>{{ $log->user->username }}</td>
+                        <td
+                            style="
+                        background-color: #ffc107; color: white; font-weight: bold; text-align: center">
+                            {{ $log->user->role ?? 'Pengguna Telah Dihapus' }}
+                        </td>
+                    @endif
+                    <td>{{ $log->user->username ?? 'Pengguna Telah Dihapus' }}</td>
                     <td
                         style="@if ($log->action == 'login') background-color: #007bff; color: white;
                 @else

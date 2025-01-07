@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Mpdf\Mpdf;
+use App\Models\User;
+use App\Models\Seller;
+use App\Models\Product;
 use App\Models\LogActivity;
 use App\Models\PaymentCode;
-use App\Models\Product;
 use App\Models\Transaction;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Mpdf\Mpdf;
 
 class PdfController extends Controller
 {
@@ -215,6 +216,44 @@ class PdfController extends Controller
         $mpdf->WriteHTML($html);
 
         return $mpdf->Output('data-product.pdf', 'I'); // 'D' untuk force download, 'I' untuk inline di browser
+    }
+
+    public function PdfSeller(Request $request)
+    {
+        $userId = session('userData')->id;
+        LogActivity::create([
+            'user_id' => $userId,
+            'action' => 'export (pdf) data penjual',
+        ]);
+
+        // Membuat instance mPDF
+        $mpdf = new Mpdf([
+            'orientation' => 'L',
+        ]);
+
+        $seller = Seller::query();
+
+        if (isset($request->date)) {
+            $data->whereDate('created_at', $request->date);
+        }
+
+        if (isset($request->status)) {
+            $data->where('status', $request->status);
+        }
+
+        $sellers = $seller->get();
+
+        // Data yang akan dikirim ke view PDF
+        $data = [
+            'title' => 'Laporan Data Penjual',
+            'date' => date('d/F/Y'),
+            'sellers' => $sellers,
+        ];
+
+        $html = view('pdf.sellerData', $data)->render();
+        $mpdf->WriteHTML($html);
+
+        return $mpdf->Output('data-penjual.pdf', 'I'); // 'D' untuk force download, 'I' untuk inline di browser
     }
 
     // user download

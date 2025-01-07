@@ -6,9 +6,11 @@ use App\Exports\UserExport;
 use App\Models\LogActivity;
 use Illuminate\Http\Request;
 use App\Exports\ProductExport;
+use App\Exports\SellersExport;
 use App\Imports\ProductImport;
 use App\Exports\LogActivityExport;
 use App\Exports\TransactionExport;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\HistoryPaymentExport;
 
@@ -70,27 +72,44 @@ class ExcelController extends Controller
         return Excel::download(new LogActivityExport, 'log-aktivitas.xlsx');
     }
 
-    // import
-    public function productImport(Request $request)
+    public function sellerExport()
     {
         // log activity
         $userId = session('userData')->id;
         LogActivity::create([
             'user_id' => $userId,
-            'action' => 'import (excel) data log activity',
+            'action' => 'export (excel) data penjual',
         ]);
-        // <!-- dd($request->file); -->
-        try {
-            $request->validate([
-                'file' => 'required|mimes:xlsx,xls,csv',
-            ]);
+        return Excel::download(new SellersExport, 'data-penjual.xlsx');
+    }
 
+    // import
+    public function productImport(Request $request)
+    {
+        $request->validate(
+            [
+                'file' => 'required|mimes:xlsx,xls',
+            ],
+            [
+                'file.required' => 'File wajib diunggah.',
+                'file.mimes' => 'Format file harus berupa xlsx, atau xls.',
+            ]
+        );
+        DB::beginTransaction();
+        try {
             // Import file
             Excel::import(new ProductImport, $request->file('file'));
-
-            return response()->json(['status' => 'success', 'message' => 'Data berhasil diimport']);
-        } catch (Exception $e) {
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+            // log activity
+            $userId = session('userData')->id;
+            LogActivity::create([
+                'user_id' => $userId,
+                'action' => 'import (excel) data log activity',
+            ]);
+            DB::commit();
+            return response()->json(['status' => 'success', 'success' => 'Data berhasil diimport']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Gagal Mengimport Data', 'details' => $e->getMessage()], 500);
         }
     }
 }

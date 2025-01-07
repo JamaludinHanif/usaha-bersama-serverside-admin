@@ -15,7 +15,7 @@
                     </a>
                 </div>
             </div>
-            <ul class="nav nav-primary">
+            <ul class="nav nav-primary" id="menu-nav">
                 <li class="nav-item {{ Request::is('admin/dashboard') ? 'active' : '' }}">
                     <a href="/admin/dashboard">
                         <i class="fas fa-home"></i>
@@ -32,18 +32,18 @@
                 <li class="nav-item">
                     <a data-toggle="collapse" aria-expanded="false" href="#users">
                         <i class="fas fa-users"></i>
-                        <p>Users</p>
+                        <p>Pengguna</p>
                         <span class="caret"></span>
                     </a>
                     <div class="collapse" id="users">
                         <ul class="nav nav-collapse">
-                            <li class="{{ Request::is('admin/users/users') ? 'active' : '' }}">
-                                <a href="/admin/users/users">
+                            <li class="{{ request()->routeIs('admin.users.index') ? 'active' : '' }}">
+                                <a href="{{ route('admin.users.index') }}">
                                     <span class="sub-item">Kelola User</span>
                                 </a>
                             </li>
-                            <li class="{{ Request::is('admin/users/log-activities') ? 'active' : '' }}">
-                                <a href="/admin/users/log-activities">
+                            <li class="{{ request()->routeIs('admin.users.log') ? 'active' : '' }}">
+                                <a href="{{ route('admin.users.log') }}">
                                     <span class="sub-item">Log Aktivitas</span>
                                 </a>
                             </li>
@@ -57,21 +57,11 @@
                     </span>
                     <h4 class="text-section">PRODUCTS</h4>
                 </li>
-                <li class="nav-item">
-                    <a data-toggle="collapse" aria-expanded="false" href="#products">
+                <li class="nav-item {{ request()->routeIs('admin.product.index') ? 'active' : '' }}">
+                    <a href="{{ route('admin.product.index') }}">
                         <i class="fas fa-box"></i>
-                        <p>Produk</p>
-                        <span class="caret"></span>
+                        <p>Kelola Produk</p>
                     </a>
-                    <div class="collapse" id="products">
-                        <ul class="nav nav-collapse">
-                            <li class="{{ Request::is('admin/products/products') ? 'active' : '' }}">
-                                <a href="/admin/products/products">
-                                    <span class="sub-item">Kelola Produk</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
                 </li>
                 {{-- Transaction --}}
                 <li class="nav-section">
@@ -88,23 +78,26 @@
                     </a>
                     <div class="collapse" id="transaction">
                         <ul class="nav nav-collapse">
-                            <li class="{{ Request::is('admin/transaction/transaction') ? 'active' : '' }}">
-                                <a href="/admin/transaction/transaction">
-                                    <span class="sub-item">Riwayat Transaksi</span>
-                                </a>
-                            </li>
-                            <li class="{{ Request::is('admin/transaction/payments') ? 'active' : '' }}">
-                                <a href="/admin/transaction/payments">
-                                    <span class="sub-item">Riwayat Pembayaran</span>
-                                </a>
-                            </li>
-                            <li class="{{ Request::is('admin/transaction/interest') ? 'active' : '' }}">
-                                <a href="/admin/transaction/interest">
-                                    <span class="sub-item">Kelola Bunga</span>
+                            <li class="{{ request()->routeIs('admin.transactions.index') ? 'active' : '' }}">
+                                <a href="{{ route('admin.transactions.index') }}">
+                                    <span class="sub-item">Kelola Transaksi</span>
                                 </a>
                             </li>
                         </ul>
                     </div>
+                </li>
+                {{-- Seller --}}
+                <li class="nav-section">
+                    <span class="sidebar-mini-icon">
+                        <i class="fa fa-ellipsis-h"></i>
+                    </span>
+                    <h4 class="text-section">SELLERS</h4>
+                </li>
+                <li class="nav-item {{ request()->routeIs('admin.seller.index') ? 'active' : '' }}">
+                    <a href="{{ route('admin.seller.index') }}">
+                        <i class="fas fa-user-shield"></i>
+                        <p>Penjual</p>
+                    </a>
                 </li>
                 {{-- recycle bin --}}
                 <li class="nav-section">

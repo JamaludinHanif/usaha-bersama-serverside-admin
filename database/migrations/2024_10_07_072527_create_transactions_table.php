@@ -15,12 +15,11 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->integer('total_amount');
-            $table->string('kode_invoice');
-            $table->string('type');  // cash & paylater
-            $table->string('status');  //
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('interest_id')->nullable();
+            $table->integer('amount')->nullable();
+            $table->string('code_invoice')->nullable();
+            $table->string('status')->nullable();
+            $table->string('seller_id')->nullable();
+            $table->foreignId('user_id')->constrained()->nullable();
             $table->timestamps();
         });
     }

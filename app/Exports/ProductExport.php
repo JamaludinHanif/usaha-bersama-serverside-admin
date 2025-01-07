@@ -5,8 +5,8 @@ namespace App\Exports;
 use App\Models\Product;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Color;
-use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -35,28 +35,36 @@ class ProductExport implements FromCollection, WithHeadings, WithMapping, WithSt
             'Satuan',
             'Stok',
             'Kategori',
+            'Berat (gram)',
+            'Panjang (cm)',
+            'Lebar (cm)',
+            'Tinggi (cm)',
             'Gambar'
         ];
     }
 
-        /**
+    /**
      * Memetakan data sebelum diekspor.
      *
-     * @param mixed $transaction
+     * @param mixed $product
      * @return array
      */
-    public function map($transaction): array
+    public function map($product): array
     {
         static $rowNumber = 1;
 
         return [
             $rowNumber++,
-            $transaction->name,
-            $transaction->price ?? 'Tidak Ada',
-            $transaction->unit,
-            $transaction->stock,
-            $transaction->category,
-            $transaction->image,
+            $product->name,
+            $product->price ?? 'Tidak Ada',
+            $product->unit,
+            $product->stock,
+            $product->category,
+            $product->weight,
+            $product->length,
+            $product->width,
+            $product->height,
+            $product->image,
         ];
     }
 
@@ -68,7 +76,7 @@ class ProductExport implements FromCollection, WithHeadings, WithMapping, WithSt
      */
     public function styles(Worksheet $sheet)
     {
-        $sheet->getStyle('A1:G1')->applyFromArray([
+        $sheet->getStyle('A1:K1')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'color' => ['argb' => Color::COLOR_WHITE],
@@ -86,7 +94,7 @@ class ProductExport implements FromCollection, WithHeadings, WithMapping, WithSt
         $rowCount = $this->collection()->count() + 1;
 
         // Mengatur border untuk semua sel yang berisi data
-        $sheet->getStyle('A1:G' . $rowCount)->applyFromArray([
+        $sheet->getStyle('A1:K' . $rowCount)->applyFromArray([
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => Border::BORDER_THIN,

@@ -194,6 +194,9 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // ...
+		'Template' => App\MyClass\Template::class,
+		'Res' => App\MyClass\Response::class,
+		'Helper' => App\MyClass\Helper::class,
         'Captcha' => Mews\Captcha\Facades\Captcha::class,
     ])->toArray(),
 

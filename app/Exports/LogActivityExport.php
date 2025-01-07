@@ -50,9 +50,9 @@ class LogActivityExport implements FromCollection, WithHeadings, WithMapping, Wi
 
         return [
             $rowNumber++,
-            $logActivity->user->name,
-            $logActivity->user->username ?? 'Tidak Ada',
-            $logActivity->user->role ?? 'Tidak Ada',
+            $logActivity->user->name ?? 'Pengguna tidak ditemukan',
+            $logActivity->user->username ?? 'Pengguna tidak ditemukan',
+            $logActivity->user->role ?? 'Pengguna tidak ditemukan',
             $logActivity->action,
             $logActivity->created_at->format('d-m-Y') . ', Pukul: ' . $logActivity->created_at->format('H:i:s'),
         ];

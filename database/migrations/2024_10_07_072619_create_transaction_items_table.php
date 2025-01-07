@@ -15,11 +15,11 @@ return new class extends Migration
     {
         Schema::create('transaction_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('transaction_id')->constrained()->onDelete('cascade');
-            $table->foreignId('product_id')->constrained();
-            $table->integer('quantity');
-            $table->integer('price');
+            $table->foreignId('user_id')->constrained()->nullable();
+            $table->foreignId('transaction_id')->constrained()->onDelete('cascade')->nullable();
+            $table->foreignId('product_id')->constrained()->nullable();
+            $table->integer('quantity')->nullable();
+            $table->integer('price')->nullable();
             $table->timestamps();
         });
     }

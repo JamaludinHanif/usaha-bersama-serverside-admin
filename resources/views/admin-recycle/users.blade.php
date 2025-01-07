@@ -56,7 +56,7 @@
                             <th style="background-color: #007bff; color: white;">Nama Pengguna</th>
                             <th style="background-color: #007bff; color: white;">Peran Sebagai</th>
                             <th style="background-color: #007bff; color: white;">Email</th>
-                            <th style="background-color: #007bff; color: white;">Gambar</th>
+                            <th style="background-color: #007bff; color: white;">No Hp</th>
                             <th style="background-color: #007bff; color: white;">Dihapus Pada</th>
                             <th style="background-color: #007bff; color: white;">Aksi</th>
                         </tr>
@@ -122,8 +122,8 @@
                     data: 'email',
                     name: 'Email'
                 }, {
-                    data: 'imageUser',
-                    name: 'Image'
+                    data: 'formatted_noHp',
+                    name: 'formatted_noHp'
                 }, {
                     data: 'formatted_deleted_at',
                     name: 'Dihapus pada'
@@ -168,43 +168,13 @@
                             admin_id: "{{ session('userData')->id }}"
                         },
                         success: function(response) {
-                            const Toast = Swal.mixin({
-                                toast: true,
-                                position: "top-end",
-                                showConfirmButton: false,
-                                timer: 3000,
-                                timerProgressBar: true,
-                                didOpen: (toast) => {
-                                    toast.onmouseenter = Swal.stopTimer;
-                                    toast.onmouseleave = Swal.resumeTimer;
-                                }
-                            });
                             if (response.success) {
-                                Toast.fire({
-                                    icon: "success",
-                                    title: response.success
-                                });
+                                successNotification('Berhasil', response.success)
                                 $('#myTable').DataTable().ajax.reload();
                             }
                         },
                         error: function(xhr, status, error) {
-                            const Toast = Swal.mixin({
-                                toast: true,
-                                position: "top-end",
-                                showConfirmButton: false,
-                                timer: 3000,
-                                timerProgressBar: true,
-                                didOpen: (toast) => {
-                                    toast.onmouseenter = Swal.stopTimer;
-                                    toast.onmouseleave = Swal.resumeTimer;
-                                }
-                            });
-                            // alert("Error: " + error);
-                            // console.log(xhr.responseJSON.error);
-                            Toast.fire({
-                                icon: "warning",
-                                title: xhr.responseJSON.error
-                            });
+                            errorNotification('Gagal Merestore Data', xhr.responseJSON.message || xhr.responseJSON.details)
                         },
                     })
                 }
@@ -232,43 +202,13 @@
                             admin_id: "{{ session('userData')->id }}"
                         },
                         success: function(response) {
-                            const Toast = Swal.mixin({
-                                toast: true,
-                                position: "top-end",
-                                showConfirmButton: false,
-                                timer: 3000,
-                                timerProgressBar: true,
-                                didOpen: (toast) => {
-                                    toast.onmouseenter = Swal.stopTimer;
-                                    toast.onmouseleave = Swal.resumeTimer;
-                                }
-                            });
                             if (response.success) {
-                                Toast.fire({
-                                    icon: "success",
-                                    title: response.success
-                                });
+                                successNotification('Berhasil', response.success)
                                 $('#myTable').DataTable().ajax.reload();
                             }
                         },
                         error: function(xhr, status, error) {
-                            const Toast = Swal.mixin({
-                                toast: true,
-                                position: "top-end",
-                                showConfirmButton: false,
-                                timer: 3000,
-                                timerProgressBar: true,
-                                didOpen: (toast) => {
-                                    toast.onmouseenter = Swal.stopTimer;
-                                    toast.onmouseleave = Swal.resumeTimer;
-                                }
-                            });
-                            // alert("Error: " + error);
-                            // console.log(xhr.responseJSON.error);
-                            Toast.fire({
-                                icon: "warning",
-                                title: xhr.responseJSON.error
-                            });
+                            errorNotification('Gagal Merestore Data', xhr.responseJSON.message || xhr.responseJSON.details)
                         },
                     })
                 }

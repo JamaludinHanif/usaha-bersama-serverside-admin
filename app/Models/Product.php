@@ -2,33 +2,211 @@
 
 namespace App\Models;
 
-use App\Models\Distributor;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Str;
+use Yajra\DataTables\Facades\DataTables;
 
 class Product extends Model
 {
     use HasFactory, SoftDeletes; // Tambahkan SoftDeletes trait
 
-    // Kolom-kolom yang dapat diisi
     protected $fillable = [
         'name',
         'price',
         'unit',
         'category',
-        'image',
         'stock',
-        "distributor_id",
-        'expired_date'
+        'weight',
+        'length',
+        'width',
+        'height',
+        'description',
+        'image',
+        'slug',
     ];
 
-    public function distributor()
+    /**
+     *  Helper methods
+     * */
+    public function priceFormatted()
     {
-        return $this->belongsTo(Distributor::class);
+        return 'Rp. ' . number_format($this->price);
+    }
+
+    public function generateSlug()
+    {
+        $base = Str::of($this->name)->slug('-');
+
+        $found = false;
+        $iter = 0;
+        $slug = '';
+        while (!$found) {
+            $slug = $iter > 0 ? $base . '-' . $iter : $base;
+            $page = self::where('slug', $slug)
+                ->where('id', '!=', $this->id)
+                ->first();
+
+            if ($page) {
+                $iter++;
+            } else {
+                $found = true;
+            }
+        }
+
+        $this->update([
+            'slug' => $slug,
+        ]);
+
+        return $this;
+    }
+
+    public function getLink()
+    {
+        return url($this->fullSlug());
+    }
+
+    public function fullSlug()
+    {
+        return route('buyer.product.detail', $this->slug);
+    }
+
+    public function modifiedAt()
+    {
+        return $this->updated_at ?? $this->created_at;
+    }
+
+    /**
+     *  CRUD methods
+     * */
+    public static function createProduct($request)
+    {
+        $product = self::create([
+            'name' => $request->name,
+            'unit' => $request->unit,
+            'category' => $request->category,
+            'price' => $request->price,
+            'stock' => $request->stock,
+            'weight' => $request->weight,
+            'length' => $request->length,
+            'width' => $request->width,
+            'height' => $request->height,
+            'description' => \Helper::fixContent($request->description),
+            'image' => $request->image,
+        ]);
+        $product->generateSlug();
+
+        return $product;
+    }
+
+    public function updateProduct($request)
+    {
+        $this->update([
+            'name' => $request->name,
+            'unit' => $request->unit,
+            'category' => $request->category,
+            'price' => $request->price,
+            'stock' => $request->stock,
+            'weight' => $request->weight,
+            'length' => $request->length,
+            'width' => $request->width,
+            'height' => $request->height,
+            'description' => \Helper::fixContent($request->description),
+            'image' => $request->image,
+        ]);
+        $this->generateSlug();
+
+        return $this;
+    }
+
+    public function deleteProduct()
+    {
+        return $this->delete();
+    }
+
+    /**
+     *  Static methods
+     * */
+    public static function dataTable($request)
+    {
+        $data = self::query();
+
+        if (isset($request->category)) {
+            $data->where('category', $request->category);
+        }
+
+        if (isset($request->unit)) {
+            $data->where('unit', $request->unit);
+        }
+
+        return DataTables::of($data)
+            ->addColumn('thumbnail', function ($data) {
+                $html = '<div class="d-flex justify-content-center"><img src="' . $data->image . '" width="50"></div> ';
+                return $html;
+            })
+            ->addColumn('category', function ($data) {
+                $btnClass = $data->category == 'minuman'
+                ? 'btn-info'
+                : ($data->category == 'makanan'
+                    ? 'btn-success'
+                    : ($data->category == 'pembersih'
+                        ? 'btn-danger'
+                        : 'btn-warning'));
+                $category = '<div class="' . $btnClass . '"
+                style="padding-top: 5px; padding-bottom: 5px; color: white; border-radius: 10px; font-size: 15px; text-align: center;">'
+                . $data->category .
+                    '</div>';
+                return $category;
+            })
+            ->addColumn('unit', function ($data) {
+                $btnClass2 = $data->unit == 'pcs'
+                ? 'btn-info'
+                : ($data->unit == 'dos'
+                    ? 'btn-success'
+                    : ($data->unit == 'pack'
+                        ? 'btn-danger'
+                        : 'btn-warning'));
+                $unit = '<div class="' . $btnClass2 . '"
+                style="padding-top: 5px; padding-bottom: 5px; color: white; border-radius: 10px; font-size: 15px; text-align: center;">'
+                . $data->unit .
+                    '</div>';
+                return $unit;
+            })
+            ->addColumn('formatted_amount', function ($data) {
+                return $data->priceFormatted();
+            })
+            ->addColumn('action', function ($data) {
+                $button = '
+                <div class="d-flex justify-content-center">
+                    <div class="dropdown">
+                        <button class="btn btn-primary px-2 py-1 dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Pilih Aksi
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="' . route('admin.product.detail', $data->id) . '" title="Detail Produk">
+                                <i class="fa fa-eye mr-1"></i> Detail
+                            <a class="dropdown-item" href="' . route('admin.product.edit', $data->id) . '" title="Edit Produk">
+                                <i class="fas fa-pencil-alt mr-1"></i> Edit
+                            </a>
+                            <a class="dropdown-item delete" href="javascript:void(0)" data-delete-message="Yakin ingin menghapus?" data-delete-href="' . route('admin.product.delete', $data->id) . '">
+                                <i class="fas fa-trash mr-1"></i> Hapus
+                            </a>
+                        </div>
+                    </div>
+                </div>';
+
+                return $button;
+            })
+            ->rawColumns(['thumbnail', 'action', 'category', 'unit'])
+            ->make(true);
+    }
+
+    public static function getBySlug($slug)
+    {
+        return self::where('slug', $slug)->first();
     }
 }
-
 
 // Product::create([
 //     'name' => 'nabati ukuran 720g rasa coklat',

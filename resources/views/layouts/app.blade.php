@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="_token" content="{{ csrf_token() }}">
     <title>@yield('title')</title>
     {{-- atlantis font --}}
     <script src="{{ asset('atlantis/assets/js/plugin/webfont/webfont.min.js') }}"></script>
@@ -33,6 +33,9 @@
 
     {{-- sweetalert cdn --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    {{-- jquery-confirm --}}
+    <link rel="stylesheet" href="{{ asset('atlantis/assets/js/plugin/jquery-confirm/jquery-confirm.css') }}">
 
     {{-- pace js --}}
     <link rel="stylesheet"
@@ -170,6 +173,9 @@
     <!-- Bootstrap Notify -->
     <script src="{{ asset('atlantis/assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
 
+    {{-- jquery-confirm --}}
+    <script src="{{ asset('atlantis/assets/js/plugin/jquery-confirm/jquery-confirm.js') }}"></script>
+
     {{-- pace js --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
 
@@ -194,6 +200,7 @@
     <!-- Atlantis DEMO methods, don't include it in your project! -->
     {{-- <script src="{{ asset('atlantis/assets/js/setting-demo.js') }}"></script> --}}
     <script src="{{ asset('atlantis/assets/js/demo.js') }}"></script>
+    <script src="{{ asset('atlantis/assets/js/myJs.js') }}"></script>
 
     <script>
         $(document).ready(function() {
@@ -212,33 +219,36 @@
     </script>
 
     <script>
-        $(document).ready(function() {
-            // Mendapatkan URL saat ini
-            var path = window.location.pathname;
+		const setActiveMenu = () => {
+			let isFoundLink = false;
+			let path = [];
+			window.location.pathname.split("/").forEach(item => {
+				if (item !== "") path.push(item);
+			})
+			let lengthPath = path.length;
+			let lengthUse = lengthPath;
+			let origin = window.location.origin;
 
-            // Menambahkan kelas 'active' pada elemen nav-item dan sub-item yang sesuai
-            $(".nav-item a").each(function() {
-                var href = $(this).attr('href');
-                if (path === href) {
-                    $(this).closest(".nav-item").addClass("active");
-                    if ($(this).hasClass('collapsed')) {
-                        $(this).attr("aria-expanded", "true");
-                        $(this).closest(".collapse").addClass("show");
-                        $(this).removeClass('collapsed');
-                    }
-                }
-            });
+			while (lengthUse >= 1) {
+				let link = '';
+				for (let i = 0; i < lengthUse; i++) {
+					link += `/${path[i]}`;
+				}
+				$.each($('#menu-nav').find('a'), (i, elem) => {
+					if ($(elem).attr('href') == `${origin}${link}`) {
+						$(elem).parent('li').addClass('active')
+						$(elem).parents('li.nav-item').addClass('active').addClass('submenu')
+						$(elem).parents('li.nav-item').find(`.collapse`).addClass('show')
+					}
+				})
 
-            // Menambahkan kelas 'active' dan 'show' pada item collapse jika salah satu item di dalamnya aktif
-            $(".nav-collapse a").each(function() {
-                var href = $(this).attr('href');
-                if (path === href) {
-                    $(this).closest(".collapse").addClass("show");
-                    $(this).closest(".nav-item").addClass("active").find("a").attr("aria-expanded", "true");
-                    $(this).addClass("active");
-                }
-            });
-        });
+				if (isFoundLink) break;
+				lengthUse--;
+			}
+		}
+
+
+		setActiveMenu();
     </script>
 
 

@@ -15,14 +15,13 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('username')->unique();
-            $table->string('role');
-            $table->string('image')->nullable();
-            $table->string('password');
+            $table->string('name')->nullable();
+            $table->string('username')->unique()->nullable();
+            $table->string('role')->nullable();
+            $table->string('password')->nullable();
             $table->string('email')->unique()->nullable();
-            $table->string('no_hp')->unique()->nullable();
-            $table->integer('debt_limit')->nullable(); // by default 100.000
+            $table->string('otp')->nullable();
+            $table->string('is_verify')->default('no');
             $table->softDeletes();
             $table->timestamps();
         });

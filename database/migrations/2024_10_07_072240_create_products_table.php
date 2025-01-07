@@ -15,14 +15,18 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->integer('price');
-            $table->string('unit'); // unit adalah satuan dos,pcs,pak, other
-            $table->string('category'); // category adalah minuman, makanan, pembersih, other
+            $table->string('name')->nullable();
+            $table->integer('price')->default(0)->nullable();
+            $table->string('unit')->nullable(); // unit adalah satuan dos,pcs,pack, lainnya
+            $table->string('category')->nullable(); // category adalah minuman, makanan, pembersih, lainnya
+            $table->integer('stock')->nullable();
+			$table->bigInteger('weight')->default(0)->nullable();
+			$table->bigInteger('length')->default(0)->nullable();
+			$table->bigInteger('width')->default(0)->nullable();
+			$table->bigInteger('height')->default(0)->nullable();
+			$table->longText('description')->nullable();
             $table->string('image')->nullable();
-            $table->integer('stock');
-            $table->date('expired_date')->nullable();
-            $table->foreignId('distributor_id')->nullable();
+			$table->string('slug')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

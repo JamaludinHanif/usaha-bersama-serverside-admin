@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\LogActivity;
 use App\Models\User;
+use App\MyClass\Fonnte;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 
@@ -34,8 +36,9 @@ class AuthController extends Controller
         return redirect('/');
     }
 
-    public function authenticate(Request $request)
+    public function login(Request $request)
     {
+        // dd($request->all());
         $credentials = $request->validate([
             'username' => 'required',
             'password' => 'required',
@@ -74,8 +77,10 @@ class AuthController extends Controller
         return response()->json(['captcha' => captcha_img('')]);
     }
 
-    // apiiii
-    public function authenticateApi(Request $request)
+    // buyer
+
+
+    public function loginBuyer(Request $request)
     {
         $credentials = $request->validate([
             'username' => 'required',
@@ -84,15 +89,15 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $userId = Auth::id();
-
-            // return response()->json([
-            //     'status' => false,
-            //     'message' => 'Login gagal',
-            //     'errors' => 'Periksa kembali username dan passwordnya',
-            //     'data' => Auth::attempt($credentials)
-            // ], 200);
-
             $data = User::find($userId);
+
+            if ($data->is_verify == 'no') {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Login gagal',
+                    'errors' => 'Akun anda belum terverifikasi',
+                ], 200);
+            }
 
             // log activity
             LogActivity::create([
@@ -156,23 +161,94 @@ class AuthController extends Controller
                 'message' => $validasi->errors(),
             ], 200);
         } else {
-            $data = [
-                'name' => $request->name,
-                'username' => $request->username,
-                'role' => $request->role,
-                'debt_limit' => 50000,
-                'email' => $request->email,
-                'no_hp' => $request->no_hp,
-                'password' => bcrypt($request->password),
-            ];
+            DB::beginTransaction();
+            try {
+                $otp = rand(1000, 9999);
+                $data = [
+                    'name' => $request->name,
+                    'username' => $request->username,
+                    'role' => 'buyer',
+                    'email' => $request->email,
+                    'no_hp' => $request->no_hp,
+                    'otp' => $otp,
+                    'password' => bcrypt($request->password),
+                ];
 
-            User::create($data);
-            return response()->json([
-                'status' => true,
-                'message' => 'Berhasil membuat akun, Silahkan Login',
-            ], 200);
+                $to = $request->no_hp;
+                $message = "📌 *Kode Verifikasi Usaha Bersama* \n\n" .
+                    "Halo, terima kasih telah mendaftar di *Usaha Bersama*. Berikut adalah kode verifikasi Anda:\n\n" .
+                    "🔑 *{$otp}*\n\n" .
+                    "Jangan berikan kode ini kepada siapa pun!!, termasuk pihak yang mengaku dari *Usaha Bersama*.\n\n" .
+                    "Jika Anda tidak merasa melakukan pendaftaran, abaikan pesan ini.\n\n" .
+                    "Salam hangat,\n" .
+                    "*Tim Usaha Bersama*";
+
+                $response = Fonnte::sendMessage($to, $message);
+
+                User::create($data);
+                DB::commit();
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Berhasil membuat akun, Silahkan cek Whatsapp kamu untuk mengisi OTP',
+                    'response_fonnte' => $response,
+                ], 200);
+            } catch (\Exception $e) {
+                DB::rollback();
+
+                return response()->json([
+                    'status' => false,
+                    'message' => "File : {$e->getFile()} | Line : {$e->getLine()} | Message : {$e->getMessage()}",
+                    // 'response_fonnte' => $response
+                ], 500);
+            }
         }
 
+    }
+
+    public function verifyOtp(Request $request)
+    {
+        $data = $request->all();
+
+        $rules = [
+            'otp' => 'required|digits:4',
+        ];
+
+        $validasi = Validator::make($data, $rules, [
+            'otp.required' => 'Kode OTP wajib diisi',
+            'otp.digits' => 'Kode OTP hanya terdiri dari 4 Nomor',
+        ]);
+
+        if ($validasi->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validasi->errors(),
+            ], 200);
+        } else {
+            DB::beginTransaction();
+            try {
+                $user = User::where('no_hp', $request->no_hp)->first();
+                if ($user->otp !== $request->otp) {
+                    return response()->json(['message' => 'Invalid OTP'], 400);
+                }
+                $user->update([
+                    'otp' => null,
+                    'is_verify' => 'yes',
+                ]);
+                DB::commit();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Pendaftaran akun berhasil',
+                ], 200);
+            } catch (\Exception $e) {
+                DB::rollback();
+
+                return response()->json([
+                    'status' => false,
+                    'message' => "File : {$e->getFile()} | Line : {$e->getLine()} | Message : {$e->getMessage()}",
+                ], 500);
+            }
+        }
     }
 
     public function logoutApi(Request $request)

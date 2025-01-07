@@ -29,6 +29,7 @@ use App\Http\Controllers\TransactionController;
 // auth
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
     Route::post('/login', [AuthController::class, 'authenticateApi']);
     Route::post('/logout', [AuthController::class, 'logoutApi']);
     Route::post('/password/email', [AuthController::class, 'sendResetLinkEmail']);
@@ -40,31 +41,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('product')->group(function () {
-    Route::post('/all-product', [ProductController::class, 'showAllApi']);
+    Route::post('/all-product', [ProductController::class, 'showApi']);
     Route::post('/search-product', [ProductController::class, 'searchProduct']);
+    Route::get('/detail-product', [ProductController::class, 'detailApi']);
     Route::post('/make-redeem-code', [ProductController::class, 'addRedeemCode']);
     Route::post('/redeem-code', [ProductController::class, 'reedemCode']);
     Route::post('/my-cart', [UserController::class, 'myCart']);
-});
-
-// untuk admin
-Route::prefix('products')->group(function () {
-    Route::get('/products-json', [ProductController::class, 'showAll']);
-    Route::post('/products', [ProductController::class, 'store']);
-    Route::delete('/products/{id}', [ProductController::class, 'deleteProduct']);
-    Route::put('/products/{id}', [ProductController::class, 'update']);
-});
-
-// untuk admin
-Route::prefix('users')->group(function () {
-    Route::get('/users-json', [UserController::class, 'showAll']);
-    Route::post('/users', [UserController::class, 'store']);
-    Route::delete('/users/{id}', [UserController::class, 'deleteUserAjax']);
-    Route::put('/users/{id}', [UserController::class, 'updateUser2']);
-    // log-activity
-    Route::get('/log-activities-json', [LogActivityController::class, 'showDataJson']);
-    // history
-    Route::get('/my-history', [HistoryController::class, 'myHistory']);
 });
 
 // untuk user
@@ -84,7 +66,7 @@ Route::prefix('transactions')->group(function () {
     Route::get('/all-interest', [InterestController::class, "showAllApi"]);
     // user (api)
     Route::post('/pre-checkout', [TransactionController::class, 'preCheckout']);
-    Route::post('/checkout', [TransactionController::class, 'checkOutV1']);
+    Route::post('/payment-cashier', [TransactionController::class, 'paymentCashier']);
     Route::get('/cek-status-payment', [TransactionController::class, 'cekStatusPayment']);
     Route::post('/payment-bill', [UserController::class, 'paymentBill']);
     // kasir (api)
@@ -107,10 +89,10 @@ Route::prefix('dashboard')->group(function () {
     });
 });
 
-Route::prefix('excel')->group(function () {
-    // import
-    Route::post('/product-import', [ExcelController::class, 'productImport'])->name('excel.import.product');
-});
+// Route::prefix('excel')->group(function () {
+//     // import
+//     Route::post('/product-import', [ExcelController::class, 'productImport'])->name('excel.import.product');
+// });
 
 
 Route::get('/export-invoice', [PdfController::class, 'exportInvoice']);

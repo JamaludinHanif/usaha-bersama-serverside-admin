@@ -5,217 +5,129 @@ namespace App\Http\Controllers;
 use App\Models\LogActivity;
 use App\Models\Product;
 use App\Models\ReedemCode;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class ProductController extends Controller
 {
-    // admin section
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin-products.kelola-products.products', [
+        if ($request->ajax()) {
+            return Product::dataTable($request);
+        }
+
+        return view('products.index', [
             'title' => 'Kelola Produk',
-            'users' => User::all(),
         ]);
     }
 
-    public function showAll(Request $request)
+    public function create()
     {
-        $data = Product::query();
-
-        // dd($request->category . '' . $request->unit);
-
-        if (isset($request->category)) {
-            $data->where('category', $request->category);
-        }
-
-        if (isset($request->unit)) {
-            $data->where('unit', $request->unit);
-        }
-
-        return Datatables::of($data)
-            ->addColumn('category', function ($data) {
-                $btnClass = $data->category == 'minuman'
-                ? 'btn-info'
-                : ($data->category == 'makanan'
-                    ? 'btn-success'
-                    : ($data->category == 'pembersih'
-                        ? 'btn-danger'
-                        : 'btn-warning'));
-
-                return '<div class="' . $btnClass . '"
-                        style="padding-top: 5px; padding-bottom: 5px; color: white; border-radius: 10px; font-size: 15px; text-align: center;">'
-                . $data->category .
-                    '</div>';
-            })
-            ->addColumn('unit', function ($data) {
-                $btnClass2 = $data->unit == 'pcs'
-                ? 'btn-info'
-                : ($data->unit == 'dos'
-                    ? 'btn-success'
-                    : ($data->unit == 'pak'
-                        ? 'btn-danger'
-                        : 'btn-warning'));
-
-                return '<div class="' . $btnClass2 . '"
-                        style="padding-top: 5px; padding-bottom: 5px; color: white; border-radius: 10px; font-size: 15px; text-align: center;">'
-                . $data->unit .
-                    '</div>';
-            })
-            ->addColumn('action', function ($data) {
-                return view('admin-products.kelola-products.action')->with('data', $data);
-            })
-            ->addColumn('image', function ($data) {
-                // Ganti $data->image dengan $data->image untuk mendapatkan nilai gambar dari data
-                $imageUrl = $data->image == null
-                ? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSI3-0UOb16mRek6YkvKr4wuBpEmwYfWhav0w&s'
-                : $data->image;
-
-                // Kembalikan HTML yang diinginkan
-                return '<div class="d-flex justify-content-center">
-                        <img src="' . $imageUrl . '" width="50" alt="">
-                    </div>';
-            })
-            ->addColumn('formatted_amount', function ($row) {
-                return $row->price ? 'Rp ' . number_format($row->price, 0, ',', '.') : '';
-            })
-            ->rawColumns(['category', 'unit', 'image', 'formatted_amount', 'action'])
-            ->make(true);
-    }
-
-    public function showFormCreate()
-    {
-        return view('admin-products.kelola-products.addProducts', [
-            'title' => 'Products Baru',
+        return view('products.create', [
+            'title' => 'Buat Produk',
         ]);
     }
 
     public function store(Request $request)
     {
-
-        $validasi = Validator::make($request->all(), [
-            'name' => 'required',
-            'price' => 'required',
-            'category' => 'required',
-            'unit' => 'required',
-            'stock' => 'required',
-        ], [
-            'name.required' => 'Nama wajib di isi',
-            'price.required' => 'Harga wajib di isi',
-            'category.required' => 'Kategori wajib di isi',
-            'unit.required' => 'Satuan wajib di isi',
-            'stock.required' => 'Stok wajib di isi',
-        ]);
-
-        if ($validasi->fails()) {
-            return response()->json(['errors' => $validasi->errors()]);
-        } else {
-            // log activity
-            $userId = $request->admin_id;
-            LogActivity::create([
-                'user_id' => $userId,
-                'action' => 'manambahkan produk',
-            ]);
-            $data = [
-                'name' => $request->name,
-                'price' => $request->price,
-                'category' => $request->category,
-                'unit' => $request->unit,
-                'stock' => $request->stock,
-                'image' => $request->image,
-            ];
-            Product::create($data);
-            return response()->json(['success' => 'Berhasi menyimpan data']);
-        }
-
-    }
-
-    public function editProduct($id)
-    {
-        return view('admin-products.kelola-products.editProducts', [
-            'title' => 'Edit Produk',
-            'data' => Product::where('id', $id)->first(),
-        ]);
-        // $data = Quotes::where('id', $id)->first();
-        // return response()->json(['data' => $data]);
-    }
-
-    public function update(Request $request, $id)
-    {
-        $produk = Product::findOrFail($id);
-        $validasi = Validator::make($request->all(), [
-            'name' => 'required',
-            'price' => 'required',
-            'category' => 'required',
-            'unit' => 'required',
-            'stock' => 'required',
-        ], [
-            'name.required' => 'Nama wajib di isi',
-            'price.required' => 'Harga wajib di isi',
-            'category.required' => 'Kategori wajib di isi',
-            'unit.required' => 'Satuan wajib di isi',
-            'stock.required' => 'Stok wajib di isi',
-        ]);
-
-        if ($validasi->fails()) {
-            return response()->json(['errors' => $validasi->errors()]);
-        } else {
-            // log activity
-            $userId = $request->admin_id;
-            LogActivity::create([
-                'user_id' => $userId,
-                'action' => 'mengubah produk' . $id,
-            ]);
-            $data = [
-                'name' => $request->name,
-                'price' => $request->price,
-                'category' => $request->category,
-                'unit' => $request->unit,
-                'stock' => $request->stock,
-                'image' => $request->image,
-            ];
-            Product::where('id', $id)->update($data);
-            return response()->json(['success' => 'Berhasi mengupdate data']);
-        }
-    }
-
-    public function deleteProduct($id)
-    {
+        DB::beginTransaction();
         try {
-            $quote = Product::findOrFail($id);
-            $quote->delete();
-            // log activity
-            $userId = $request->admin_id;
             LogActivity::create([
-                'user_id' => $userId,
-                'action' => 'menghapus produk' . $id,
+                'user_id' => session('userData')->id,
+                'action' => 'membuat produk ' . $request->username,
             ]);
-            // toast('User berhasil di ubah','success');
-            return response()->json(['success' => 'Berhasil menghapus data'], 200); // Berikan respons sukses
+            Product::createProduct($request);
+            DB::commit();
+
+            return \Res::save();
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Gagal menghapus data: ' . $e->getMessage()], 500); // Berikan respons error
+            DB::rollback();
+
+            return \Res::error($e);
+        }
+    }
+
+    public function edit(Product $product)
+    {
+        return view('products.edit', [
+            'title' => 'Edit Produk',
+            'product' => $product,
+        ]);
+    }
+
+    public function update(Request $request, Product $product)
+    {
+        $request->validate([
+            'slug' => 'required|unique:products,slug,' . $product->id,
+        ], [
+            'slug.unique' => 'Slug tidak tersedia',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            LogActivity::create([
+                'user_id' => session('userData')->id,
+                'action' => 'mengubah produk' . $product->id,
+            ]);
+            $product->updateProduct($request);
+            DB::commit();
+
+            return \Res::update();
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return \Res::error($e);
+        }
+    }
+
+    public function detail(Product $product)
+    {
+
+        return view('products.detail', [
+            'title' => 'Detail Produk',
+            'product' => $product,
+        ]);
+    }
+
+    public function delete(Request $request, Product $product)
+    {
+        DB::beginTransaction();
+
+        try {
+            LogActivity::create([
+                'user_id' => session('userData')->id,
+                'action' => 'menghapus produk' . $product->name,
+            ]);
+            $product->deleteProduct();
+            DB::commit();
+
+            return \Res::delete();
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return \Res::error($e);
         }
     }
 
     public function importProduct()
     {
-        return view('admin-products.kelola-products.importProducts', [
+        return view('products.import', [
             'title' => 'Import Produk',
         ]);
     }
 
     // recycle section
-    public function indexRecycle()
+    public function indexRestore()
     {
         return view('admin-recycle.products', [
             'title' => 'Recycle Products',
         ]);
     }
 
-    public function showAllRecycle(Request $request)
+    public function showRestore(Request $request)
     {
         $data = Product::query()->onlyTrashed();
 
@@ -279,35 +191,46 @@ class ProductController extends Controller
             ->make(true);
     }
 
-    public function restore($id)
+    public function restore(Request $request, $id)
     {
-        // dd($id);
-        $product = Product::onlyTrashed()->where('id', $id)->restore();
-        // log activity
-        $userId = $request->admin_id;
-        LogActivity::create([
-            'user_id' => $userId,
-            'action' => 'merestore produk' . $id,
-        ]);
-        return response()->json(['success' => 'Berhasil merestore data']);
+        DB::beginTransaction();
+        try {
+            $product = Product::onlyTrashed()->where('id', $id)->restore();
+            // log activity
+            $userId = $request->admin_id;
+            LogActivity::create([
+                'user_id' => $userId,
+                'action' => 'merestore produk' . $id,
+            ]);
+            DB::commit();
+            return response()->json(['success' => 'Berhasil merestore data']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Gagal', 'details' => $e->getMessage()], 500);
+        }
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        // dd($id);
-        // log activity
-        $userId = $request->admin_id;
-        LogActivity::create([
-            'user_id' => $userId,
-            'action' => 'menghancurkan produk' . $id,
-        ]);
-        $product = Product::onlyTrashed()->where('id', $id)->forceDelete();
-
-        return response()->json(['success' => 'Berhasil mendestroy data']);
+        DB::beginTransaction();
+        try {
+            $product = Product::onlyTrashed()->where('id', $id)->forceDelete();
+            // log activity
+            $userId = $request->admin_id;
+            LogActivity::create([
+                'user_id' => $userId,
+                'action' => 'menghancurkan produk' . $id,
+            ]);
+            DB::commit();
+            return response()->json(['success' => 'Berhasil mendestroy data']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Gagal', 'details' => $e->getMessage()], 500);
+        }
     }
 
     // api section
-    public function showAllApi(Request $request)
+    public function showApi(Request $request)
     {
         $data = Product::all();
         $data = $data->map(function ($item) {
@@ -323,11 +246,10 @@ class ProductController extends Controller
         ], 200);
     }
 
-    public function searchProduct(Request $request)
+    public function detailApi(Request $request)
     {
-        // return $request;
-        $search = $request->name;
-        $data = Product::where('name', 'like', '%' . $search . '%')->get();
+        $slug = $request->slug;
+        $data = Product::where('slug', $slug)->first();
 
         return response()->json([
             'status' => true,

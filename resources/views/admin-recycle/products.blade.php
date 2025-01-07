@@ -181,43 +181,13 @@
                             admin_id: "{{ session('userData')->id }}"
                         },
                         success: function(response) {
-                            const Toast = Swal.mixin({
-                                toast: true,
-                                position: "top-end",
-                                showConfirmButton: false,
-                                timer: 3000,
-                                timerProgressBar: true,
-                                didOpen: (toast) => {
-                                    toast.onmouseenter = Swal.stopTimer;
-                                    toast.onmouseleave = Swal.resumeTimer;
-                                }
-                            });
                             if (response.success) {
-                                Toast.fire({
-                                    icon: "success",
-                                    title: response.success
-                                });
+                                successNotification('Berhasil', response.success)
                                 $('#myTable').DataTable().ajax.reload();
                             }
                         },
                         error: function(xhr, status, error) {
-                            const Toast = Swal.mixin({
-                                toast: true,
-                                position: "top-end",
-                                showConfirmButton: false,
-                                timer: 3000,
-                                timerProgressBar: true,
-                                didOpen: (toast) => {
-                                    toast.onmouseenter = Swal.stopTimer;
-                                    toast.onmouseleave = Swal.resumeTimer;
-                                }
-                            });
-                            // alert("Error: " + error);
-                            // console.log(xhr.responseJSON.error);
-                            Toast.fire({
-                                icon: "warning",
-                                title: xhr.responseJSON.error
-                            });
+                            errorNotification('Gagal Merestore Data', xhr.responseJSON.message || xhr.responseJSON.details)
                         },
                     })
                 }
@@ -245,43 +215,13 @@
                             admin_id: "{{ session('userData')->id }}"
                         },
                         success: function(response) {
-                            const Toast = Swal.mixin({
-                                toast: true,
-                                position: "top-end",
-                                showConfirmButton: false,
-                                timer: 3000,
-                                timerProgressBar: true,
-                                didOpen: (toast) => {
-                                    toast.onmouseenter = Swal.stopTimer;
-                                    toast.onmouseleave = Swal.resumeTimer;
-                                }
-                            });
                             if (response.success) {
-                                Toast.fire({
-                                    icon: "success",
-                                    title: response.success
-                                });
+                                successNotification('Berhasil', response.success)
                                 $('#myTable').DataTable().ajax.reload();
                             }
                         },
                         error: function(xhr, status, error) {
-                            const Toast = Swal.mixin({
-                                toast: true,
-                                position: "top-end",
-                                showConfirmButton: false,
-                                timer: 3000,
-                                timerProgressBar: true,
-                                didOpen: (toast) => {
-                                    toast.onmouseenter = Swal.stopTimer;
-                                    toast.onmouseleave = Swal.resumeTimer;
-                                }
-                            });
-                            // alert("Error: " + error);
-                            // console.log(xhr.responseJSON.error);
-                            Toast.fire({
-                                icon: "warning",
-                                title: xhr.responseJSON.error
-                            });
+                            errorNotification('Gagal Merestore Data', xhr.responseJSON.message || xhr.responseJSON.details)
                         },
                     })
                 }

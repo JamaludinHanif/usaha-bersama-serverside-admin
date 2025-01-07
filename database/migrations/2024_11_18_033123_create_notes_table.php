@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('notes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
-            $table->string('status'); // 1 artinya belum selesai sedangkan 2 artinya selesai
-            $table->string('note');
+            $table->foreignId('user_id')->nullable();
+            $table->string('status')->nullable(); // 1 artinya belum selesai sedangkan 2 artinya selesai
+            $table->string('note')->nullable();
             $table->timestamps();
         });
     }
