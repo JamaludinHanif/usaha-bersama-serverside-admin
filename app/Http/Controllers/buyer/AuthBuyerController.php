@@ -125,6 +125,8 @@ class AuthBuyerController extends Controller
                 'action' => 'verifikasi OTP',
             ]);
 
+            Auth::login($user);
+
             session([
                 'userData' => $user,
             ]);

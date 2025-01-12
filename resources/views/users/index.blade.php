@@ -124,6 +124,12 @@
                         </div>
 
                         <div class="form-group">
+                            <label> Nomor Handphone {!! Template::required() !!} </label>
+                            <input type="number" name="no_hp" placeholder="Nomor Handphone" class="form-control" required>
+                            <span class="invalid-feedback"></span>
+                        </div>
+
+                        <div class="form-group">
                             <label> Role {!! Template::required() !!} </label>
                             <select name="role" class="form-control" required>
                                 <option value="" disabled selected>Pilih Role</option>
@@ -138,6 +144,8 @@
                             <input type="password" name="password" placeholder="Password" class="form-control" required>
                             <span class="invalid-feedback"></span>
                         </div>
+
+                        <input type="hidden" name="is_verify" value="yes">
 
                     </div>
 
@@ -188,6 +196,12 @@
                         <div class="form-group">
                             <label> Email {!! Template::required() !!} </label>
                             <input type="text" name="email" placeholder="Email" class="form-control" required>
+                            <span class="invalid-feedback"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label> Nomor Handphone {!! Template::required() !!} </label>
+                            <input type="number" name="no_hp" placeholder="Nomor Handphone" class="form-control" required>
                             <span class="invalid-feedback"></span>
                         </div>
 
@@ -338,6 +352,7 @@
                                 $formUpdate.find(`[name="name"]`).val(user.name);
                                 $formUpdate.find(`[name="username"]`).val(user.username);
                                 $formUpdate.find(`[name="email"]`).val(user.email);
+                                $formUpdate.find(`[name="no_hp"]`).val(user.no_hp);
                                 $formUpdate.find(`[name="role"]`).val(user.role);
 
                                 formSubmit(

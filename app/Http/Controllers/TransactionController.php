@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SendInvoice;
+use App\Models\Cart;
+use App\Models\InterestBill;
+use App\Models\LogActivity;
+use App\Models\Paylater;
+use App\Models\PaymentCode;
+use App\Models\Product;
+use App\Models\Transaction;
+use App\Models\TransactionItem;
+use App\Models\User;
 use App\MyClass;
 use Carbon\Carbon;
-use App\Models\User;
-use App\Models\Product;
-use App\Models\Paylater;
-use App\Mail\SendInvoice;
-use App\Models\LogActivity;
-use App\Models\PaymentCode;
-use App\Models\Transaction;
-use Illuminate\Support\Str;
-use App\Models\InterestBill;
 use Illuminate\Http\Request;
-use App\Models\TransactionItem;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class TransactionController extends Controller
 {
@@ -367,12 +368,36 @@ class TransactionController extends Controller
         }
     }
 
+
+    // seller
     public function preCheckout(Request $request)
     {
-        return view('buyer.preCheckout', [
-            'title' => 'PreCheckout',
-            'products' => Product::where('slug', $request->product)->get(),
-        ]);
+        if ($request->product) {
+            $data = Product::where('slug', $request->product)->get()->map(function ($item) {
+                return [
+                    'product' => $item,
+                    'quantity' => 1,
+                ];
+            });
+            return view('buyer.preCheckout', [
+                'title' => 'PreCheckout',
+                'datas' => $data,
+            ]);
+        } else {
+            $cart = Cart::where('user_id', session('userData')->id)
+                ->with('product')
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'product' => $item->product,
+                        'quantity' => $item->quantity,
+                    ];
+                });
+            return view('buyer.preCheckout', [
+                'title' => 'PreCheckout',
+                'datas' => $cart,
+            ]);
+        }
     }
 
     public function checkoutBuyer(Request $request)
@@ -448,6 +473,9 @@ class TransactionController extends Controller
                 ]);
 
                 //
+                if (count($request->data) > 1) {
+                    Cart::where('user_id', session('userData')->id)->delete();
+                }
                 DB::commit();
                 return response()->json(['message' => 'Transaksi Berhasil', 'data' => $request->all()], 200);
             }
@@ -458,4 +486,105 @@ class TransactionController extends Controller
         }
     }
 
+
+    // seller
+    public function confirmOrder(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $transaction = Transaction::where('id', $request->id)->first();
+
+            $transaction->update([
+                'status' => 'success',
+            ]);
+
+            // log activity
+            LogActivity::create([
+                'user_id' => session('userData')->id,
+                'action' => "konfirmasi pembayaran ($transaction->code_invoice)",
+            ]);
+
+            DB::commit();
+            return response()->json(['success' => 'Konfirmasi Pesanan Berhasil', 'data' => $request->all()], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json(['error' => 'Konfirmasi Pesanan gagal. Silakan coba lagi.', 'details' => "File : {$e->getFile()} | Line : {$e->getLine()} | Message : {$e->getMessage()}"], 500);
+        }
+    }
+
+    public function checkoutSeller(Request $request)
+    {
+
+        DB::beginTransaction();
+        try {
+            // database section
+
+            do {
+                $randomLetters = Str::upper(Str::random(4));
+                $date = now()->format('dmy');
+                $codeInvoice = $randomLetters . "-" . $date . "-" . session('userData')->id;
+
+                $exists = \App\Models\Transaction::where('code_invoice', $codeInvoice)->exists();
+            } while ($exists);
+
+            $totalAmount = 0;
+            $productItems = [];
+
+            foreach ($request->data as $productData) {
+                if (isset($productData['product_id'])) {
+                    $product = Product::find($productData['product_id']);
+                } else {
+                    $product = null;
+                }
+
+                $quantity = $productData['quantity'];
+
+                if ($product && $quantity > 0) {
+                    $itemPrice = $product->price * $quantity;
+                    $totalAmount += $itemPrice;
+
+                    $productItems[] = [
+                        'product_id' => $product->id,
+                        'quantity' => $quantity,
+                        'price' => $itemPrice,
+                    ];
+                }
+            }
+
+            if ($totalAmount > 0) {
+                $transaction = Transaction::create([
+                    'amount' => $totalAmount,
+                    'code_invoice' => $codeInvoice,
+                    'user_id' => 18,
+                    'status' => 'success',
+                    'seller_id' => session('userData')->id,
+                ]);
+
+                foreach ($productItems as $item) {
+                    TransactionItem::create([
+                        'transaction_id' => $transaction->id,
+                        'user_id' => 18,
+                        'product_id' => $item['product_id'],
+                        'quantity' => $item['quantity'],
+                        'price' => $item['price'],
+                    ]);
+                    Product::find($item['product_id'])->decrement('stock', $item['quantity']);
+                }
+
+                // log activity
+                LogActivity::create([
+                    'user_id' => 18,
+                    'action' => "melakukan transaksi via kasir " . session('userData')->shop_name,
+                ]);
+
+                DB::commit();
+                return response()->json(['message' => 'Transaksi Berhasil', 'data' => $request->all()], 200);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json(['error' => 'Pendaftaran gagal. Silakan coba lagi.', 'details' => "File : {$e->getFile()} | Line : {$e->getLine()} | Message : {$e->getMessage()}"], 500);
+        }
+    }
 }

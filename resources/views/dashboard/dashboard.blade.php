@@ -18,7 +18,7 @@
     </ul>
 @endsection
 @section('content')
-    <div class="mt--5">
+    {{-- <div class="mt--5">
         <div class="row mt--2">
             <div class="col-md-6">
                 <div class="card full-height">
@@ -55,18 +55,15 @@
                             <div class="d-flex flex-column justify-content-center mt-2">
                                 <div class="d-flex">
                                     <div>
-                                        {{-- @dd($weeklyIncome) --}}
                                         <h4 class="fw-extrabold text-warning">Rp.
                                             {{ number_format($weeklyIncomeKotor ?? 0, 0, ',', '.') }}</h4>
                                     </div>
                                     <div>
-                                        {{-- @dd($weeklyIncome) --}}
                                         <h4 class="fw-extrabold ml-4 text-success">Rp.
                                             {{ number_format($weeklyIncomeBersih ?? 0, 0, ',', '.') }}</h4>
                                     </div>
                                 </div>
                                 <div class="">
-                                    {{-- @dd($topCashiers) --}}
                                     <h4 class="fw-extrabold text-info" style="text-align: center">Rp.
                                         {{ number_format($interestWeeklyIncome ?? 0, 0, ',', '.') }}</h4>
                                 </div>
@@ -94,7 +91,6 @@
             </div>
         </div>
         <div class="row">
-            {{-- ini --}}
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
@@ -121,7 +117,6 @@
                         <div class="chart-container" style="min-height: 375px">
                             <canvas id="statisticsChart"></canvas>
                         </div>
-                        {{-- <div id="myChartLegend"></div> --}}
                     </div>
                 </div>
             </div>
@@ -185,7 +180,6 @@
                     </div>
                 </div>
             </div>
-            {{-- @dd($topBuyers) --}}
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">
@@ -378,7 +372,6 @@
                                     <span
                                         class="avatar-title text-uppercase rounded-circle border border-white {{ $randomColor }}">{{ strtoupper(substr($debt->user->name, 0, 1)) }}</span>
                                 </div>
-                                {{-- @dd($debts) --}}
                                 <div class="flex-1 ml-3 pt-1">
                                     <h6 class="text-capitalize fw-bold mb-1">{{ $debt->user->username }}<span
                                             class="text-warning pl-3">Rp.
@@ -424,7 +417,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 @endsection
 @section('modal')
     <!-- Modal -->
@@ -450,7 +443,7 @@
     </div>
 @endsection
 @section('scripts')
-    <script>
+    {{-- <script>
         function formatRupiah(angka) {
             return 'Rp. ' + angka?.toLocaleString('id-ID', {
                 minimumFractionDigits: 0,
@@ -901,5 +894,5 @@
                 }
             });
         });
-    </script>
+    </script> --}}
 @endsection

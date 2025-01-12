@@ -32,7 +32,7 @@ class CartController extends Controller
         ]);
         DB::beginTransaction();
         try {
-            $existingCart = Cart::where('user_id', auth()->id())
+            $existingCart = Cart::where('user_id', session('userData')->id)
                 ->where('product_id', $request->product_id)
                 ->first();
 
@@ -46,14 +46,14 @@ class CartController extends Controller
 
             $cart = Cart::updateOrCreate(
                 [
-                    'user_id' => auth()->id(),
+                    'user_id' => session('userData')->id,
                     'product_id' => $request->product_id,
                 ],
                 [
                     'quantity' => $request->quantity,
                 ]
             );
-            $cartCount = Cart::where('user_id', auth()->id())->count();
+            $cartCount = Cart::where('user_id', session('userData')->id)->count();
             DB::commit();
             return response()->json(['success' => 'Produk berhasil ditambahkan ke keranjang!', 'cartCount' => $cartCount]);
         } catch (\Exception $e) {
@@ -67,7 +67,7 @@ class CartController extends Controller
         // dd($request->all());
         DB::beginTransaction();
         try {
-            $cart = Cart::where('user_id', auth()->id())
+            $cart = Cart::where('user_id', session('userData')->id)
                 ->where('product_id', $request->product_id)
                 ->first();
 
@@ -86,10 +86,10 @@ class CartController extends Controller
     {
         DB::beginTransaction();
         try {
-            $cart = Cart::where('id', $id)->where('user_id', auth()->id())->first();
+            $cart = Cart::where('id', $id)->where('user_id', session('userData')->id)->first();
             if ($cart) {
                 $cart->delete();
-                $cartCount = Cart::where('user_id', auth()->id())->count();
+                $cartCount = Cart::where('user_id', session('userData')->id)->count();
                 DB::commit();
                 return response()->json(['success' => 'Item telah berhasil dihapus dari keranjang!', 'cartCount' => $cartCount]);
             }

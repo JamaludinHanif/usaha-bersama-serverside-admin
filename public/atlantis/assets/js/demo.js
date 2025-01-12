@@ -18,23 +18,23 @@ Circles.create({
 });
 
 //Notify
-$.notify(
-    {
-        icon: "flaticon-alarm-1",
-        title: "Hallo Semuanya 🖐️🖐️",
-        message:
-            "Jika kalian mendapatkan bug atau semacamnya silahkan klik notifikasi ini",
-        url: "https://wa.me/6285161310017?text=saya%20mengalami%20bug%20diaplikasi%20E-Commerce-Jamal",
-    },
-    {
-        type: "secondary",
-        placement: {
-            from: "bottom",
-            align: "right",
-        },
-        time: 1000000,
-    }
-);
+// $.notify(
+//     {
+//         icon: "flaticon-alarm-1",
+//         title: "Hallo Semuanya 🖐️🖐️",
+//         message:
+//             "Jika kalian mendapatkan bug atau semacamnya silahkan klik notifikasi ini",
+//         url: "https://wa.me/6285161310017?text=saya%20mengalami%20bug%20diaplikasi%20E-Commerce-Jamal",
+//     },
+//     {
+//         type: "secondary",
+//         placement: {
+//             from: "bottom",
+//             align: "right",
+//         },
+//         time: 1000000,
+//     }
+// );
 
 // JQVmap
 $("#map-example").vectorMap({

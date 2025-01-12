@@ -17,6 +17,10 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        return view('dashboard.dashboard', [
+            'title' => 'Dashboard',
+            'title2' => 'Haloo 🖐️🖐️, selamat datang Admin' . ' ' . session('userData')->username,
+        ]); // sementara
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek = Carbon::now()->endOfWeek();
 

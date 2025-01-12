@@ -1,4 +1,4 @@
-@extends('layouts.buyer')
+@extends('layouts.seller')
 @section('content')
 
     <body class="bg-white">
@@ -16,7 +16,7 @@
                             {{-- @dd(
                                 \App\Models\Transaction::where('user_id', session('userData')->id)->with(['user', 'seller', 'items.product'])->orderBy('created_at', 'asc')->get()
                             ) --}}
-                            @forelse (\App\Models\Transaction::where('user_id', session('userData')->id)->with(['user', 'seller', 'items.product'])->orderBy('created_at', 'desc')->get() as $index => $transaction)
+                            @forelse (\App\Models\Transaction::where('seller_id', session('userData')->id)->whereIn('status', ['success', 'failed'])->with(['user', 'seller', 'items.product'])->orderBy('created_at', 'desc')->get() as $index => $transaction)
                                 <div aria-labelledby="">
                                     <div class="space-y-1 md:flex md:items-baseline md:space-x-4 md:space-y-0">
                                         <div class="flex justify-between items-center">
@@ -33,10 +33,10 @@
                                         <div
                                             class="space-y-5 sm:flex sm:items-baseline sm:justify-between sm:space-y-0 md:min-w-0 md:flex-1">
                                             <p class="text-xs font-medium text-gray-500">
-                                                Dibeli Pada Tanggal {{ $transaction->created_at->translatedFormat('d F Y, H:i') }}
+                                                Dikonfirmasi Pada Tanggal {{ $transaction->updated_at->translatedFormat('d F Y, H:i') }}
                                             </p>
                                             <div class="flex text-sm font-medium">
-                                                <a href="{{ route('buyer.detail.order', $transaction->code_invoice) }}"
+                                                <a href="{{ route('seller.order.detail', $transaction->code_invoice) }}"
                                                     class="text-indigo-600 hover:text-indigo-500">Detail
                                                     Pembelian</a>
                                                 <div class="ml-4 border-l border-gray-200 pl-4 sm:ml-6 sm:pl-6">
@@ -71,25 +71,19 @@
                                     </div>
                                     @if (count($transaction->items) > 2)
                                         <div class="text-center mt-3">
-                                            <a href="{{ route('buyer.detail.order', $transaction->code_invoice) }}" class="text-sm text-gray-500 hover:text-gray-700">
+                                            <a href="{{ route('seller.order.detail', $transaction->code_invoice) }}" class="text-sm text-gray-500 hover:text-gray-700">
                                                 Produk Lainnya
                                             </a>
                                         </div>
                                     @endif
                                 </div>
                             @empty
-                                <div class="grid min-h-full place-items-center bg-white my-20 px-6 lg:px-8">
+                                <div class="grid min-h-full place-items-center bg-white my- px-6 lg:px-8">
                                     <div class="text-center">
                                         <p class="text-base font-semibold text-indigo-600">404</p>
                                         <h1
                                             class="mt-4 text-balance text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
                                             {{ $title }} Kamu Kosong</h1>
-                                        <div class="mt-10 flex items-center justify-center gap-x-6">
-                                            <a href="{{ route('buyer.index') }}"
-                                                class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold hover:text-white text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Lihat
-                                                Dan
-                                                Cari Produk</a>
-                                        </div>
                                     </div>
                                 </div>
                             @endforelse

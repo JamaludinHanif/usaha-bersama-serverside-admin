@@ -49,6 +49,8 @@ class Transaction extends Model
             $data->where('status', $request->status);
         }
 
+        $data = $data->orderBy('updated_at', 'DESC');
+
         return Datatables::of($data)
             ->addColumn('buyer', function ($data) {
                 return $data->user ? $data->user->username : 'Pengguna Telah Dihapus';

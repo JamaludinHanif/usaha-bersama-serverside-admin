@@ -9,7 +9,7 @@ use App\Http\Controllers\SellerController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Buyer\CartController;
+use App\Http\Controllers\buyer\CartController;
 use App\Http\Controllers\buyer\BuyerController;
 use App\Http\Controllers\LogActivityController;
 use App\Http\Controllers\TransactionController;
@@ -173,6 +173,7 @@ Route::prefix('buyer')->group(function () {
     Route::get('/search-seller', [PenjualController::class, 'searchSeller'])->name('buyer.seller.search');
     Route::get('/my-profile', [BuyerController::class, 'indexProfile'])->name('buyer.profile')->middleware('auth.buyer');
     Route::get('/my-history-payment', [BuyerController::class, 'indexHistoryPayment'])->name('buyer.history')->middleware('auth.buyer');
+    Route::get('/my-history-payment/{code}', [BuyerController::class, 'detailOrder'])->name('buyer.detail.order')->middleware('auth.buyer');
 });
 
 Route::prefix('seller')->group(function () {
@@ -184,5 +185,18 @@ Route::prefix('seller')->group(function () {
         Route::get('/logout', [AuthSellerController::class, 'logout'])->name('seller.logout');
     });
 
+    Route::prefix('transaction')->group(function () {
+        Route::post('/confirmation-order', [TransactionController::class, 'confirmOrder'])->name('seller.confirm.order');
+        Route::post('/checkout', [TransactionController::class, 'checkoutSeller'])->name('seller.checkout');
+    });
+
     Route::get('/', [PenjualController::class, 'index'])->name('seller.index');
+    Route::post('/change-status', [PenjualController::class, 'changeStatus'])->name('seller.change.status');
+    Route::get('/order', [PenjualController::class, 'indexOrder'])->name('seller.order');
+    Route::get('/history', [PenjualController::class, 'history'])->name('seller.history');
+    Route::get('/confirmation-order/{code}', [PenjualController::class, 'confirmOrder'])->name('seller.detail.order');
+    Route::get('/detail-order/{code}', [PenjualController::class, 'detailOrder'])->name('seller.order.detail');
+    Route::get('/cashier', [PenjualController::class, 'cashier'])->name('seller.cashier');
+    Route::get('/get-products', [PenjualController::class, 'getProducts'])->name('seller.get.product');
+
 });

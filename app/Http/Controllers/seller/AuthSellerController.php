@@ -59,29 +59,29 @@ class AuthSellerController extends Controller
         return redirect(route('seller.loginView'))->with('logout-success', 'Logout Berhasil');
     }
 
-    public function changePassword(Request $request)
-    {
-        $request->validate([
-            'password' => 'required|string|min:8',
-        ], [
-            'password.required' => 'Kata sandi tidak boleh kosong.',
-            'password.min' => 'Kata sandi harus terdiri dari minimal 8 karakter.',
-        ]);
+    // public function changePassword(Request $request)
+    // {
+    //     $request->validate([
+    //         'password' => 'required|string|min:8',
+    //     ], [
+    //         'password.required' => 'Kata sandi tidak boleh kosong.',
+    //         'password.min' => 'Kata sandi harus terdiri dari minimal 8 karakter.',
+    //     ]);
 
-        DB::beginTransaction();
+    //     DB::beginTransaction();
 
-        try {
-            $user = Auth::user();
-            $user->password = Hash::make($request->password);
-            $user->save();
+    //     try {
+    //         $user = Auth::user();
+    //         $user->password = Hash::make($request->password);
+    //         $user->save();
 
-            DB::commit();
-            return response()->json(['success' => 'Password berhasil diubah!', 'user' => $user], 200);
-        } catch (\Exception $e) {
-            DB::rollBack();
+    //         DB::commit();
+    //         return response()->json(['success' => 'Password berhasil diubah!', 'user' => $user], 200);
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
 
-            return response()->json(['error' => 'Ganti Password gagal. Silakan coba lagi.', 'details' => $e->getMessage()], 500);
-        }
+    //         return response()->json(['error' => 'Ganti Password gagal. Silakan coba lagi.', 'details' => $e->getMessage()], 500);
+    //     }
 
-    }
+    // }
 }

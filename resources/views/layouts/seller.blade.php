@@ -40,6 +40,8 @@
         rel="stylesheet">
 
     <link rel="stylesheet" href="{{ asset('atlantis/assets/css/custom.css') }}">
+    <link rel="stylesheet" href="{{ asset('atlantis/assets/js/plugin/select2/select2.css') }}">
+    <link rel="stylesheet" href="{{ asset('atlantis/assets/js/plugin/select2/select2-bootstrap.css') }}">
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
@@ -166,7 +168,7 @@
     <script src="{{ asset('atlantis/assets/js/atlantis.min.js') }}"></script>
 
     {{-- select2 --}}
-    <script src="{{ asset('select2/select2.min.js') }}"></script>
+    <script src="{{ asset('atlantis/assets/js/plugin/select2/select2.min.js') }}"></script>
 
     <!-- Atlantis DEMO methods, don't include it in your project! -->
     {{-- <script src="{{ asset('atlantis/assets/js/setting-demo.js') }}"></script> --}}
@@ -255,6 +257,14 @@
         function updateCartBadge(count) {
             $('.cart-badge').text(count);
         }
+    </script>
+
+    <script>
+        $('.on-going').click(function(e) {
+            alertTailwind('Peringatan!',
+                'Fitur belum tersedia untuk saat ini', 'warning'
+            );
+        });
     </script>
 
     </script>

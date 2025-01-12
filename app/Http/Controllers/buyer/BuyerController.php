@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\buyer;
 
 use App\Models\Product;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -28,6 +29,14 @@ class BuyerController extends Controller
     {
         return view('buyer.historyPayment', [
             'title' => 'Riwayat Pembelian'
+        ]);
+    }
+
+    public function detailOrder($code)
+    {
+        return view('buyer.history_detail', [
+            'title' => 'Detail',
+            'datas' => Transaction::where('user_id', session('userData')->id)->where('code_invoice', $code)->with(['user', 'seller', 'items.product'])->first()
         ]);
     }
 

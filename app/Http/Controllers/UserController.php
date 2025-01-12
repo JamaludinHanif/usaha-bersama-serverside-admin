@@ -45,7 +45,7 @@ class UserController extends Controller
                 'user_id' => session('userData')->id,
                 'action' => 'membuat pengguna ' . $request->username,
             ]);
-            User::createUser($data);
+            User::createUser($request->all());
             DB::commit();
             return \Res::save();
         } catch (\Exception $e) {

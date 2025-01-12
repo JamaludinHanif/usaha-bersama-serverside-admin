@@ -39,7 +39,7 @@
                         <ul class="nav nav-collapse">
                             <li class="{{ request()->routeIs('admin.users.index') ? 'active' : '' }}">
                                 <a href="{{ route('admin.users.index') }}">
-                                    <span class="sub-item">Kelola User</span>
+                                    <span class="sub-item">Kelola Pengguna</span>
                                 </a>
                             </li>
                             <li class="{{ request()->routeIs('admin.users.log') ? 'active' : '' }}">
@@ -68,7 +68,7 @@
                     <span class="sidebar-mini-icon">
                         <i class="fa fa-ellipsis-h"></i>
                     </span>
-                    <h4 class="text-section">TRANSAKSI</h4>
+                    <h4 class="text-section">TRANSACTION</h4>
                 </li>
                 <li class="nav-item">
                     <a data-toggle="collapse" aria-expanded="false" href="#transaction">

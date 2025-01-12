@@ -253,47 +253,44 @@
                         </div>
                     </div> --}}
                 </div>
-
+{{-- @dd($datas) --}}
                 <!-- Order summary -->
                 <div class="mt-8 pt-2 border-t border-gray-200 lg:mt-0">
                     <h2 class="text-lg font-medium text-gray-900">Detail Pembelian</h2>
                     <div class="mt-4 rounded-lg border border-gray-200 bg-white shadow-sm">
                         <ul role="list" class="divide-y divide-gray-200">
-                            @foreach ($products as $index => $product)
+                            @foreach ($datas as $index => $data)
                                 <li class="flex px-4 py-6 sm:px-6">
                                     <input type="hidden" name="data[{{ $index }}][product_id]"
-                                        value="{{ $product->id }}">
+                                        value="{{ $data['product']->id }}">
                                     <div class="shrink-0">
-                                        <img src="{{ $product->image }}" alt="{{ $product->name }}" class="w-20 rounded-md">
+                                        <img src="{{ $data['product']->image }}" alt="{{ $data['product']->name }}"
+                                            class="w-20 rounded-md">
                                     </div>
 
                                     <div class="ml-6 flex flex-1 flex-col">
                                         <div class="">
                                             <h4 class="text-sm">
                                                 <a href="#"
-                                                    class="font-medium text-gray-700 hover:text-gray-800 line-clamp-2 lg:line-clamp-3">{{ $product->name }}</a>
+                                                    class="font-medium text-gray-700 hover:text-gray-800 line-clamp-2 lg:line-clamp-3">{{ $data['product']->name }}</a>
                                             </h4>
                                         </div>
 
                                         <div class="flex flex-1 items-end justify-between pt-2">
                                             <p class="item-price mt-1 text-sm font-medium text-gray-900">
-                                                {{ $product->priceFormatted() }}</p>
+                                                {{ $data['product']->priceFormatted() }}</p>
 
                                             <div class="ml-4">
                                                 <div class="grid grid-cols-1">
                                                     <select id="quantity" name="data[{{ $index }}][quantity]"
                                                         aria-label="Quantity"
                                                         class="item-quantity col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-2 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                                                        <option value="1">1</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-                                                        <option value="4">4</option>
-                                                        <option value="5">5</option>
-                                                        <option value="6">6</option>
-                                                        <option value="7">7</option>
-                                                        <option value="8">8</option>
-                                                        <option value="9">9</option>
-                                                        <option value="10">10</option>
+                                                        @for ($i = 1; $i <= 10; $i++)
+                                                            <option value="{{ $i }}"
+                                                                {{ $data['quantity'] == $i ? 'selected' : '' }}>
+                                                                {{ $i }}
+                                                            </option>
+                                                        @endfor
                                                     </select>
                                                     <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
                                                         viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"
@@ -313,7 +310,7 @@
                         <dl class="space-y-6 border-t border-gray-200 px-4 py-6 sm:px-6">
                             <div class="flex items-center justify-between">
                                 <dt class="text-sm">Subtotal</dt>
-                                <dd class="text-sm font-medium text-gray-900">{{ $product->priceFormatted() }}</dd>
+                                <dd class="text-sm font-medium text-gray-900">{{ $data['product']->priceFormatted() }}</dd>
                             </div>
                             {{-- <div class="flex items-center justify-between">
                                 <dt class="text-sm">Ongkir</dt>
