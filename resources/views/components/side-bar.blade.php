@@ -70,22 +70,13 @@
                     </span>
                     <h4 class="text-section">TRANSACTION</h4>
                 </li>
-                <li class="nav-item">
-                    <a data-toggle="collapse" aria-expanded="false" href="#transaction">
+                <li class="nav-item {{ request()->routeIs('admin.transactions.index') ? 'active' : '' }}">
+                    <a href="{{ route('admin.transactions.index') }}">
                         <i class="fas fa-money-check-alt"></i>
-                        <p>Transaksi</p>
-                        <span class="caret"></span>
+                        <p>Kelola Transaksi</p>
                     </a>
-                    <div class="collapse" id="transaction">
-                        <ul class="nav nav-collapse">
-                            <li class="{{ request()->routeIs('admin.transactions.index') ? 'active' : '' }}">
-                                <a href="{{ route('admin.transactions.index') }}">
-                                    <span class="sub-item">Kelola Transaksi</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
                 </li>
+
                 {{-- Seller --}}
                 <li class="nav-section">
                     <span class="sidebar-mini-icon">
@@ -100,7 +91,7 @@
                     </a>
                 </li>
                 {{-- recycle bin --}}
-                <li class="nav-section">
+                {{-- <li class="nav-section">
                     <span class="sidebar-mini-icon">
                         <i class="fa fa-ellipsis-h"></i>
                     </span>
@@ -126,7 +117,7 @@
                             </li>
                         </ul>
                     </div>
-                </li>
+                </li> --}}
                 {{-- <li class="nav-item">
                     <a href="widgets.html">
                         <i class="fas fa-desktop"></i>
@@ -134,8 +125,8 @@
                         <span class="badge badge-success">4</span>
                     </a>
                 </li> --}}
-                <li class="mx-4 mt-2">
-                    <a href="{{ route('auth.logout') }}" class="btn btn-primary btn-block"><span
+                <li class="mx-4 mt-5">
+                    <a href="{{ route('auth.logout') }}" class="btn btn-warning btn-block"><span
                             class="btn-label mr-2"> <i class="fas fa-sign-out-alt"></i>
                         </span>Logout</a>
                 </li>

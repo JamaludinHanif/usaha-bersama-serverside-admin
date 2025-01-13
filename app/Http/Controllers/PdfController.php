@@ -89,7 +89,6 @@ class PdfController extends Controller
             'title' => 'Laporan Data Transaksi',
             'date' => date('d/F/Y'),
             'transactions' => $transactions,
-
         ];
 
         $html = view('pdf.historyTransactionsData', $data)->render();

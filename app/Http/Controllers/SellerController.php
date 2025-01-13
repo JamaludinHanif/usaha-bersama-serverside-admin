@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Seller;
 use App\Models\LogActivity;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -76,10 +78,31 @@ class SellerController extends Controller
 
     public function detail(Seller $seller)
 	{
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
+
+        $today = Carbon::now();
+        $weeklyIncome = [];
+        for ($i = 0; $i < 7; $i++) {
+            $date = $today->copy()->startOfWeek()->addDays($i);
+            $income = Transaction::where('seller_id', $seller->id)->where('status', 'success')->whereDate('created_at', $date)
+                ->sum('amount');
+            $weeklyIncome[] = $income;
+        }
+
+        $monthlyIncome = [];
+        for ($month = 1; $month <= 12; $month++) {
+            $monthlyIncome[] = Transaction::where('seller_id', $seller->id)->whereMonth('created_at', $month)
+                ->where('status', 'success')
+                ->sum('amount');
+        }
 
 		return view('sellers.detail', [
 			'title'     => 'Detail Penjual',
 			'seller'    => $seller,
+            'weeklyIncomeBersih' => Transaction::where('seller_id', $seller->id)->where('status', 'success')->whereBetween('created_at', [$startOfWeek, $endOfWeek])->sum('amount'),
+            'weeklyIncome' => $weeklyIncome,
+            'monthlyIncome' => $monthlyIncome,
 		]);
 	}
 

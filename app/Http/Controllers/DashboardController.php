@@ -17,55 +17,29 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        return view('dashboard.dashboard', [
-            'title' => 'Dashboard',
-            'title2' => 'Haloo 🖐️🖐️, selamat datang Admin' . ' ' . session('userData')->username,
-        ]); // sementara
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek = Carbon::now()->endOfWeek();
 
         // data dari database
-        $userCount = User::count();
+        $userCount = User::where('role', 'buyer')->count();
         $productCount = Product::count();
         $transactionCount = Transaction::where('status', 'success')->whereDate('created_at', Carbon::today())->count();
-        $listDebt = Paylater::with('user')->where('status', '1')->get();
 
         // perminggu
-        $interestWeeklyIncome = \DB::table('paylaters')
-            ->join('transactions', 'paylaters.transaction_id', '=', 'transactions.id')
-            ->join('interest_bills', 'paylaters.interest_id', '=', 'interest_bills.id')
-            ->whereBetween('paylaters.created_at', [$startOfWeek, $endOfWeek]) // optional
-            ->selectRaw('SUM(transactions.total_amount * (interest_bills.interest / 100)) as total_interest')
-            ->value('total_interest');
-        $weeklyIncomeBersih = PaymentCode::where('status', 'success')
+        $weeklyIncomeBersih = Transaction::where('status', 'success')
             ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
             ->sum('amount');
-        $weeklyIncomeKotor = Transaction::where('status', 'success')
-            ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
-            ->sum('total_amount');
 
         // pertahun
-        $yearIncomeBersih = PaymentCode::where('status', 'success')
+        $yearIncomeBersih = Transaction::where('status', 'success')
             ->whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])
             ->sum('amount');
-        $yearIncomeKotor = Transaction::where('status', 'success')
-            ->whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])
-            ->sum('total_amount');
-        $yearBill = Paylater::where('status', '1')
-            ->whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])
-            ->sum('debt_remaining');
-        $interestYearIncome = \DB::table('paylaters')
-            ->join('transactions', 'paylaters.transaction_id', '=', 'transactions.id')
-            ->join('interest_bills', 'paylaters.interest_id', '=', 'interest_bills.id')
-            ->whereBetween('paylaters.created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()]) // optional
-            ->selectRaw('SUM(transactions.total_amount * (interest_bills.interest / 100)) as total_interest')
-            ->value('total_interest');
 
         // Mengambil produk terlaris berdasarkan jumlah quantity yang terjual
         $topSellingProducts = TransactionItem::select('product_id', \DB::raw('SUM(quantity) as total_quantity'))
             ->groupBy('product_id')
             ->orderByDesc('total_quantity')
-            ->take(5) // Mengambil 5 produk terlaris
+            ->take(7) // Mengambil 5 produk terlaris
             ->get();
 
         $products = Product::whereIn('id', $topSellingProducts->pluck('product_id'))->get();
@@ -79,17 +53,18 @@ class DashboardController extends Controller
         });
 
         // top kasir
-        $topCashiers = PaymentCode::select('cashier_id', \DB::raw('SUM(amount) as total_sales'))
-            ->groupBy('cashier_id') // Kelompokkan berdasarkan cashier_id
-            ->orderByDesc('total_sales') // Urutkan berdasarkan total_sales yang terbesar
-            ->take(7) // Ambil 5 kasir teratas
+        $topSellers = Transaction::select('seller_id', \DB::raw('SUM(amount) as total_sales'))
+            ->with('seller')
+            ->groupBy('seller_id')
+            ->orderByDesc('total_sales')
+            ->take(7)
             ->get();
 
             // top pembeli
-        $topBuyers = PaymentCode::select('user_id', \DB::raw('SUM(amount) as total_sales'))
+        $topBuyers = Transaction::select('user_id', \DB::raw('SUM(amount) as total_sales'))
             ->groupBy('user_id')
             ->orderByDesc('total_sales')
-            ->take(5)
+            ->take(7)
             ->get();
 
         return view('dashboard.dashboard', [
@@ -101,49 +76,33 @@ class DashboardController extends Controller
             'jumlahProduk' => $productCount,
             'jumlahTransaksi' => $transactionCount,
             // data mingguan
-            'interestWeeklyIncome' => $interestWeeklyIncome,
             'weeklyIncomeBersih' => $weeklyIncomeBersih,
-            'weeklyIncomeKotor' => $weeklyIncomeKotor,
             // data tahunan
             'yearIncomeBersih' => $yearIncomeBersih,
-            'yearIncomeKotor' => $yearIncomeKotor,
-            'interestYearIncome' => $interestYearIncome,
-            'yearBill' => $yearBill,
+            // top
             'topSellingProducts' => $topSellingProducts,
-            'topCashiers' => $topCashiers,
+            'topSellers' => $topSellers,
             'topBuyers' => $topBuyers,
-            // data hutang
-            'debts' => $listDebt,
         ]);
     }
 
     public function transactionChart()
     {
-        $cashData = [];
+        $successData = [];
         $billData = [];
         $paylaterData = [];
 
         // Looping untuk setiap bulan (1-12)
         for ($month = 1; $month <= 12; $month++) {
             // Hitung jumlah transaksi per jenis pembayaran berdasarkan bulan
-            $cashData[] = PaymentCode::whereMonth('created_at', $month)
-                ->where('type', 'cash')
-                ->sum('amount');
-
-            $billData[] = PaymentCode::whereMonth('created_at', $month)
-                ->where('type', 'payment bill')
-                ->sum('amount');
-
-            $paylaterData[] = PaymentCode::whereMonth('created_at', $month)
-                ->where('type', 'paylater')
+            $successData[] = Transaction::whereMonth('created_at', $month)
+                ->where('status', 'success')
                 ->sum('amount');
         }
 
         // Return data sebagai JSON
         return response()->json([
-            'cash' => $cashData,
-            'bill' => $billData,
-            'paylater' => $paylaterData,
+            'success' => $successData,
         ]);
     }
 
@@ -155,7 +114,7 @@ class DashboardController extends Controller
 
         for ($i = 0; $i < 7; $i++) {
             $date = $today->copy()->startOfWeek()->addDays($i);
-            $income = PaymentCode::where('status', 'success')->whereDate('created_at', $date)
+            $income = Transaction::where('status', 'success')->whereDate('created_at', $date)
                 ->sum('amount');
             $weeklyIncome[] = $income;
         }

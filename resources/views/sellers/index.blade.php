@@ -75,7 +75,7 @@
                         <tr>
                             <th style="background-color: #007bff; color: white; text-align: center;">Nama Toko</th>
                             <th style="background-color: #007bff; color: white; text-align: center;">Nomor Hp</th>
-                            <th style="background-color: #007bff; color: white; text-align: center;">Profit</th>
+                            <th style="background-color: #007bff; color: white; text-align: center;">Email</th>
                             <th style="background-color: #007bff; color: white; text-align: center;">Status</th>
                             <th style="background-color: #007bff; color: white; text-align: center;">Logo</th>
                             <th style="background-color: #007bff; color: white; text-align: center;">Aksi</th>
@@ -190,8 +190,8 @@
                     data: 'no_hp',
                     name: 'Nomor Hp'
                 }, {
-                    data: 'profit',
-                    name: 'Profit'
+                    data: 'email',
+                    name: 'email'
                 }, {
                     data: 'status',
                     name: 'Status'

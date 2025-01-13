@@ -76,7 +76,7 @@
                             </tr>
                             <tr>
                                 <td><span class="mx-2">Invoice/Nota</span></td>
-                                <td>: <span class="fw-bold mx-1"><a href="#">Download Invoice</a></span></td>
+                                <td>: <span class="fw-bold mx-1"><a href="#" data-id="{{ $datas->id }}" class="downloadInvoice">Download Invoice</a></span></td>
                             </tr>
                         </table>
                     </div>

@@ -219,38 +219,84 @@
     </script>
 
     <script>
-		const setActiveMenu = () => {
-			let isFoundLink = false;
-			let path = [];
-			window.location.pathname.split("/").forEach(item => {
-				if (item !== "") path.push(item);
-			})
-			let lengthPath = path.length;
-			let lengthUse = lengthPath;
-			let origin = window.location.origin;
+        const setActiveMenu = () => {
+            let isFoundLink = false;
+            let path = [];
+            window.location.pathname.split("/").forEach(item => {
+                if (item !== "") path.push(item);
+            })
+            let lengthPath = path.length;
+            let lengthUse = lengthPath;
+            let origin = window.location.origin;
 
-			while (lengthUse >= 1) {
-				let link = '';
-				for (let i = 0; i < lengthUse; i++) {
-					link += `/${path[i]}`;
-				}
-				$.each($('#menu-nav').find('a'), (i, elem) => {
-					if ($(elem).attr('href') == `${origin}${link}`) {
-						$(elem).parent('li').addClass('active')
-						$(elem).parents('li.nav-item').addClass('active').addClass('submenu')
-						$(elem).parents('li.nav-item').find(`.collapse`).addClass('show')
-					}
-				})
+            while (lengthUse >= 1) {
+                let link = '';
+                for (let i = 0; i < lengthUse; i++) {
+                    link += `/${path[i]}`;
+                }
+                $.each($('#menu-nav').find('a'), (i, elem) => {
+                    if ($(elem).attr('href') == `${origin}${link}`) {
+                        $(elem).parent('li').addClass('active')
+                        $(elem).parents('li.nav-item').addClass('active').addClass('submenu')
+                        $(elem).parents('li.nav-item').find(`.collapse`).addClass('show')
+                    }
+                })
 
-				if (isFoundLink) break;
-				lengthUse--;
-			}
-		}
+                if (isFoundLink) break;
+                lengthUse--;
+            }
+        }
 
 
-		setActiveMenu();
+        setActiveMenu();
     </script>
 
+    <script>
+        $(document).ready(function() {
+            $('.downloadInvoice').click(function() {
+                const $button = $(this);
+                const originalText = $button.text();
+                const id = $button.data('id');
+
+                $button.text('Loading...').prop('disabled', true);
+
+                $.ajax({
+                    url: "{{ route('download.invoice') }}",
+                    type: 'GET',
+                    data: {
+                        id: id,
+                        type: 'D' // 'D' untuk force download
+                    },
+                    xhrFields: {
+                        responseType: 'blob' // Untuk menangani file binary
+                    },
+                    success: function(response, status, xhr) {
+                        // Ambil nama file dari header
+                        const fileName = xhr.getResponseHeader('Content-Disposition')
+                            .split('filename=')[1]
+                            .replace(/['"]+/g, '');
+
+                        // Buat URL dari blob
+                        const url = window.URL.createObjectURL(new Blob([response]));
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = fileName || 'invoice.pdf';
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        window.URL.revokeObjectURL(url); // Hapus blob
+                    },
+                    error: function(xhr) {
+                        console.error('Gagal mengunduh invoice:', xhr.responseJSON || xhr);
+                        alert('Terjadi kesalahan saat mengunduh invoice. Silakan coba lagi.');
+                    },
+                    complete: function() {
+                        $button.text(originalText).prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
 
     @yield('scripts') <!-- Stack tambahan untuk JS khusus tiap halaman -->
 </body>

@@ -67,7 +67,7 @@
                 <th style="width: 15%;text-align: center">Nama Pengguna</th>
                 <th style="text-align: center">Status</th>
                 <th style="text-align: center">Total Pembelian</th>
-                <th style="text-align: center">Tipe</th>
+                <th style="text-align: center">Penjual</th>
                 <th style="text-align: center">Tanggal</th>
             </tr>
         </thead>
@@ -75,7 +75,7 @@
             @foreach ($transactions as $index => $transaction)
                 <tr>
                     <td style="text-align: center">{{ $index + 1 }}.</td>
-                    <td>{{ $transaction->kode_invoice }}</td>
+                    <td>{{ $transaction->code_invoice }}</td>
                     <td>{{ $transaction->user->username }}</td>
                     <td
                         style="@if ($transaction->status == 'pending') background-color: #ffad46; color: white;
@@ -84,15 +84,9 @@
                     background-color: #f25961; color: white; @endif font-weight: bold; text-align: center;">
                         {{ $transaction->status }}
                     </td>
-                    <td>Rp. {{ number_format($transaction->total_amount ?? 0, 0, ',', '.') }}</td>
-                    <td
-                        style="@if ($transaction->type == 'paylater') background-color: #ffad46; color: white;
-                        @elseif ($transaction->type == 'cash' || $transaction->type == 'tunai') background-color: #31ce36; color: white;
-                        @else
-                        background-color: #007bff; color: white; @endif font-weight: bold; text-align: center">
-                        {{ $transaction->type }}
-                    </td>
-                    <td>{{ $transaction->created_at->format('d-F-Y') }}</td>
+                    <td>Rp. {{ number_format($transaction->amount ?? 0, 0, ',', '.') }}</td>
+                    <td>{{ $transaction->seller->shop_name }}</td>
+                    <td>{{ $transaction->created_at->translatedFormat('d-F-Y') }}</td>
                 </tr>
             @endforeach
         </tbody>

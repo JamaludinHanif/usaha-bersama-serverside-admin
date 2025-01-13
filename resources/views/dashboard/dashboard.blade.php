@@ -18,7 +18,7 @@
     </ul>
 @endsection
 @section('content')
-    {{-- <div class="mt--5">
+    <div class="mt--5">
         <div class="row mt--2">
             <div class="col-md-6">
                 <div class="card full-height">
@@ -55,34 +55,97 @@
                             <div class="d-flex flex-column justify-content-center mt-2">
                                 <div class="d-flex">
                                     <div>
-                                        <h4 class="fw-extrabold text-warning">Rp.
-                                            {{ number_format($weeklyIncomeKotor ?? 0, 0, ',', '.') }}</h4>
-                                    </div>
-                                    <div>
                                         <h4 class="fw-extrabold ml-4 text-success">Rp.
                                             {{ number_format($weeklyIncomeBersih ?? 0, 0, ',', '.') }}</h4>
                                     </div>
                                 </div>
-                                <div class="">
-                                    <h4 class="fw-extrabold text-info" style="text-align: center">Rp.
-                                        {{ number_format($interestWeeklyIncome ?? 0, 0, ',', '.') }}</h4>
-                                </div>
                             </div>
                             <div class="">
                                 <div class="d-flex align-items-center">
-                                    <div class="d-inline-block bg-warning"
-                                        style="height: 10px; width: 10px; margin-right: 5px;"></div>
-                                    <div>Pendapatan Kotor minggu ini</div>
-                                </div>
-                                <div class="d-flex align-items-center">
                                     <div class="d-inline-block bg-success"
                                         style="height: 10px; width: 10px; margin-right: 5px;"></div>
-                                    <div>Pendapatan bersih minggu ini</div>
+                                    <div>Pendapatan minggu ini</div>
                                 </div>
-                                <div class="d-flex align-items-center">
-                                    <div class="d-inline-block bg-info"
-                                        style="height: 10px; width: 10px; margin-right: 5px;"></div>
-                                    <div>Pendapatan bunga minggu ini</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row row-card-no-pd">
+            <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="icon-big text-center">
+                                    <i class="flaticon-graph text-primary"></i>
+                                </div>
+                            </div>
+                            <div class="col-7 col-stats">
+                                <div class="numbers">
+                                    <p class="card-category">Pendapatan hari ini</p>
+                                    <h4 class="card-title">{{ 'Rp ' .number_format(\App\Models\Transaction::where('status', 'success')->whereDate('created_at', now())->sum('amount'),0,',','.') }}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="icon-big text-center">
+                                    <i class="far fa-calendar-check text-primary"></i>
+                                </div>
+                            </div>
+                            <div class="col-7 col-stats">
+                                <div class="numbers">
+                                    <p class="card-category">Transaksi hari ini</p>
+                                    <h4 class="card-title">{{ \App\Models\Transaction::whereDate('created_at', now())->count() }}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="icon-big text-center">
+                                    <i class="flaticon-coins text-success"></i>
+                                </div>
+                            </div>
+                            <div class="col-7 col-stats">
+                                <div class="numbers">
+                                    <p class="card-category">Total pendapatan</p>
+                                    <h4 class="card-title">{{ 'Rp ' .number_format(\App\Models\Transaction::where('status', 'success')->sum('amount'),0,',','.') }}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="icon-big text-center">
+                                    <i class="far fa-check-square text-success"></i>
+                                </div>
+                            </div>
+                            <div class="col-7 col-stats">
+                                <div class="numbers">
+                                    <p class="card-category">Transaksi selesai</p>
+                                    <h4 class="card-title">{{ \App\Models\Transaction::where('status', 'success')->count() }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -121,30 +184,25 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card">
+                <div class="card full-height">
                     <div class="card-header">
-                        <div class="card-title">List stok habis</div>
-                    </div>
-                    <div class="card-body" style="height: 400px;overflow-y: auto">
-                        @foreach (App\Models\Product::where('stock', 0)->get() as $index => $product)
-                            <div class="">
-                                <div class="d-flex align-content-center">
-                                    <div class="d-flex ml-auto align-items-center mr-3">
-                                        <h4 class="fw-bold">{{ $index + 1 }}.</h4>
-                                    </div>
-                                    <div class="avatar">
-                                        <img src="{{ $product->image }}" alt="..."
-                                            class="avatar-img rounded-circle">
-                                    </div>
-                                    <div class="flex-1 pt-1 ml-2">
-                                        <h6 class="fw-bold mb-1">{{ $product->name }}</h6>
-                                        <small
-                                            class="">{{ $product->category }}</small>
-                                    </div>
-                                </div>
-                                <div class="separator-dashed"></div>
+                        <div class="card-head-row">
+                            <div class="card-title">Catatan / Notes</div>
+                            <div class="card-tools">
+                                <ul class="nav nav-pills nav-secondary nav-pills-no-bd nav-sm" id="pills-tab"
+                                    role="tablist">
+                                    <li class="nav-item">
+                                        <div data-id="{{ session('userData')->id }}"
+                                            class="btn btn-warning btn-circle btn-sm modal-notes">
+                                            Buat Catatan <i class="fas fa-edit ml-2"></i> </div>
+                                    </li>
+                                </ul>
                             </div>
-                        @endforeach
+                        </div>
+                    </div>
+                    <div class="card-body" style="max-height: 400px;overflow-y: auto">
+                        <ol class="activity-feed" id="notesList">
+                        </ol>
                     </div>
                 </div>
             </div>
@@ -156,23 +214,23 @@
                         <div class="card-title">Top Kasir</div>
                     </div>
                     <div class="card-body" style="height: 400px;overflow-y: auto">
-                        @foreach ($topCashiers as $index => $topCashier)
+                        @foreach ($topSellers as $index => $topSeller)
                             <div class="d-flex">
                                 <div class="d-flex ml-auto align-items-center mr-3">
                                     <h4 class="fw-bold">{{ $index + 1 }}.</h4>
                                 </div>
                                 <div class="avatar">
-                                    <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-                                        alt="..." class="avatar-img rounded-circle">
+                                    <img src="{{ $topSeller->seller->imageLink() }}" alt="..."
+                                        class="avatar-img rounded-circle">
                                 </div>
                                 <div class="flex-1 pt-1 ml-2">
-                                    <h5 class="fw-bold mb-1">{{ $topCashier->cashier->username }}</h5>
+                                    <h5 class="fw-bold mb-1">{{ $topSeller->seller->shop_name }}</h5>
                                     <small
-                                        class="text-muted">{{ \Illuminate\Support\Str::limit($topCashier->cashier->name, 20, '...') }}</small>
+                                        class="text-muted">{{ \Illuminate\Support\Str::limit($topSeller->seller->name, 20, '...') }}</small>
                                 </div>
                                 <div class="d-flex ml-auto align-items-center">
                                     <h4 class="text-info fw-bold">Rp.
-                                        {{ number_format($topCashier->total_sales ?? 0, 0, ',', '.') }}</h4>
+                                        {{ number_format($topSeller->total_sales ?? 0, 0, ',', '.') }}</h4>
                                 </div>
                             </div>
                             <div class="separator-dashed"></div>
@@ -192,7 +250,7 @@
                                     <h4 class="fw-bold">{{ $index + 1 }}.</h4>
                                 </div>
                                 <div class="avatar">
-                                    <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+                                    <img src="{{ asset('user-avatar.jpg') }}"
                                         alt="..." class="avatar-img rounded-circle">
                                 </div>
                                 <div class="flex-1 pt-1 ml-2">
@@ -253,171 +311,7 @@
                 </div>
             </div>
         </div>
-        <div class="row row-card-no-pd">
-            <div class="col-sm-6 col-md-3">
-                <div class="card card-stats card-round">
-                    <div class="card-body ">
-                        <div class="row">
-                            <div class="col-5">
-                                <div class="icon-big text-center">
-                                    <i class="flaticon-chart-pie text-warning"></i>
-                                </div>
-                            </div>
-                            <div class="col-7 col-stats">
-                                <div class="numbers">
-                                    <p class="card-category">Pendapatan Kotor</p>
-                                    <h4 class="card-title">Rp. {{ number_format($yearIncomeKotor ?? 0, 0, ',', '.') }}
-                                    </h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-md-3">
-                <div class="card card-stats card-round">
-                    <div class="card-body ">
-                        <div class="row">
-                            <div class="col-5">
-                                <div class="icon-big text-center">
-                                    <i class="flaticon-coins text-success"></i>
-                                </div>
-                            </div>
-                            <div class="col-7 col-stats">
-                                <div class="numbers">
-                                    <p class="card-category">Pendapatan Bersih</p>
-                                    <h4 class="card-title">Rp. {{ number_format($yearIncomeBersih ?? 0, 0, ',', '.') }}
-                                    </h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-md-3">
-                <div class="card card-stats card-round">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-5">
-                                <div class="icon-big text-center">
-                                    <i class="flaticon-graph text-primary"></i>
-                                </div>
-                            </div>
-                            <div class="col-7 col-stats">
-                                <div class="numbers">
-                                    <p class="card-category">Total Bunga (kotor)</p>
-                                    <h4 class="card-title">Rp. {{ number_format($interestYearIncome ?? 0, 0, ',', '.') }}
-                                    </h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-md-3">
-                <div class="card card-stats card-round">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-5">
-                                <div class="icon-big text-center">
-                                    <i class="flaticon-gestures text-danger"></i>
-                                </div>
-                            </div>
-                            <div class="col-7 col-stats">
-                                <div class="numbers">
-                                    <p class="card-category">Hutang belum lunas</p>
-                                    <h4 class="card-title">Rp. {{ number_format($yearBill ?? 0, 0, ',', '.') }}</h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card full-height">
-                    <div class="card-header">
-                        <div class="card-head-row">
-                            <div class="card-title">List hutang</div>
-                            <div class="card-tools">
-                                <ul class="nav nav-pills nav-secondary nav-pills-no-bd nav-sm" id="pills-tab"
-                                    role="tablist">
-                                    <li class="nav-item">
-                                        <a class="nav-link" id="pills-today" data-toggle="pill" href="#pills-today"
-                                            role="tab" aria-selected="true">Today</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link active" id="pills-week" data-toggle="pill" href="#pills-week"
-                                            role="tab" aria-selected="false">Week</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" id="pills-month" data-toggle="pill" href="#pills-month"
-                                            role="tab" aria-selected="false">Month</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body" style="max-height: 400px;overflow-y: auto">
-                        @php
-                            $colors = ['bg-primary', 'bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'bg-dark'];
-                        @endphp
-                        @foreach ($debts as $debt)
-                            @php
-                                $randomColor = $colors[array_rand($colors)];
-                            @endphp
-                            <div class="d-flex modal-whatsapp" data-id="{{ $debt->id }}" style="cursor: pointer">
-                                <div class="avatar avatar-online">
-                                    <span
-                                        class="avatar-title text-uppercase rounded-circle border border-white {{ $randomColor }}">{{ strtoupper(substr($debt->user->name, 0, 1)) }}</span>
-                                </div>
-                                <div class="flex-1 ml-3 pt-1">
-                                    <h6 class="text-capitalize fw-bold mb-1">{{ $debt->user->username }}<span
-                                            class="text-warning pl-3">Rp.
-                                            {{ number_format($debt->debt_remaining ?? 0, 0, ',', '.') }}</span></h6>
-                                    <span class="text-muted">Jatuh tempo pada : <span
-                                            class="text-secondary fw-bold ml-2">{{ \Carbon\Carbon::parse($debt->due_date)->format('d M Y') }}</span></span>
-                                </div>
-                                <div class="float-right pt-1">
-                                    <small
-                                        class="text-muted">{{ \Carbon\Carbon::parse($debt->due_date)->diffForHumans() }}</small>
-                                </div>
-                            </div>
-                            <div class="separator-dashed"></div>
-                        @endforeach
-                        @if ($debts->count() < 5)
-                            <p class="fw-bold" style="text-align: center;color: gray;margin-top: 30px">Total
-                                {{ $debts->count() }}</p>
-                        @endif
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card full-height">
-                    <div class="card-header">
-                        <div class="card-head-row">
-                            <div class="card-title">Catatan / Notes</div>
-                            <div class="card-tools">
-                                <ul class="nav nav-pills nav-secondary nav-pills-no-bd nav-sm" id="pills-tab"
-                                    role="tablist">
-                                    <li class="nav-item">
-                                        <div data-id="{{ session('userData')->id }}"
-                                            class="btn btn-warning btn-circle btn-sm modal-notes">
-                                            Buat Catatan <i class="fas fa-edit ml-2"></i> </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body" style="max-height: 400px;overflow-y: auto">
-                        <ol class="activity-feed" id="notesList">
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> --}}
+    </div>
 @endsection
 @section('modal')
     <!-- Modal -->
@@ -443,7 +337,7 @@
     </div>
 @endsection
 @section('scripts')
-    {{-- <script>
+    <script>
         function formatRupiah(angka) {
             return 'Rp. ' + angka?.toLocaleString('id-ID', {
                 minimumFractionDigits: 0,
@@ -589,113 +483,12 @@
 
         function statsTransaction(data) {
             var ctx = document.getElementById('statisticsChart').getContext('2d');
-
-            // var statisticsChart = new Chart(ctx, {
-            //     type: 'line',
-            //     data: {
-            //         labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            //         datasets: [{
-            //             label: "Cash",
-            //             borderColor: '#f25961',
-            //             pointBackgroundColor: '#f25961',
-            //             pointRadius: 0,
-            //             backgroundColor: '',
-            //             legendColor: '#f25961',
-            //             fill: true,
-            //             borderWidth: 2,
-            //             data: data.cash
-            //         }, {
-            //             label: "Payment Bill",
-            //             borderColor: '#007bff',
-            //             pointBackgroundColor: '#007bff',
-            //             pointRadius: 0,
-            //             backgroundColor: '',
-            //             legendColor: '#007bff',
-            //             fill: true,
-            //             borderWidth: 2,
-            //             data: data.bill
-            //         }, {
-            //             label: "Paylater",
-            //             borderColor: '#31ce36',
-            //             pointBackgroundColor: '#31ce36',
-            //             pointRadius: 0,
-            //             backgroundColor: '',
-            //             legendColor: '#31ce36',
-            //             fill: true,
-            //             borderWidth: 2,
-            //             data: data.paylater
-            //         }]
-            //     },
-            //     options: {
-            //         responsive: true,
-            //         maintainAspectRatio: false,
-            //         legend: {
-            //             display: false
-            //         },
-            //         tooltips: {
-            //             bodySpacing: 4,
-            //             mode: "nearest",
-            //             intersect: 0,
-            //             position: "nearest",
-            //             xPadding: 10,
-            //             yPadding: 10,
-            //             caretPadding: 10
-            //         },
-            //         layout: {
-            //             padding: {
-            //                 left: 5,
-            //                 right: 5,
-            //                 top: 15,
-            //                 bottom: 15
-            //             }
-            //         },
-            //         scales: {
-            //             yAxes: [{
-            //                 ticks: {
-            //                     fontStyle: "500",
-            //                     beginAtZero: false,
-            //                     maxTicksLimit: 5,
-            //                     padding: 10
-            //                 },
-            //                 gridLines: {
-            //                     drawTicks: false,
-            //                     display: false
-            //                 }
-            //             }],
-            //             xAxes: [{
-            //                 gridLines: {
-            //                     zeroLineColor: "transparent"
-            //                 },
-            //                 ticks: {
-            //                     padding: 10,
-            //                     fontStyle: "500"
-            //                 }
-            //             }]
-            //         },
-            //         legendCallback: function(chart) {
-            //             var text = [];
-            //             text.push('<ul class="' + chart.id + '-legend html-legend">');
-            //             for (var i = 0; i < chart.data.datasets.length; i++) {
-            //                 text.push('<li><span style="background-color:' + chart.data.datasets[i]
-            //                     .legendColor +
-            //                     '"></span>');
-            //                 if (chart.data.datasets[i].label) {
-            //                     text.push(chart.data.datasets[i].label);
-            //                 }
-            //                 text.push('</li>');
-            //             }
-            //             text.push('</ul>');
-            //             return text.join('');
-            //         }
-            //     }
-            // });
-
             var statisticsChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
                     datasets: [{
-                        label: "Tunai",
+                        label: "Pendapatan Perbulan",
                         borderColor: "#f25961",
                         pointBorderColor: "#FFF",
                         pointBackgroundColor: "#f25961",
@@ -706,20 +499,7 @@
                         backgroundColor: 'transparent',
                         fill: true,
                         borderWidth: 2,
-                        data: data.cash
-                    }, {
-                        label: "Bayar Tagihan",
-                        borderColor: "#007bff",
-                        pointBorderColor: "#FFF",
-                        pointBackgroundColor: "#007bff",
-                        pointBorderWidth: 2,
-                        pointHoverRadius: 4,
-                        pointHoverBorderWidth: 1,
-                        pointRadius: 4,
-                        backgroundColor: 'transparent',
-                        fill: true,
-                        borderWidth: 2,
-                        data: data.bill
+                        data: data.success
                     }]
                 },
                 options: {
@@ -894,5 +674,5 @@
                 }
             });
         });
-    </script> --}}
+    </script>
 @endsection
