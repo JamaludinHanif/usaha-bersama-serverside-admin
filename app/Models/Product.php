@@ -140,6 +140,8 @@ class Product extends Model
             $data->where('unit', $request->unit);
         }
 
+        $data = $data->orderBy('updated_at', 'DESC');
+
         return DataTables::of($data)
             ->addColumn('thumbnail', function ($data) {
                 $html = '<div class="d-flex justify-content-center"><img src="' . $data->image . '" width="50"></div> ';

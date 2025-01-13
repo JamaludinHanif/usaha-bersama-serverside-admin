@@ -114,7 +114,7 @@
                         $formConfirmSubmitBtn.prop('disabled', false).text(
                             originalBtnText);
                         setTimeout(() => {
-                            // location.href = ``;
+                            location.href = `{{ route('seller.history') }}`;
                         }, 1500)
                     })
                     .fail(error => {

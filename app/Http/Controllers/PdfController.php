@@ -259,7 +259,7 @@ class PdfController extends Controller
     // user download
     public function exportInvoice(Request $request)
     {
-        $data = PaymentCode::where('id', $request->payment_id)->with('interest', 'transaction.items.product', 'user')->first();
+        $data = Transaction::where('id', $request->id)->with('items.product', 'seller', 'user')->first();
 
         // log activity
         LogActivity::create([
@@ -267,46 +267,18 @@ class PdfController extends Controller
             'action' => 'mendownload invoice',
         ]);
 
-        if ($data->type == "paylater") {
-            $dataPdf = [
-                'noInvoice' => $data->transaction->kode_invoice,
-                'name' => $data->user->name,
-                // pembelian baru
-                'dataProduk' => $data->transaction->items,
-                'totalHarga' => $data->transaction->total_amount,
-                'dataBunga' => $data->interest,
-            ];
+        $dataPdf = [
+            'noInvoice' => $data->code_invoice,
+            'name' => $data->user->name,
+            // pembelian baru
+            'dataProduk' => $data->items,
+            'totalHarga' => $data->amount,
+        ];
 
-            // instance mPDF
-            $mpdf = new \Mpdf\Mpdf();
-            // view sebagai konten PDF
-            $html = view('pdf.invoice-pembelian.invoicePaylater', $dataPdf)->render();
-        } else if ($data->type == "cash") {
-            $dataPdf = [
-                'noInvoice' => $data->transaction->kode_invoice,
-                'name' => $data->user->name,
-                // pembelian baru
-                'dataProduk' => $data->transaction->items,
-                'totalHarga' => $data->transaction->total_amount,
-            ];
-            // instance mPDF
-            $mpdf = new \Mpdf\Mpdf();
-            // view sebagai konten PDF
-            $html = view('pdf.invoice-pembelian.invoiceCash', $dataPdf)->render();
-        } else {
-            $dataPdf = [
-                'noInvoice' => $data->transaction->kode_invoice,
-                'name' => $data->user->name,
-                // pembayaran tagihan
-                'nominalPembayaran' => $data->amount,
-                'dataPaylater' => $data->interest,
-            ];
-
-            // instance mPDF
-            $mpdf = new \Mpdf\Mpdf();
-            // view sebagai konten PDF
-            $html = view('pdf.invoice-pembelian.invoicePembayaranTagihan', $dataPdf)->render();
-        }
+        // instance mPDF
+        $mpdf = new \Mpdf\Mpdf();
+        // view sebagai konten PDF
+        $html = view('pdf.invoice-pembelian.invoiceCash', $dataPdf)->render();
 
         $mpdf->WriteHTML($html);
 
@@ -318,12 +290,6 @@ class PdfController extends Controller
         }
 
         return $mpdf->Output('invoice.pdf', $request->type); // 'D' untuk force download, 'I' untuk inline di browser
-
-        // return response()->json([
-        //     'status' => true,
-        //     'message' => 'berhasil download invoice',
-        //     'data' => $request->all(),
-        // ], 200);
     }
 
 }

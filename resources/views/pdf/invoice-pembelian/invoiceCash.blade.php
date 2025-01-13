@@ -153,7 +153,7 @@
                     Tanggal
                 </td>
                 <td>
-                    : {{ now()->format('d-F-Y') }}
+                    : {{ now()->translatedFormat('d F Y , H:i') }}
                 </td>
             </tr>
             <tr>

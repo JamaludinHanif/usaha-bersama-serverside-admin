@@ -16,7 +16,7 @@
                             {{-- @dd(
                                 \App\Models\Transaction::where('user_id', session('userData')->id)->with(['user', 'seller', 'items.product'])->orderBy('created_at', 'asc')->get()
                             ) --}}
-                            @forelse (\App\Models\Transaction::where('seller_id', session('userData')->id)->whereIn('status', ['success', 'failed'])->with(['user', 'seller', 'items.product'])->orderBy('created_at', 'desc')->get() as $index => $transaction)
+                            @forelse (\App\Models\Transaction::where('seller_id', session('userData')->id)->whereIn('status', ['success', 'failed'])->with(['user', 'seller', 'items.product'])->orderBy('updated_at', 'desc')->get() as $index => $transaction)
                                 <div aria-labelledby="">
                                     <div class="space-y-1 md:flex md:items-baseline md:space-x-4 md:space-y-0">
                                         <div class="flex justify-between items-center">
@@ -33,14 +33,14 @@
                                         <div
                                             class="space-y-5 sm:flex sm:items-baseline sm:justify-between sm:space-y-0 md:min-w-0 md:flex-1">
                                             <p class="text-xs font-medium text-gray-500">
-                                                Dikonfirmasi Pada Tanggal {{ $transaction->updated_at->translatedFormat('d F Y, H:i') }}
+                                                Dikonfirm Tanggal {{ $transaction->updated_at->translatedFormat('d F Y, H:i') }}
                                             </p>
                                             <div class="flex text-sm font-medium">
                                                 <a href="{{ route('seller.order.detail', $transaction->code_invoice) }}"
                                                     class="text-indigo-600 hover:text-indigo-500">Detail
                                                     Pembelian</a>
                                                 <div class="ml-4 border-l border-gray-200 pl-4 sm:ml-6 sm:pl-6">
-                                                    <a href="#" class="text-indigo-600 hover:text-indigo-500">Lihat
+                                                    <a href="#" id="" data-id="{{ $transaction->id }}" class="downloadInvoice text-indigo-600 hover:text-indigo-500">Download
                                                         Invoice</a>
                                                 </div>
                                             </div>

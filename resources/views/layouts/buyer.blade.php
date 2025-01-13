@@ -257,6 +257,51 @@
         }
     </script>
 
+    <script>
+        $(document).ready(function() {
+            $('.downloadInvoice').click(function() {
+                const $button = $(this);
+                const originalText = $button.text();
+                const id = $button.data('id');
+
+                $button.text('Loading...').prop('disabled', true);
+
+                $.ajax({
+                    url: "{{ route('download.invoice') }}",
+                    type: 'GET',
+                    data: {
+                        id: id,
+                        type: 'D' // 'D' untuk force download
+                    },
+                    xhrFields: {
+                        responseType: 'blob' // Untuk menangani file binary
+                    },
+                    success: function(response, status, xhr) {
+                        // Ambil nama file dari header
+                        const fileName = xhr.getResponseHeader('Content-Disposition')
+                            .split('filename=')[1]
+                            .replace(/['"]+/g, '');
+
+                        // Buat URL dari blob
+                        const url = window.URL.createObjectURL(new Blob([response]));
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = fileName || 'invoice.pdf';
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        window.URL.revokeObjectURL(url); // Hapus blob
+                    },
+                    error: function(xhr) {
+                        console.error('Gagal mengunduh invoice:', xhr.responseJSON || xhr);
+                        alert('Terjadi kesalahan saat mengunduh invoice. Silakan coba lagi.');
+                    },
+                    complete: function() {
+                        $button.text(originalText).prop('disabled', false);
+                    }
+                });
+            });
+        });
     </script>
 
     @yield('script')

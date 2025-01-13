@@ -368,7 +368,6 @@ class TransactionController extends Controller
         }
     }
 
-
     // seller
     public function preCheckout(Request $request)
     {
@@ -486,36 +485,83 @@ class TransactionController extends Controller
         }
     }
 
-
     // seller
     public function confirmOrder(Request $request)
     {
+        // Validasi request
+        $request->validate([
+            'id' => 'required|integer|exists:transactions,id',
+        ]);
+
         DB::beginTransaction();
         try {
-            $transaction = Transaction::where('id', $request->id)->first();
+            // Ambil data transaksi
+            $transaction = Transaction::with('user', 'seller')->findOrFail($request->id);
+            $transaction->update(['status' => 'success']);
 
-            $transaction->update([
-                'status' => 'success',
-            ]);
+            // Ambil data user dan item transaksi
+            $userData = $transaction->user;
+            $dataProduct = TransactionItem::with('product')->where('transaction_id', $transaction->id)->get();
 
-            // log activity
+            // Siapkan data untuk PDF
+            $dataPdf = [
+                'noInvoice' => $transaction->code_invoice,
+                'name' => $userData->name,
+                'dataProduk' => $dataProduct,
+                'totalHarga' => $transaction->amount,
+            ];
+
+            $html = view('pdf.invoice-pembelian.invoiceCash', $dataPdf)->render();
+
+            // Generate PDF
+            $mpdf = new \Mpdf\Mpdf();
+            $mpdf->WriteHTML($html);
+            $fileName = 'invoice-' . now()->format('dmy-H-i-s') . '.pdf';
+            $filePath = 'invoices/' . $fileName;
+            $pdfContent = $mpdf->Output('', 'S');
+
+            // Simpan PDF ke storage
+            Storage::disk('public')->put($filePath, $pdfContent);
+
+            // Kirim email dengan file PDF
+            Mail::to($userData->email)->send(new SendInvoice(storage_path('app/public/' . $filePath)));
+
+            // Hapus file PDF dari storage setelah email terkirim
+            if (Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+            }
+
+            // Log aktivitas
             LogActivity::create([
-                'user_id' => session('userData')->id,
-                'action' => "konfirmasi pembayaran ($transaction->code_invoice)",
+                'user_id' => 15,
+                'action' => "Konfirmasi pembayaran ($transaction->code_invoice), kasir " . ($transaction->seller->shop_name ?? 'Tanpa Nama'),
             ]);
 
             DB::commit();
-            return response()->json(['success' => 'Konfirmasi Pesanan Berhasil', 'data' => $request->all()], 200);
+
+            return response()->json([
+                'success' => 'Konfirmasi Pesanan Berhasil',
+                'data' => $transaction,
+            ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return response()->json(['error' => 'Konfirmasi Pesanan gagal. Silakan coba lagi.', 'details' => "File : {$e->getFile()} | Line : {$e->getLine()} | Message : {$e->getMessage()}"], 500);
+            // Logging error untuk debugging
+            Log::error("Error Konfirmasi Pesanan: {$e->getMessage()}", [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return response()->json([
+                'error' => 'Konfirmasi Pesanan gagal. Silakan coba lagi.',
+                'details' => "File : {$e->getFile()} | Line : {$e->getLine()} | Message : {$e->getMessage()}",
+            ], 500);
         }
     }
 
+
     public function checkoutSeller(Request $request)
     {
-
         DB::beginTransaction();
         try {
             // database section
@@ -556,7 +602,7 @@ class TransactionController extends Controller
                 $transaction = Transaction::create([
                     'amount' => $totalAmount,
                     'code_invoice' => $codeInvoice,
-                    'user_id' => 18,
+                    'user_id' => 15,
                     'status' => 'success',
                     'seller_id' => session('userData')->id,
                 ]);
@@ -564,7 +610,7 @@ class TransactionController extends Controller
                 foreach ($productItems as $item) {
                     TransactionItem::create([
                         'transaction_id' => $transaction->id,
-                        'user_id' => 18,
+                        'user_id' => 15,
                         'product_id' => $item['product_id'],
                         'quantity' => $item['quantity'],
                         'price' => $item['price'],
@@ -572,9 +618,41 @@ class TransactionController extends Controller
                     Product::find($item['product_id'])->decrement('stock', $item['quantity']);
                 }
 
+            // Ambil data user dan item transaksi
+            $userData = $transaction->user;
+            $dataProduct = TransactionItem::with('product')->where('transaction_id', $transaction->id)->get();
+
+            // Siapkan data untuk PDF
+            $dataPdf = [
+                'noInvoice' => $transaction->code_invoice,
+                'name' => $userData->name,
+                'dataProduk' => $dataProduct,
+                'totalHarga' => $transaction->amount,
+            ];
+
+            $html = view('pdf.invoice-pembelian.invoiceCash', $dataPdf)->render();
+
+            // Generate PDF
+            $mpdf = new \Mpdf\Mpdf();
+            $mpdf->WriteHTML($html);
+            $fileName = 'invoice-' . now()->format('dmy-H-i-s') . '.pdf';
+            $filePath = 'invoices/' . $fileName;
+            $pdfContent = $mpdf->Output('', 'S');
+
+            // Simpan PDF ke storage
+            Storage::disk('public')->put($filePath, $pdfContent);
+
+            // Kirim email dengan file PDF
+            Mail::to('newhanif743@gmail.com')->send(new SendInvoice(storage_path('app/public/' . $filePath)));
+
+            // Hapus file PDF dari storage setelah email terkirim
+            if (Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+            }
+
                 // log activity
                 LogActivity::create([
-                    'user_id' => 18,
+                    'user_id' => 15,
                     'action' => "melakukan transaksi via kasir " . session('userData')->shop_name,
                 ]);
 

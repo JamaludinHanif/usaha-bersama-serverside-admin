@@ -151,6 +151,8 @@ class Seller extends Model
             $data->where('status', $request->status);
         }
 
+        $data = $data->orderBy('updated_at', 'DESC');
+
         return DataTables::of($data)
             ->addColumn('status', function ($data) {
                 $btnClass = $data->status == 'pcs'

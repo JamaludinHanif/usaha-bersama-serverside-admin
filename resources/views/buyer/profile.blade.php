@@ -103,116 +103,111 @@
                 {{-- riwayat pembelian --}}
                 <div id="content-history" class="hidden content rounded-md mt-4">
                     <div class="bg-white">
-                        <div class="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-                            <div class="max-w-xl">
-                                <h1 id="your-orders-heading" class="text-xl font-bold tracking-tight text-gray-900">Riwayat
-                                    Pembelian</h1>
-                            </div>
-
-                            <div class="mt-8 space-y-16 lg:mt-10">
-                                <div aria-labelledby="">
-                                    <div class="space-y-1 md:flex md:items-baseline md:space-x-4 md:space-y-0">
-                                        <h2 id="" class="text-lg font-medium text-gray-900 md:shrink-0">Order
-                                            #1</h2>
-                                        <div
-                                            class="space-y-5 sm:flex sm:items-baseline sm:justify-between sm:space-y-0 md:min-w-0 md:flex-1">
-                                            <p class="text-sm font-medium text-gray-500">Dibeli Pada Tanggal 11 Desember
-                                                2024</p>
-                                            <div class="flex text-sm font-medium">
-                                                <a href="#" class="text-indigo-600 hover:text-indigo-500">Manage
-                                                    order</a>
-                                                <div class="ml-4 border-l border-gray-200 pl-4 sm:ml-6 sm:pl-6">
-                                                    <a href="#" class="text-indigo-600 hover:text-indigo-500">Lihat
-                                                        Invoice</a>
-                                                </div>
-                                            </div>
+                        <div class="max-w-7xl mx-auto">
+                            {{-- riwayat pembelian --}}
+                            <div class="rounded-md">
+                                <div class="bg-white">
+                                    <div class="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+                                        <div class="max-w-xl">
+                                            <h1 id="your-orders-heading"
+                                                class="text-xl font-bold tracking-tight text-gray-900">
+                                                {{ $title }}</h1>
                                         </div>
-                                    </div>
 
-                                    <div class="-mb-6 mt-6 flow-root divide-y divide-gray-200 border-t border-gray-200">
-                                        @foreach (\App\Models\Product::orderBy('created_at', 'asc')->take(2)->get() as $product)
-                                            <div class="py-6 sm:flex">
-                                                <div class="flex space-x-4 sm:min-w-0 sm:flex-1 sm:space-x-6 lg:space-x-8">
-                                                    <img src="{{ $product->image }}"
-                                                        alt="Brass puzzle in the shape of a jack with overlapping rounded posts."
-                                                        class="size-20 flex-none rounded-md object-cover sm:size-48">
-                                                    <div class="min-w-0 flex-1 pt-1.5 sm:pt-0">
-                                                        <h3 class="text-sm font-medium text-gray-900 line-clamp-2">
-                                                            {{ $product->name }}
-                                                        </h3>
-                                                        <p class="truncate text-sm text-gray-500">
-                                                            3 x buah
-                                                        </p>
-                                                        <p class="mt-1 font-medium text-gray-900">
-                                                            {{ $product->priceFormatted() }}</p>
+                                        <div class="mt-8 space-y-16 lg:mt-10">
+                                            {{-- @dd(
+                                                \App\Models\Transaction::where('user_id', session('userData')->id)->with(['user', 'seller', 'items.product'])->orderBy('created_at', 'asc')->get()
+                                            ) --}}
+                                            @forelse (\App\Models\Transaction::where('user_id', session('userData')->id)->with(['user', 'seller', 'items.product'])->orderBy('created_at', 'desc')->get() as $index => $transaction)
+                                                <div aria-labelledby="">
+                                                    <div
+                                                        class="space-y-1 md:flex md:items-baseline md:space-x-4 md:space-y-0">
+                                                        <div class="flex justify-between items-center">
+                                                            <h2 id=""
+                                                                class="text-lg font-medium text-gray-900 md:shrink-0">
+                                                                #{{ $transaction->code_invoice }}</h2>
+                                                            <span
+                                                                class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset
+                                                                    {{ $transaction->status === 'success' ? 'bg-green-400/10 text-green-400 ring-green-400/30' : '' }}
+                                                                    {{ $transaction->status === 'pending' ? 'bg-yellow-400/10 text-yellow-400 ring-yellow-400/30' : '' }}
+                                                                    {{ $transaction->status === 'failed' ? 'bg-red-400/10 text-red-400 ring-red-400/30' : '' }}">
+                                                                {{ $transaction->status }}
+                                                            </span>
+                                                        </div>
+                                                        <div
+                                                            class="space-y-5 sm:flex sm:items-baseline sm:justify-between sm:space-y-0 md:min-w-0 md:flex-1">
+                                                            <p class="text-xs font-medium text-gray-500">
+                                                                Dibeli Pada Tanggal
+                                                                {{ $transaction->created_at->translatedFormat('d F Y, H:i') }}
+                                                            </p>
+                                                            <div class="flex text-sm font-medium">
+                                                                <a href="{{ route('buyer.detail.order', $transaction->code_invoice) }}"
+                                                                    class="text-indigo-600 hover:text-indigo-500">Detail
+                                                                    Pembelian</a>
+                                                                <div
+                                                                    class="ml-4 border-l border-gray-200 pl-4 sm:ml-6 sm:pl-6">
+                                                                    <a href="#"
+                                                                        class="text-indigo-600 hover:text-indigo-500">Lihat
+                                                                        Invoice</a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="-mb-3 flow-root divide-y divide-gray-200 ">
+                                                        @foreach ($transaction->items->take(2) as $item)
+                                                            <div class="py-6 border-b sm:flex">
+                                                                <div
+                                                                    class="flex space-x-4 sm:min-w-0 sm:flex-1 sm:space-x-6 lg:space-x-8">
+                                                                    <img src="{{ $item->product->image }}"
+                                                                        alt="Brass puzzle in the shape of a jack with overlapping rounded posts."
+                                                                        class="size-20 flex-none rounded-md object-cover sm:size-48">
+                                                                    <div class="min-w-0 flex-1 pt-1.5 sm:pt-0">
+                                                                        <h3
+                                                                            class="text-sm font-medium text-gray-900 line-clamp-1">
+                                                                            {{ $item->product->name }}
+                                                                        </h3>
+                                                                        <p class="truncate text-sm text-gray-500">
+                                                                            {{ $item->quantity }} x buah
+                                                                        </p>
+                                                                        <p class="mt-1 font-medium text-gray-900">
+                                                                            {{ $item->product->priceFormatted() }}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                        <!-- More products... -->
+                                                    </div>
+                                                    @if (count($transaction->items) > 2)
+                                                        <div class="text-center mt-3">
+                                                            <a href="{{ route('buyer.detail.order', $transaction->code_invoice) }}"
+                                                                class="text-sm text-gray-500 hover:text-gray-700">
+                                                                Produk Lainnya
+                                                            </a>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            @empty
+                                                <div
+                                                    class="grid min-h-full place-items-center bg-white my-20 px-6 lg:px-8">
+                                                    <div class="text-center">
+                                                        <p class="text-base font-semibold text-indigo-600">404</p>
+                                                        <h1
+                                                            class="mt-4 text-balance text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
+                                                            {{ $title }} Kamu Kosong</h1>
+                                                        <div class="mt-10 flex items-center justify-center gap-x-6">
+                                                            <a href="{{ route('buyer.index') }}"
+                                                                class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold hover:text-white text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Lihat
+                                                                Dan
+                                                                Cari Produk</a>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="mt-6 space-y-4 sm:ml-6 sm:mt-0 sm:w-40 sm:flex-none">
-                                                    <a href="#{{-- route('buyer.buy.now',['product_id'=>$product->id]) --}}"
-                                                        class="flex w-full items-center justify-center rounded-md hover:text-white border border-transparent bg-indigo-600 px-2.5 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-full sm:grow-0">Beli
-                                                        Lagi</a>
-                                                    <a href="{{ $product->getLink() }}"
-                                                        class="flex w-full items-center justify-center rounded-md hover:text-black border border-gray-300 bg-white px-2.5 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-full sm:grow-0">Lihat
-                                                        Produk</a>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                        <!-- More products... -->
+                                            @endforelse
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div aria-labelledby="">
-                                    <div class="space-y-1 md:flex md:items-baseline md:space-x-4 md:space-y-0">
-                                        <h2 id="" class="text-lg font-medium text-gray-900 md:shrink-0">Order
-                                            #2</h2>
-                                        <div
-                                            class="space-y-5 sm:flex sm:items-baseline sm:justify-between sm:space-y-0 md:min-w-0 md:flex-1">
-                                            <p class="text-sm font-medium text-gray-500">Dibeli Pada Tanggal 12 Desember
-                                                2024</p>
-                                            <div class="flex text-sm font-medium">
-                                                <a href="#" class="text-indigo-600 hover:text-indigo-500">Manage
-                                                    order</a>
-                                                <div class="ml-4 border-l border-gray-200 pl-4 sm:ml-6 sm:pl-6">
-                                                    <a href="#" class="text-indigo-600 hover:text-indigo-500">Lihat
-                                                        Invoice</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="-mb-6 mt-6 flow-root divide-y divide-gray-200 border-t border-gray-200">
-                                        @foreach (\App\Models\Product::orderBy('created_at', 'desc')->take(2)->get() as $product)
-                                            <div class="py-6 sm:flex">
-                                                <div class="flex space-x-4 sm:min-w-0 sm:flex-1 sm:space-x-6 lg:space-x-8">
-                                                    <img src="{{ $product->image }}"
-                                                        alt="Brass puzzle in the shape of a jack with overlapping rounded posts."
-                                                        class="size-20 flex-none rounded-md object-cover sm:size-48">
-                                                    <div class="min-w-0 flex-1 pt-1.5 sm:pt-0">
-                                                        <h3 class="text-sm font-medium text-gray-900 line-clamp-2">
-                                                            {{ $product->name }}
-                                                        </h3>
-                                                        <p class="truncate text-sm text-gray-500">
-                                                            3 x buah
-                                                        </p>
-                                                        <p class="mt-1 font-medium text-gray-900">
-                                                            {{ $product->priceFormatted() }}</p>
-                                                    </div>
-                                                </div>
-                                                <div class="mt-6 space-y-4 sm:ml-6 sm:mt-0 sm:w-40 sm:flex-none">
-                                                    <a href="#{{-- route('buyer.buy.now',['product_id'=>$product->id]) --}}"
-                                                        class="flex w-full items-center justify-center rounded-md hover:text-white border border-transparent bg-indigo-600 px-2.5 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-full sm:grow-0">Beli
-                                                        Lagi</a>
-                                                    <a href="{{ $product->getLink() }}"
-                                                        class="flex w-full items-center justify-center rounded-md hover:text-black border border-gray-300 bg-white px-2.5 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-full sm:grow-0">Lihat
-                                                        Produk</a>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                        <!-- More products... -->
-                                    </div>
-                                </div>
-
-                                <!-- More orders... -->
                             </div>
                         </div>
                     </div>

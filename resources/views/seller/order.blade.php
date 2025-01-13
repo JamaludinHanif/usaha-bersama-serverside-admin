@@ -1,6 +1,6 @@
 @extends('layouts.seller')
 @section('content')
-    <div class="my-5">
+    <div class="my-5 mb-80">
         <h3 class="text-lg font-semibold text-gray-900 px-4 py-2">Pesanan yang belum di konfirmasi</h3>
         <ul role="list" class="divide-y divide-gray-100 px-4">
             @forelse (\App\Models\Transaction::where('seller_id', session('userData')->id)->where('status', 'pending')->with(['user', 'seller', 'items.product'])->orderBy('created_at', 'desc')->get() as $index => $transaction)
@@ -28,10 +28,18 @@
                     </div>
                     <div class="flex flex-none items-center gap-x-4">
                         <a href="{{ route('seller.detail.order', $transaction->code_invoice) }}"
-                            class=" rounded-md bg-blue-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:block">Konfirmasi</a>
+                            class=" rounded-md bg-blue-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-blue-300 sm:block">Konfirmasi</a>
                     </div>
                 </li>
             @empty
+            <div class="grid min-h-full place-items-center bg-white my- px-6 lg:px-8">
+                <div class="text-center">
+                    <p class="text-base font-semibold text-indigo-600">404</p>
+                    <h1
+                        class="mt-4 text-balance text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
+                        {{ $title }} Kamu Kosong</h1>
+                </div>
+            </div>
             @endforelse
             {{-- <li class="flex items-center justify-between gap-x-6 py-5">
                 <div class="min-w-0">

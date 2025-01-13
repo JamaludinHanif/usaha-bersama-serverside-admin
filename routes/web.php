@@ -200,3 +200,5 @@ Route::prefix('seller')->group(function () {
     Route::get('/get-products', [PenjualController::class, 'getProducts'])->name('seller.get.product');
 
 });
+
+Route::get('/download-invoice', [PdfController::class, 'exportInvoice'])->name('download.invoice');
