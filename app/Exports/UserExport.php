@@ -37,7 +37,6 @@ class UserExport implements FromCollection, WithHeadings, WithMapping, WithStyle
             'Role',
             'Email',
             'No Hp',
-            'Limit Hutang'
         ];
     }
 
@@ -58,7 +57,6 @@ class UserExport implements FromCollection, WithHeadings, WithMapping, WithStyle
             $user->role,
             $user->email,
             " ".$user->no_hp,
-            $user->debt_limit,
         ];
     }
 
@@ -70,7 +68,7 @@ class UserExport implements FromCollection, WithHeadings, WithMapping, WithStyle
      */
     public function styles(Worksheet $sheet)
     {
-        $sheet->getStyle('A1:G1')->applyFromArray([
+        $sheet->getStyle('A1:F1')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'color' => ['argb' => Color::COLOR_WHITE],
@@ -88,7 +86,7 @@ class UserExport implements FromCollection, WithHeadings, WithMapping, WithStyle
         $rowCount = $this->collection()->count() + 1;
 
         // Mengatur border untuk semua sel yang berisi data
-        $sheet->getStyle('A1:G' . $rowCount)->applyFromArray([
+        $sheet->getStyle('A1:F' . $rowCount)->applyFromArray([
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => Border::BORDER_THIN,

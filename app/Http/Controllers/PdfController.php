@@ -78,9 +78,6 @@ class PdfController extends Controller
         if (isset($request->status)) {
             $transaction->where('status', $request->status);
         }
-        if (isset($request->type)) {
-            $transaction->where('type', $request->type);
-        }
 
         $transactions = $transaction->get();
 

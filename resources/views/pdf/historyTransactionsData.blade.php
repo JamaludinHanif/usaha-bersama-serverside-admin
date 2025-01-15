@@ -64,7 +64,7 @@
             <tr>
                 <th style="text-align: center">No</th>
                 <th style="width: 15%;text-align: center">Kode Invoice</th>
-                <th style="width: 15%;text-align: center">Nama Pengguna</th>
+                <th style="width: 15%;text-align: center">Pembeli</th>
                 <th style="text-align: center">Status</th>
                 <th style="text-align: center">Total Pembelian</th>
                 <th style="text-align: center">Penjual</th>

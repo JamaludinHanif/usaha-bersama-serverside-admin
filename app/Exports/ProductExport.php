@@ -56,7 +56,7 @@ class ProductExport implements FromCollection, WithHeadings, WithMapping, WithSt
         return [
             $rowNumber++,
             $product->name,
-            $product->price ?? 'Tidak Ada',
+            $product->priceFormatted() ?? 'Tidak Ada',
             $product->unit,
             $product->stock,
             $product->category,

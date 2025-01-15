@@ -254,9 +254,9 @@
                                         alt="..." class="avatar-img rounded-circle">
                                 </div>
                                 <div class="flex-1 pt-1 ml-2">
-                                    <h5 class="fw-bold mb-1">{{ $topBuyer->user->username }}</h5>
+                                    <h5 class="fw-bold mb-1">{{ $topBuyer->user->username ?? 'Pengguna tidak ditemukan' }}</h5>
                                     <small
-                                        class="text-muted">{{ \Illuminate\Support\Str::limit($topBuyer->user->name, 20, '...') }}</small>
+                                        class="text-muted">{{ \Illuminate\Support\Str::limit($topBuyer->user->name ?? 'Pengguna tidak ditemukan', 20, '...') }}</small>
                                 </div>
                                 <div class="d-flex ml-auto align-items-center">
                                     <h4 class="text-info fw-bold">Rp.

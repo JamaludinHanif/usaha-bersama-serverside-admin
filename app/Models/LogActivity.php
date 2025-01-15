@@ -36,6 +36,8 @@ class LogActivity extends Model
             });
         }
 
+        $data = $data->orderBy('updated_at', 'DESC');
+
         return Datatables::of($data)
             ->addColumn('name', function ($data) {
                 return $data->user ? $data->user->name : 'Pengguna Telah Dihapus';

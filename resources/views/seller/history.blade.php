@@ -2,7 +2,7 @@
 @section('content')
 
     <body class="bg-white">
-        <div class="max-w-7xl mx-auto">
+        <div class="max-w-7xl mx-auto mb-80">
             {{-- riwayat pembelian --}}
             <div class="rounded-md">
                 <div class="bg-white">

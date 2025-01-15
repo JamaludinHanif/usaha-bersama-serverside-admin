@@ -65,7 +65,6 @@
                 <th style="text-align: center">Username</th>
                 <th style="text-align: center">Email</th>
                 <th style="text-align: center">No Hp</th>
-                <th style="text-align: center">Limit</th>
             </tr>
         </thead>
         <tbody>
@@ -84,7 +83,6 @@
                     <td>{{ $user->username }}</td>
                     <td>{{ $user->email }}</td>
                     <td>{{ $user->no_hp }}</td>
-                    <td>{{ $user->debt_limit }}</td>
                 </tr>
             @endforeach
         </tbody>

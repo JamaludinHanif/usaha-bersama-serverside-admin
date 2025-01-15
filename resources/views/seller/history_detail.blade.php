@@ -21,8 +21,8 @@
                                 src="{{ asset('user-avatar.jpg') }}">
                         </div>
                         <div class="ml-4 flex-auto">
-                            <p class="text-sm font-medium text-gray-700">{{ $datas->user->username }}</p>
-                            <p class="text-xs text-gray-500 line-clamp-1">{{ $datas->user->name }}</p>
+                            <p class="text-sm font-medium text-gray-700">{{ $datas->user->username ?? 'Pengguna tidak ditemukan' }}</p>
+                            <p class="text-xs text-gray-500 line-clamp-1">{{ $datas->user->name ?? 'Pengguna tidak ditemukan' }}</p>
                         </div>
                     </div>
                 </div>

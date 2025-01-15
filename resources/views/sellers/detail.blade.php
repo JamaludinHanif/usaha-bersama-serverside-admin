@@ -277,7 +277,7 @@
                             <div class="col-lg-9">
                                 <div class="form-group">
                                     : <span
-                                        class="badge text-white fw-bold mx-1 {{ $seller->status == 'Buka' ? 'bg-success' : ($seller->status == 'Tutup' ? 'bg-gray-100' : 'bg-danger') }}">
+                                        class="badge text-white fw-bold mx-1 {{ $seller->status == 'Buka' ? 'bg-success' : ($seller->status == 'Tutup' ? 'bg-warning' : 'bg-danger') }}">
                                         {{ $seller->status }}
                                     </span>
                                     <small class="invalid-feedback"></small>

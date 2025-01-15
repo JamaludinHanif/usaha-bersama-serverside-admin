@@ -65,7 +65,7 @@
                         <table>
                             <tr>
                                 <td><span class="mx-2">Nama Pelanggan</span></td>
-                                <td>: <span class="fw-bold mx-1">{{ $datas->user->name }}</span></td>
+                                <td>: <span class="fw-bold mx-1">{{ $datas->user->name ?? 'Pengguna tidak ditemukan' }}</span></td>
                             </tr>
                             <tr>
                                 <td><span class="mx-2">Status</span></td>

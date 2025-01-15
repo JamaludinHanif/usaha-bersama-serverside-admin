@@ -77,8 +77,9 @@
                     <td>{{ $product->name }}</td>
                     <td>Rp. {{ number_format($product->price ?? 0, 0, ',', '.') }}</td>
                     <td
-                        style="@if ($product->unit == 'pak') background-color: #ffad46; color: white;
+                        style="@if ($product->unit == 'pack') background-color: #ffad46; color: white;
                     @elseif ($product->unit == 'dos') background-color: #31ce36; color: white;
+                    @elseif ($product->unit == 'pcs') background-color: #007bff; color: white;
                     @else
                     background-color: #f25961; color: white; @endif font-weight: bold; text-align: center;">
                         {{ $product->unit }}
@@ -87,8 +88,9 @@
                     <td
                         style="@if ($product->category == 'pembersih') background-color: #f25961; color: white;
                         @elseif ($product->category == 'makanan') background-color: #31ce36; color: white;
+                        @elseif ($product->category == 'minuman') background-color: #007bff; color: white;
                         @else
-                        background-color: #007bff; color: white; @endif font-weight: bold; text-align: center">
+                        background-color: gray; color: white; @endif font-weight: bold; text-align: center">
                         {{ $product->category }}
                     </td>
                     <td>

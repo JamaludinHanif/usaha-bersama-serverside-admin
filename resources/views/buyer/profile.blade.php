@@ -146,8 +146,8 @@
                                                                     Pembelian</a>
                                                                 <div
                                                                     class="ml-4 border-l border-gray-200 pl-4 sm:ml-6 sm:pl-6">
-                                                                    <a href="#"
-                                                                        class="text-indigo-600 hover:text-indigo-500">Lihat
+                                                                    <a href="#" data-id="{{ $transaction->id }}"
+                                                                        class="downloadInvoice text-indigo-600 hover:text-indigo-500">Download
                                                                         Invoice</a>
                                                                 </div>
                                                             </div>

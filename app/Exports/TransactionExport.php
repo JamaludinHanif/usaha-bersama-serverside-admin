@@ -31,10 +31,10 @@ class TransactionExport implements FromCollection, WithHeadings, WithMapping, Wi
         return [
             'No',
             'Kode Invoice',
-            'Username',
+            'Pembeli',
+            'Penjual',
             'Status',
             'Total Pembelian',
-            'Tipe',
             'Waktu'
         ];
     }
@@ -51,12 +51,12 @@ class TransactionExport implements FromCollection, WithHeadings, WithMapping, Wi
 
         return [
             $rowNumber++,
-            $transaction->kode_invoice,
+            $transaction->code_invoice,
             $transaction->user->username ?? 'Tidak Ada',
+            $transaction->seller->shop_name ?? 'Tidak Ada',
             $transaction->status,
-            $transaction->total_amount,
-            $transaction->type,
-            $transaction->created_at->format('Y-m-d H:i:s'),
+            $transaction->priceFormatted(),
+            $transaction->created_at->translatedFormat('Y-m-d H:i:s'),
         ];
     }
 
