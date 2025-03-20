@@ -6,6 +6,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title> Usaha Bersama | {{ $title }}</title>
     <meta content="{{ csrf_token() }}" name="_token">
+    <link rel="icon" type="image/png" href="{{ asset('logo-company.png') }}">
 
     {{-- atlantis font --}}
     <script src="{{ asset('atlantis/assets/js/plugin/webfont/webfont.min.js') }}"></script>

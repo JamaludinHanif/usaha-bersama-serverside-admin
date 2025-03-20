@@ -9,7 +9,7 @@
     <style>
         body {
             font-family: 'Nunito', sans-serif;
-            color: #999;
+            color: black;
         }
 
         .container {

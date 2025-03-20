@@ -265,7 +265,7 @@ class PdfController extends Controller
 
         $dataPdf = [
             'noInvoice' => $data->code_invoice,
-            'name' => $data->user->name,
+            'name' => $data->user->name ?? 'Pengguna tidak ditemukan',
             // pembelian baru
             'dataProduk' => $data->items,
             'totalHarga' => $data->amount,

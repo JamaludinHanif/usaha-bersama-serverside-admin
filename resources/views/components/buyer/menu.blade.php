@@ -21,7 +21,7 @@
                     </button>
                 </div>
                 <div class="flex items-center">
-                    <img class="h-8 w-auto mr-2" src="{{ asset('logo.png') }}" alt="Usaha Bersama">
+                    <img class="h-8 w-auto mr-2" src="{{ asset('logo-company.png') }}" alt="Usaha Bersama">
                     <a href="{{ url('/') }}" class="text-sm lg:text-2xl font-semibold">Usaha Bersama</a>
                 </div>
             </div>

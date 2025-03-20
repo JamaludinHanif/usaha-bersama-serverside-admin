@@ -76,7 +76,7 @@
                 <tr>
                     <td style="text-align: center">{{ $index + 1 }}.</td>
                     <td>{{ $transaction->code_invoice }}</td>
-                    <td>{{ $transaction->user->username }}</td>
+                    <td>{{ $transaction->user->username ?? 'Pengguna tidak ditemukan' }}</td>
                     <td
                         style="@if ($transaction->status == 'pending') background-color: #ffad46; color: white;
                     @elseif ($transaction->status == 'success') background-color: #31ce36; color: white;
@@ -85,7 +85,7 @@
                         {{ $transaction->status }}
                     </td>
                     <td>Rp. {{ number_format($transaction->amount ?? 0, 0, ',', '.') }}</td>
-                    <td>{{ $transaction->seller->shop_name }}</td>
+                    <td>{{ $transaction->seller->shop_name ?? 'Penjual tidak ditemukan' }}</td>
                     <td>{{ $transaction->created_at->translatedFormat('d-F-Y') }}</td>
                 </tr>
             @endforeach

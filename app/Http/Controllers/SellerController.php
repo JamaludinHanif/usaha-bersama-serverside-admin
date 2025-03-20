@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\Seller;
 use App\Models\LogActivity;
+use App\Models\Seller;
 use App\Models\Transaction;
+use App\MyClass\Fonnte;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,13 +14,13 @@ class SellerController extends Controller
 {
     public function index(Request $request)
     {
-		if($request->ajax()) {
-			return Seller::dataTable($request);
-		}
+        if ($request->ajax()) {
+            return Seller::dataTable($request);
+        }
 
-		return view('sellers.index', [
-			'title' => 'Kelola Penjual',
-		]);
+        return view('sellers.index', [
+            'title' => 'Kelola Penjual',
+        ]);
     }
 
     public function create()
@@ -32,52 +33,68 @@ class SellerController extends Controller
     public function store(Request $request)
     {
         DB::beginTransaction();
-		try {
+        try {
             LogActivity::create([
                 'user_id' => session('userData')->id,
                 'action' => 'membuat Penjual ' . $request->shop_name,
             ]);
-			Seller::createSeller($request);
-			DB::commit();
 
-			return \Res::save();
-		} catch (\Exception $e) {
-			DB::rollback();
+            $link_login = route('seller.loginView');
+            $to = $request->no_hp;
 
-			return \Res::error($e);
-		}
+            $message = "Halo 🖐️ *$request->name*,\n\n"
+            . "Selamat datang di platform kami! Berikut adalah informasi login anda untuk akun penjual:\n\n"
+            . "- Nama Toko: *$request->shop_name*\n"
+            . "- Password: *$request->password*\n\n"
+            . "Silakan gunakan informasi ini untuk masuk ke akun anda.\n\n"
+            . "Login di sini: *$link_login*\n\n"
+            . "Jika ada pertanyaan atau membutuhkan bantuan, jangan ragu untuk menghubungi kami.\n\n"
+            . "Terima kasih,\n"
+            . "-- Usaha Bersama --";
+
+            $response = Fonnte::sendMessage($to, $message);
+
+            Seller::createSeller($request);
+            DB::commit();
+
+            return \Res::save();
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return \Res::error($e);
+        }
     }
 
-	public function edit(Seller $seller)
-	{
-		return view('sellers.edit', [
-			'title'		=> 'Edit Penjual',
-			'seller'	=> $seller,
-		]);
-	}
+    public function edit(Seller $seller)
+    {
+        return view('sellers.edit', [
+            'title' => 'Edit Penjual',
+            'seller' => $seller,
+        ]);
+    }
 
     public function update(Request $request, Seller $seller)
     {
-		DB::beginTransaction();
+        DB::beginTransaction();
 
-		try {
+        try {
             LogActivity::create([
                 'user_id' => session('userData')->id,
                 'action' => 'mengubah Penjual' . $seller->id,
             ]);
-			$seller->updateSeller($request);
-			DB::commit();
+            $seller->updateSeller($request);
+            DB::commit();
 
-			return \Res::update();
-		} catch (\Exception $e) {
-			DB::rollback();
+            return \Res::update();
+        } catch (\Exception $e) {
+            DB::rollback();
 
-			return \Res::error($e);
-		}
+            return \Res::error($e);
+        }
     }
 
     public function detail(Seller $seller)
-	{
+    {
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek = Carbon::now()->endOfWeek();
 
@@ -97,33 +114,33 @@ class SellerController extends Controller
                 ->sum('amount');
         }
 
-		return view('sellers.detail', [
-			'title'     => 'Detail Penjual',
-			'seller'    => $seller,
+        return view('sellers.detail', [
+            'title' => 'Detail Penjual',
+            'seller' => $seller,
             'weeklyIncomeBersih' => Transaction::where('seller_id', $seller->id)->where('status', 'success')->whereBetween('created_at', [$startOfWeek, $endOfWeek])->sum('amount'),
             'weeklyIncome' => $weeklyIncome,
             'monthlyIncome' => $monthlyIncome,
-		]);
-	}
+        ]);
+    }
 
     public function delete(Request $request, Seller $seller)
     {
-		DB::beginTransaction();
+        DB::beginTransaction();
 
-		try {
+        try {
             LogActivity::create([
                 'user_id' => session('userData')->id,
                 'action' => 'menghapus Penjual' . $seller->shop_name,
             ]);
-			$seller->deleteSeller();
-			DB::commit();
+            $seller->deleteSeller();
+            DB::commit();
 
-			return \Res::delete();
-		} catch (\Exception $e) {
-			DB::rollback();
+            return \Res::delete();
+        } catch (\Exception $e) {
+            DB::rollback();
 
-			return \Res::error($e);
-		}
+            return \Res::error($e);
+        }
     }
 
     // recyle/restore

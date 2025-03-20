@@ -52,7 +52,7 @@
 <body>
     {{-- <h1>Laporan Data User</h1> --}}
     <div class="">
-        <img src="{{ public_path('kop-surat-2.png') }}" style="width: 100%" alt="">
+        <img src="{{ public_path('kop-surat-v2.jpg') }}" style="width: 100%" alt="">
     </div>
     <h3 style="text-align: right">{{ $title }}</h3>
     <div class="" style="height: 30px"></div>

@@ -9,7 +9,7 @@
     <style>
         body {
             font-family: 'Nunito', sans-serif;
-            color: #999;
+            color: white;
         }
 
         .container {
@@ -109,7 +109,7 @@
         @endphp
         <div class="">
             {{-- <img src="{{ asset('kop-surat.png') }}" style="width: 100%" alt=""> --}}
-            <img src="{{ public_path('kop-surat-2.png') }}" style="width: 100%" alt="">
+            <img src="{{ public_path('kop-surat-v2.png') }}" style="width: 100%" alt="">
         </div>
         <table style="width: 100%;">
             <tr>
